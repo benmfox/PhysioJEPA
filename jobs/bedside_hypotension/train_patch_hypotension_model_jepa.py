@@ -87,7 +87,6 @@ n_patches = int(n_patches)
 
 # read in the sample_df (instead of calculated it)
 ## this is only for ABP waveforms, that are 60 seconds long, and have the outcome for the current minute
-#sample_df = pd.read_csv('/sc/arion/projects/EHR_ML/bfox/mimic3_samples_60_seconds_125Hz_ABP.csv.gz')
 if Path(f'{models_dir}/{dataset_filename}-train_samples.csv.gz').exists():
     sample_df_train = pd.read_csv(f'{models_dir}/{dataset_filename}-train_samples.csv.gz')
 else:

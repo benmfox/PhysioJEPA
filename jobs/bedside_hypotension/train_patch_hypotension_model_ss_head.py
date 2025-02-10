@@ -115,7 +115,7 @@ n_patches = int(n_patches)
 
 # read in the sample_df (instead of calculated it)
 if Path(f'{models_dir}/{dataset_filename}-train_samples.csv.gz').exists():
-    sample_df_train = pd.read_csv(f'/sc/arion/projects/EHR_ML/bfox/models_hypotension_chil/{dataset_filename}-train_samples.csv.gz')
+    sample_df_train = pd.read_csv(f'{models_dir}/{dataset_filename}-train_samples.csv.gz')
 else:
     sample_df_train = None
 if Path(f'{models_dir}/{dataset_filename}-val_samples.csv.gz').exists():
@@ -215,11 +215,11 @@ if __name__ == "__main__":
     test_targets = [y for _, y in test_loader]
     test_targets_cat = torch.cat(test_targets)
 
-    if not Path(f'/sc/arion/projects/EHR_ML/bfox/models_hypotension_chil/{dataset_filename}-train_samples.csv.gz').exists():
+    if not Path(f'{models_dir}/{dataset_filename}-train_samples.csv.gz').exists():
         train_ds.sample_df.to_csv(os.path.join(models_dir, f"{dataset_filename}-train_samples.csv.gz"), compression='gzip', index=True)
-    if not Path(f'/sc/arion/projects/EHR_ML/bfox/models_hypotension_chil/{dataset_filename}-val_samples.csv.gz').exists():
+    if not Path(f'{models_dir}/{dataset_filename}-val_samples.csv.gz').exists():
         val_ds.sample_df.to_csv(os.path.join(models_dir, f"{dataset_filename}-val_samples.csv.gz"), compression='gzip', index=True)
-    if not Path(f'/sc/arion/projects/EHR_ML/bfox/models_hypotension_chil/{dataset_filename}-test_samples.csv.gz').exists():
+    if not Path(f'{models_dir}/{dataset_filename}-test_samples.csv.gz').exists():
         test_ds.sample_df.to_csv(os.path.join(models_dir, f"{dataset_filename}-test_samples.csv.gz"), compression='gzip', index=True)
     
     patchmeupe2e_model = PatchTFTSingleOutcomeLightning(learning_rate=learning_rate, 
