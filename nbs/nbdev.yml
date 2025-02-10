@@ -1,0 +1,9 @@
+project:
+  output-dir: _docs
+
+website:
+  title: "PhysioJEPA"
+  site-url: "https://benmfox.github.io/PhysioJEPA"
+  description: "PhysioJEPA"
+  repo-branch: main
+  repo-url: "https://github.com/benmfox/PhysioJEPA"
