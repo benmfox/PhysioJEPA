@@ -20,8 +20,7 @@ class PatchTSJEPALightning(pl.LightningModule):
                  channels,
                  patchtsjepa_encoder_kwargs,
                  patchtsjepa_predictor_kwargs,
-                 use_sequence_padding_mask=False,
-                 loss_func = 'smoothl1',
+                 loss_func,
                  max_lr=0.01,
                  weight_decay=0.,
                  epochs=100,
@@ -29,8 +28,6 @@ class PatchTSJEPALightning(pl.LightningModule):
                  scheduler_type='OneCycle',
                  target_mask_range=(0.1,0.5), # the target can be up to 50% of the original x 
                  context_mask_range=(0.2,0.8), # the context can be up to 80% of masked out target (1-target_mask_ratio)
-                 mask_input_ratio=0.0,
-                 mask_all_channels=True,
                  pretrain=True,
                  ema_decay=0.996,
                  ):
@@ -45,19 +42,16 @@ class PatchTSJEPALightning(pl.LightningModule):
         self.batch_size = batch_size
         self.epochs = epochs
         self.channels = channels
-        self.use_sequence_padding_mask = use_sequence_padding_mask
         self.optimizer_type = optimizer_type
         self.weight_decay = weight_decay
-        self.loss_fn = nn.SmoothL1Loss() if loss_func == 'smoothl1' else nn.MSELoss()
+        self.loss_fn = loss_func
         self.target_mask_range = target_mask_range
         self.context_mask_range = context_mask_range
         self.pretrain = pretrain
-        self.mask_all_channels = mask_all_channels
         self.ema_decay = ema_decay
-        self.mask_input_ratio = mask_input_ratio
         ipe = self.train_size//self.batch_size
         self.momentum_scheduler = (self.ema_decay + i*(1-self.ema_decay)/(ipe*self.epochs) for i in range(int(ipe*self.epochs)+1))
-        self.model = PatchTSJEPA(patchtsjepa_encoder_kwargs, patchtsjepa_predictor_kwargs, pretrain=pretrain, target_mask_range=self.target_mask_range, context_mask_range=self.context_mask_range, mask_all_channels=self.mask_all_channels, mask_input_ratio=self.mask_input_ratio)
+        self.model = PatchTSJEPA(patchtsjepa_encoder_kwargs, patchtsjepa_predictor_kwargs, pretrain=pretrain, target_mask_range=self.target_mask_range, context_mask_range=self.context_mask_range)
 
     def ema_update(self, context_encoder, target_encoder):
         with torch.no_grad():
@@ -67,24 +61,65 @@ class PatchTSJEPALightning(pl.LightningModule):
                 param_k.requires_grad_(False)
         return target_encoder
 
-    def forward(self, x, sequence_padding_mask=None):
+    def create_channel_mask(self, x):
+        channel_mask = torch.all(x == 0, dim=-1)
+        if not torch.any(channel_mask):
+            channel_mask = None
+        return channel_mask
+
+    def forward(self, x, channel_mask=None):
         if self.pretrain or self.training:
-            pred, z_target, z_context, context_mask, target_mask, padding_mask = self.model(x, sequence_padding_mask=sequence_padding_mask)
-            return pred, z_target, z_context, context_mask, target_mask, padding_mask
+            pred, z_target, z_context, context_mask, target_mask = self.model(x)
+            return pred, z_target, z_context, context_mask, target_mask
         else:
-            z, padding_mask = self.model(x, sequence_padding_mask=sequence_padding_mask)
-            return z, padding_mask
+            z = self.model(x, channel_mask=channel_mask)
+            return z
+        
+    def predict_step(self, batch, batch_idx, dataloader_idx=0, channel_mask=None):
+        x, _ = batch
+        channel_mask = self.create_channel_mask(x)
+        z = self(x, channel_mask=channel_mask)
+        return z
 
     def training_step(self, batch, batch_idx):
         # training_step defines the train loop.
-        if self.use_sequence_padding_mask:
-            x, _, sequence_padding_mask = batch
-        else:
-            x, _ = batch
-            sequence_padding_mask = None
-        pred, z_target, z_context, context_mask, target_mask, padding_mask = self(x, sequence_padding_mask=sequence_padding_mask)
+        x, _ = batch
+        pred, z_target, z_context, context_mask, target_mask = self(x)
         
         loss = self.loss_fn(pred, z_target)
+
+        if loss.isnan():
+            warnings.warn(f"""
+            Train Loss is NaN at batch idx {batch_idx}
+            Diagnostics:
+            - pred stats: min={pred.min().item():.4f}, max={pred.max().item():.4f}, mean={pred.mean().item():.4f}
+            - z_target stats: min={z_target.min().item():.4f}, max={z_target.max().item():.4f}, mean={z_target.mean().item():.4f}
+            - pred contains nan: {torch.isnan(pred).any().item()}
+            - z_target contains nan: {torch.isnan(z_target).any().item()}
+            - pred contains inf: {torch.isinf(pred).any().item()}
+            - z_target contains inf: {torch.isinf(z_target).any().item()}
+            """)
+            loss = torch.nan_to_num(loss) # convert to 0
+        if batch_idx % 50 == 0:
+            with torch.no_grad():
+                # Check representation stats
+                context_mean = z_context.mean().item()
+                target_mean = z_target.mean().item()
+                target_std = z_target.std().item()
+                pred_mean = pred.mean().item()
+                pred_std = pred.std().item()
+                self.log('context_mean', context_mean)
+                self.log('target_mean', target_mean)
+                self.log('target_std', target_std)
+                self.log('pred_mean', pred_mean)
+                self.log('pred_std', pred_std)
+                
+                # Check mask coverage
+                target_ratio = target_mask.float().mean().item()
+                context_ratio = context_mask.float().mean().item()
+                self.log('target_ratio', target_ratio)
+                self.log('context_ratio', context_ratio)
+                
 
         loss = loss.to(self.device)
         self.log('train_loss', loss, prog_bar=True, on_step=True, on_epoch=True, sync_dist=True)
@@ -99,14 +134,25 @@ class PatchTSJEPALightning(pl.LightningModule):
         )
     
     def validation_step(self, batch, batch_idx):
-        if self.use_sequence_padding_mask:
-            x, _, sequence_padding_mask = batch
-        else:
-            x, _ = batch
-            sequence_padding_mask = None
-        pred, z_target, z_context, _, _, _ = self(x, sequence_padding_mask=sequence_padding_mask)
+        x, _ = batch
+
+        pred, z_target, _, _, _ = self(x)
 
         loss = self.loss_fn(pred, z_target)
+
+        if loss.isnan():
+            warnings.warn(f"""
+            Val Loss is NaN at batch idx {batch_idx}
+            Diagnostics:
+            - pred stats: min={pred.min().item():.4f}, max={pred.max().item():.4f}, mean={pred.mean().item():.4f}
+            - z_target stats: min={z_target.min().item():.4f}, max={z_target.max().item():.4f}, mean={z_target.mean().item():.4f}
+            - pred contains nan: {torch.isnan(pred).any().item()}
+            - z_target contains nan: {torch.isnan(z_target).any().item()}
+            - pred contains inf: {torch.isinf(pred).any().item()}
+            - z_target contains inf: {torch.isinf(z_target).any().item()}
+            """)
+            loss = torch.nan_to_num(loss) # convert to 0
+
         loss = loss.to(self.device)
 
         self.log("val_loss", loss, prog_bar=True, on_step=True, on_epoch=True, sync_dist=True)
@@ -132,25 +178,22 @@ class PatchTFTSingleOutcomeLightning(pl.LightningModule): #encoder for linear pr
                 train_size, # the training data size (for one_cycle_scheduler=True)
                 batch_size, # the batch size (for one_cycle_scheduler=True)
                 linear_probing_head, # model head to linear probe/train
+                preloaded_model, # loaded pretrained model to use for linear probing
                 metrics={}, # name:function for metrics to log
-                drop_channel_indexes=None, # indices of channels to drop from the model after encoding
                 fine_tune=False, # indicator to fine tune encoder or freeze encoder weights and perform linear probing
                 loss_fxn='CrossEntropy', # loss function to use, BCEWithLogitsLoss, BCELos, or FocalLoss for binary classification
                 class_weights=None, # weights of classes to use in CE loss fxn
                 gamma=2., # for focal loss
                 label_smoothing=0, # label smoothing for cross entropy loss
-                use_sequence_padding_mask=False, #indicator to use the sequence padding mask when training/in the loss fxn
                 y_padding_mask=-100, # padded value that was added to target and indice to ignore when computing loss
                 max_lr=0.01, # maximum learning rate for one_cycle_scheduler
                 epochs=100, # number of epochs for one_cycle_scheduler
-                one_cycle_scheduler=True, # indicator to use a one cycle scheduler to vary the learning rate 
                 scheduler_type='OneCycle',
                 optimizer_type='Adam',
                 weight_decay=0., # weight decay for Adam optimizer
-                pretrained_encoder_path=None, # path of the pretrained model to use for linear probing
-                preloaded_model=None, # loaded pretrained model to use for linear probing
                 torch_model_name='model', # name of the pytorch model within the lightning model module, this is to remove layers (for example lightning_model.pytorch_model.head = nn.Identity())
-                remove_pretrain_layers=['head'] # layers within the lightning model or lightning model.pytorch_model to remove
+                remove_pretrain_layers=['head'], # layers within the lightning model or lightning model.pytorch_model to remove
+                create_zero_channel_mask=False, # create a zero channel mask for the encoder when the a data channel is all zeros
                 ):
         super().__init__()
         self.encoder = preloaded_model
@@ -160,12 +203,9 @@ class PatchTFTSingleOutcomeLightning(pl.LightningModule): #encoder for linear pr
                     setattr(getattr(self.encoder, torch_model_name), l, nn.Identity())
                 else:
                     setattr(self.encoder, l, nn.Identity())
-        #if bool(self.encoder.hparams.get('convolve')):
-        #    assert self.encoder.hparams['conv_out_channels'] == linear_probing_kwargs['c_in'], f"The encoder used a convolution, creating {self.encoder.hparams['conv_out_channels']} channels. This should be the value for `c_in` in the time distributed feed forward network."
         self.scheduler_type = scheduler_type
         if self.scheduler_type is not None:
             assert self.scheduler_type.lower() in ['onecycle', 'cosineannealingwarmrestarts'], "scheduler must be either OneCycle, CosineAnnealingWarmRestarts, or None"
-        self.one_cycle_scheduler = one_cycle_scheduler
         self.weight_decay = weight_decay
         self.label_smoothing = label_smoothing
         self.learning_rate = learning_rate
@@ -176,64 +216,59 @@ class PatchTFTSingleOutcomeLightning(pl.LightningModule): #encoder for linear pr
         self.metrics = metrics
         self.y_padding_mask = y_padding_mask
         self.class_weights = class_weights
-        self.use_sequence_padding_mask = use_sequence_padding_mask
         self.loss_fxn = loss_fxn.lower()
         self.gamma = gamma
         self.fine_tune = fine_tune
+        self.create_zero_channel_mask = create_zero_channel_mask
         self.optimizer_type = optimizer_type
-        self.drop_channel_indexes = drop_channel_indexes
         if not self.fine_tune:
             self.encoder.freeze() # freeze the encoder weights (sets to eval mode)
             if hasattr(self.encoder, 'pretrain'):
                 setattr(self.encoder, 'pretrain', False)
+                setattr(self.encoder.model, 'pretrain', False)
         # Adjust the output layer for binary classification
         self.feedforward = linear_probing_head # model head to linear probe/train
         self.save_hyperparameters(ignore=['linear_probing_head', 'preloaded_model'])
 
-    def forward(self, x, sequence_padding_mask=None):
-        x = self.encoder(x, sequence_padding_mask=sequence_padding_mask) # [bs, n_channels, d_model, n_ffts/n_patches]
+    def forward(self, x, channel_mask=None):
+        channel_mask = self.create_channel_mask(x)
+        x = self.encoder(x, channel_mask=channel_mask) # [bs, n_channels, d_model, n_ffts/n_patches]
         if isinstance(x, tuple):
             # contrastive model
             x = x[0]
-        if self.drop_channel_indexes is not None:
-            channels_to_keep = [i for i in range(x.shape[1]) if i not in self.drop_channel_indexes]
-            x = torch.index_select(x, dim=1, index=torch.tensor(channels_to_keep, device=x.device))
         if torch.isnan(x).any():
             warnings.warn("NaN values in input to feedforward layer")
-        x = self.feedforward(x, return_softmax=True) # [bs, n_classes, pred_len_seconds]
+        x = self.feedforward(x, channel_mask=channel_mask) # [bs, n_classes, pred_len_seconds]
         return x # Ensure the output is of shape [batch_size]
     
-    def predict_step(self, batch, batch_idx, dataloader_idx=0): #does the order matter? should it be after test_step()
-        if self.use_sequence_padding_mask:
-            x, _, sequence_padding_mask = batch
+    def create_channel_mask(self, x):
+        if self.create_zero_channel_mask:
+            channel_mask = torch.all(x == 0, dim=-1)
+            if not torch.any(channel_mask):
+                channel_mask = None
+            return channel_mask
         else:
-            x,_ = batch
-            sequence_padding_mask = None
-        x = self.encoder(x, sequence_padding_mask = sequence_padding_mask)
+            return None
+
+    def predict_step(self, batch, batch_idx, dataloader_idx=0, channel_mask=None): #does the order matter? should it be after test_step()
+        x,_ = batch
+        channel_mask = self.create_channel_mask(x)
+        x = self.encoder(x, channel_mask=channel_mask)
         if isinstance(x, tuple):
             # contrastive model
             x = x[0]
-        if self.drop_channel_indexes is not None:
-            channels_to_keep = [i for i in range(x.shape[1]) if i not in self.drop_channel_indexes]
-            x = torch.index_select(x, dim=1, index=torch.tensor(channels_to_keep, device=x.device))
-        preds = self.feedforward(x, return_softmax=True)
+        preds = self.feedforward(x, return_softmax=True, channel_mask=channel_mask)
         return preds
 
-    def training_step(self, batch, batch_idx):
+    def training_step(self, batch, batch_idx, channel_mask=None):
         # training_step defines the train loop.
-        if self.use_sequence_padding_mask:
-            x, y, sequence_padding_mask = batch
-        else:
-            x, y = batch
-            sequence_padding_mask = None
-        x = self.encoder(x, sequence_padding_mask=sequence_padding_mask)
+        x, y = batch
+        channel_mask = self.create_channel_mask(x)
+        x = self.encoder(x, channel_mask=channel_mask)
         if isinstance(x, tuple):
             # contrastive model
             x = x[0]
-        if self.drop_channel_indexes is not None:
-            channels_to_keep = [i for i in range(x.shape[1]) if i not in self.drop_channel_indexes]
-            x = torch.index_select(x, dim=1, index=torch.tensor(channels_to_keep, device=x.device))
-        x = self.feedforward(x)  # Ensure output is [batch_size]
+        x = self.feedforward(x, channel_mask=channel_mask)  # Ensure output is [batch_size]
         bce_loss = nn.CrossEntropyLoss(weight=self.class_weights.to(x.device) if self.class_weights is not None else None, label_smoothing=self.label_smoothing, ignore_index=self.y_padding_mask)
         focal_loss = FocalLoss(weight=self.class_weights.to(x.device) if self.class_weights is not None else None, gamma=self.gamma, ignore_index=self.y_padding_mask)
         bce_loss_val = bce_loss(x,y)
@@ -252,20 +287,14 @@ class PatchTFTSingleOutcomeLightning(pl.LightningModule): #encoder for linear pr
         self.log_dict({f'train_{name}':metric(x, y) for name, metric in self.metrics.items()}, prog_bar=True, on_step=False, on_epoch=True, sync_dist=True)
         return loss
 
-    def validation_step(self, batch, batch_idx):
-        if self.use_sequence_padding_mask:
-            x, y, sequence_padding_mask = batch
-        else:
-            x, y = batch
-            sequence_padding_mask = None
-        x = self.encoder(x, sequence_padding_mask=sequence_padding_mask)
+    def validation_step(self, batch, batch_idx, channel_mask=None):
+        x, y = batch
+        channel_mask = self.create_channel_mask(x)
+        x = self.encoder(x, channel_mask=channel_mask)
         if isinstance(x, tuple):
             # contrastive model
             x = x[0]
-        if self.drop_channel_indexes is not None:
-            channels_to_keep = [i for i in range(x.shape[1]) if i not in self.drop_channel_indexes]
-            x = torch.index_select(x, dim=1, index=torch.tensor(channels_to_keep, device=x.device))
-        x = self.feedforward(x)  # Ensure output is [batch_size]
+        x = self.feedforward(x, channel_mask=channel_mask)  # Ensure output is [batch_size]
         bce_loss = nn.CrossEntropyLoss(weight=self.class_weights.to(x.device) if self.class_weights is not None else None, label_smoothing=self.label_smoothing, ignore_index=self.y_padding_mask)
         focal_loss =  FocalLoss(weight=self.class_weights.to(x.device) if self.class_weights is not None else None, gamma=self.gamma, ignore_index=self.y_padding_mask)
         bce_loss_val = bce_loss(x,y)

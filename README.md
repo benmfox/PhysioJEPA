@@ -43,24 +43,25 @@ new functionality. Then, run `nbdev_prepare` to generate the
       foundational transformer model
     - `train_patch_hypotension_model_ss_head.py`: Trains the probing
       head for hypotension classification
-- `additional_hypotension_label_processing.ipynb`: Additional processing
-  for hypotension labels into 10 min bins
+    - `hypotension_ablate_channels.py`: Ablates channels from the JEPA
+      model and probes the effect on hypotension classification
+- `additional_label_processing.ipynb`: Additional processing for
+  hypotension and shock index labels derivation
 
 ### Model Training Pipeline
 
-1.  Hyperparameter Tuning
-    (`jobs/bedside_hypotension/hypertune_hypotension_model.py`)
-    - Idenitfied optimal hyperparameters for the PatchTST encoder model
-      using a fully supervised approach
-2.  JEPA Model Training
+1.  JEPA Model Training
     (`jobs/bedside_hypotension/train_patch_hypotension_model_jepa.py`)
     - Trains the context and target transformers on bedside hypotension
       data zarr files
     - Creates general purpose 45-min representations of bedside
       hypotension signals
-3.  Probe Training
+2.  Probe Training
     (`jobs/bedside_hypotension/train_patch_hypotension_model_ss_head.py`)
     - Trains a classification head on top of the JEPA model
+3.  Ablation (`jobs/bedside_hypotension/hypotension_ablate_channels.py`)
+    - Ablates channels from the JEPA model and probes the effect on
+      hypotension classification
 
 ## Technical Details
 

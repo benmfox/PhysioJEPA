@@ -17,46 +17,22 @@ class TSTEncoderLayer(nn.Module):
                  d_model, # dimension of patch embeddings
                  n_heads, # number of attention heads per layer
                  d_ff=256, # dimension of feedforward layer in each transformer layer
-                 store_attn=False, # indicator of whether or not to store attention
-                 norm='BatchNorm',
-                 relative_attn_type='vanilla', # options include vaniall or eRPE
-                 use_flash_attn=False, # indicator to use flash attention
-                 num_patches=None, # num patches required for eRPE attn
                  attn_dropout=0, 
                  dropout=0., 
                  bias=True, 
                  activation="gelu", 
-                 res_attention=False, 
                  pre_norm=False
                 ):
         super().__init__()
         
         assert not d_model%n_heads, f"d_model ({d_model}) must be divisible by n_heads ({n_heads})"
-        d_k = d_model // n_heads
-        d_v = d_model // n_heads
 
         # Multi-Head attention
-        self.res_attention = res_attention
-        self.use_flash_attn = use_flash_attn
-        self.store_attn = store_attn
-        if self.use_flash_attn and self.store_attn:
-            warnings.warn("Flash attention does not support storing attention, setting store_attn to False")
-            self.store_attn = False
-        if relative_attn_type == 'eRPE':
-            assert num_patches is not None, "You must provide a num_patches for eRPE"
-            self.self_attn = Attention_Rel_Scl(d_model, n_heads=n_heads, seq_len=num_patches, res_attention=res_attention, attn_dropout=attn_dropout, proj_dropout=dropout)
-        else:
-            self.self_attn = MultiheadAttentionCustom(d_model, n_heads, d_k, d_v, attn_dropout=attn_dropout, proj_dropout=dropout, res_attention=res_attention)
-
-        if use_flash_attn:
-            self.self_attn = MultiheadFlashAttention(d_model, n_heads, attn_dropout=attn_dropout, proj_dropout=dropout)
+        self.self_attn = MultiheadFlashAttention(d_model, n_heads, attn_dropout=attn_dropout, proj_dropout=dropout)
 
         # Add & Norm
         self.dropout_attn = nn.Dropout(dropout) 
-        if "batch" in norm.lower():
-            self.norm_attn = nn.Sequential(Transpose(1,2), nn.BatchNorm1d(d_model), Transpose(1,2))
-        else:
-            self.norm_attn = nn.LayerNorm(d_model)
+        self.norm_attn = nn.LayerNorm(d_model)
 
         # Position-wise Feed-Forward
         self.ff = nn.Sequential(nn.Linear(d_model, d_ff, bias=bias), 
@@ -66,31 +42,22 @@ class TSTEncoderLayer(nn.Module):
 
         # Add & Norm
         self.dropout_ffn = nn.Dropout(dropout)
-        if "batch" in norm.lower():
-            self.norm_ffn = nn.Sequential(Transpose(1,2), nn.BatchNorm1d(d_model), Transpose(1,2))
-        else:
-            self.norm_ffn = nn.LayerNorm(d_model)
+        self.norm_ffn = nn.LayerNorm(d_model)
 
         self.pre_norm = pre_norm
 
 
-    def forward(self, src:Tensor, prev:Optional[Tensor]=None, key_padding_mask=None):
+    def forward(self, src:Tensor, channel_mask:Optional[Tensor]=None):
         """
         src: tensor [bs x q_len x d_model]
+        channel_mask: tensor [bs x n_channels]
         """
         # Multi-Head attention sublayer
         if self.pre_norm:
             src = self.norm_attn(src)
         ## Multi-Head attention
-        if self.res_attention:
-            src2, attn, scores = self.self_attn(src, prev=prev, key_padding_mask=key_padding_mask)
-        elif not self.use_flash_attn:
-            src2, attn = self.self_attn(src, key_padding_mask=key_padding_mask)
-        else:
-            src2 = self.self_attn(src, key_padding_mask=key_padding_mask)
+        src2 = self.self_attn(src, channel_mask=channel_mask)
         
-        if self.store_attn:
-            self.attn = attn
         ## Add & Norm
         src = src + self.dropout_attn(src2) # Add: residual connection with residual dropout
         if not self.pre_norm:
@@ -107,11 +74,7 @@ class TSTEncoderLayer(nn.Module):
         if not self.pre_norm:
             src = self.norm_ffn(src)
 
-        if self.res_attention:
-            return src, scores
-        else:
-            return src
-
+        return src
 
 # %% ../nbs/04_transformers.ipynb 7
 class PatchTSJEPAPredictor(nn.Module):
@@ -125,19 +88,18 @@ class PatchTSJEPAPredictor(nn.Module):
         n_heads=4,
         n_layers=2,
         d_ff=1024,
-        norm='BatchNorm',
         pos_encoding_type='learned', # 'learned' or 'tAPE'
         dropout=0.1,
         attn_dropout=0.0,
         act="gelu",
         pre_norm=False,
-        use_flash_attn=False,
     ):
         super().__init__()
         
         self.c_in = c_in
         self.num_patches = num_patches
         self.predictor_dim = predictor_dim
+        self.d_model = d_model
         
         # Project from encoder dimension to predictor dimension
         self.predictor_embed = nn.Linear(d_model, predictor_dim, bias=True)
@@ -148,12 +110,13 @@ class PatchTSJEPAPredictor(nn.Module):
         
         # Positional encoding for predictor
         if pos_encoding_type.lower() == 'tape':
-            self.W_pos = torch.zeros(1, num_patches, predictor_dim)  # positional encoding
-            position = torch.arange(0, num_patches, dtype=torch.float, device=self.W_pos.device).unsqueeze(1)
-            div_term = torch.exp(torch.arange(0, predictor_dim, 2, device=self.W_pos.device).float() * (-np.log(10000.0) / predictor_dim))
+            W_pos = torch.zeros(1, num_patches, predictor_dim)  # positional encoding
+            position = torch.arange(0, num_patches, dtype=torch.float).unsqueeze(1)
+            div_term = torch.exp(torch.arange(0, predictor_dim, 2).float() * (-np.log(10000.0) / predictor_dim))
 
-            self.W_pos[..., 0::2] = torch.sin((position * div_term)*(predictor_dim/num_patches)) # this is the difference between normal PE and tAPE, scaling (d_model/seq_len)
-            self.W_pos[..., 1::2] = torch.cos((position * div_term)*(predictor_dim/num_patches))
+            W_pos[..., 0::2] = torch.sin((position * div_term)*(predictor_dim/num_patches)) # this is the difference between normal PE and tAPE, scaling (d_model/seq_len)
+            W_pos[..., 1::2] = torch.cos((position * div_term)*(predictor_dim/num_patches))
+            self.register_buffer('W_pos', W_pos)  # this stores the variable in the state_dict (used for non-trainable variables)
         else:
             self.W_pos =  nn.Parameter(torch.empty((1, num_patches, predictor_dim)))
             nn.init.uniform_(self.W_pos, -0.02, 0.02)
@@ -164,15 +127,10 @@ class PatchTSJEPAPredictor(nn.Module):
                 d_model=predictor_dim,
                 n_heads=n_heads,
                 d_ff=d_ff,
-                norm=norm,
                 attn_dropout=attn_dropout,
                 dropout=dropout,
-                num_patches=num_patches,
                 activation=act,
-                res_attention=False,
-                use_flash_attn=use_flash_attn,
-                pre_norm=pre_norm,
-                store_attn=False
+                pre_norm=pre_norm
             ) for _ in range(n_layers)
         ])
         
@@ -189,40 +147,46 @@ class PatchTSJEPAPredictor(nn.Module):
         Returns:
             Predictions for masked patches [B, C, d_model, n_masked_patches]
         """
-        B = x.shape[0]
+        B = x.size(0)
         
         # Reshape and project to predictor dimension
-        
-        x = x.permute(0, 1, 3, 2)  # [B, C, n_patches, d_model]
-        x = self.predictor_embed(x)  # [B, C, n_patches, predictor_dim]
-        x = x.reshape(B * self.c_in, -1, x.shape[-1]) # [B*C, n_patches, predictor_dim]
-
+        x = x.permute(0, 3, 1, 2) # [B, n_patches, C, d_model]
+        x = self.predictor_embed(x)  # [B, n_patches, C, predictor_dim] 
+        x = x.permute(0,2,1,3)
+        if not x.is_nested:
+            x = torch.reshape(x, (B * self.c_in, -1, self.predictor_dim)) # u: [bs * nvars x num_patch x d_model]
+        else:
+            x_list = list(x.unbind())
+            reshaped_list = []
+            for x_i in x_list:
+                # x has shape [c_in, var_len, d_model]
+                # Split into 7 separate tensors
+                channel_tensors = list(x_i.unbind(0))
+                reshaped_list.extend(channel_tensors)
+            x = torch.nested.as_nested_tensor(reshaped_list, layout=torch.jagged)
         # Handle visible patches (context)
         if masks_x is not None:
             # Expand mask for all channels
-            if masks_x.ndim == 2:
-                context_mask = masks_x.unsqueeze(1)  # [B x 1 x n_patches]
-                context_mask = context_mask.expand(-1, self.c_in, -1)  # [B, C, n_patches]
-            elif masks_x.ndim == 3:
-                context_mask = masks_x # [B, C, n_patches]
-            else:
-                raise ValueError(f"Masks must be 2 or 3 dimensions, got {masks_x.ndim}")
-            context_mask = context_mask.reshape(B * self.c_in, -1, 1)  # [B*C, n_patches, 1]
-
+            # masks_x is [B, C, n_patches]
             pos_embed = self.W_pos.repeat(B * self.c_in, 1, 1)  # [B*C, n_patches, predictor_dim]
+            
+            context_mask = masks_x
+            context_mask = context_mask.reshape(B * self.c_in, -1, 1)  # [B*C, n_patches, 1]
             pos_embed = pos_embed.masked_fill(~context_mask, 0.0)  # Zero out non-context positions
-            x = x + pos_embed * self.pe_scale_factor # [B*C, n_patches, predictor_dim]
+            if x.is_nested:
+                x_list = list(x.unbind())
+                for i in range(len(x_list)):
+                    seq_len = x_list[i].size(0)
+                    x_list[i] = x_list[i] + pos_embed[i,:seq_len,:] * self.pe_scale_factor # [B*C, n_patches, predictor_dim]
+                x = torch.nested.as_nested_tensor(x_list, layout=torch.jagged)
+            else:
+                x = x + pos_embed * self.pe_scale_factor # [B*C, n_patches, predictor_dim]
 
         # Add mask tokens for prediction
         if masks is not None:
             # Get positions that need to be predicted (any channel masked)
-            if masks.ndim == 2:
-                target_mask = masks.unsqueeze(1)  # [B, 1, n_patches]
-                target_mask = target_mask.expand(-1, self.c_in, -1)  # [B, C, n_patches]
-            elif masks.ndim == 3:
-                target_mask = masks  # [B, C, n_patches]
-            else:
-                raise ValueError(f"Masks must be 2 or 3 dimensions, got {masks.ndim}")
+            # masks  is [B, C, n_patches]
+            target_mask = masks
             target_mask = target_mask.reshape(B * self.c_in, -1, 1)  # [B*C x n_patches x 1]
             target_mask = target_mask.expand(-1, -1, self.predictor_dim)  # [B*C, n_patches, predictor_dim]
 
@@ -233,51 +197,74 @@ class PatchTSJEPAPredictor(nn.Module):
             mask_tokens = mask_tokens + pos_embs  # Add positional embeddings
             # Zero out positions we don't want to predict
             # in the target mask, True means what we want to predict so we do not need to invert it.
-            x = torch.where(target_mask, mask_tokens, x)
-            
+            if x.is_nested:
+                x_list = list(x.unbind())
+                for i in range(len(x_list)):
+                    seq_len = x_list[i].size(0)
+                    x_list[i] = torch.where(target_mask[i, :seq_len, :], mask_tokens[i, :seq_len, :], x_list[i])
+                x = torch.nested.as_nested_tensor(x_list, layout=torch.jagged)
+            else:
+                x = torch.where(target_mask, mask_tokens, x)
+
+        # Forward through transformer layers
         for layer in self.predictor_layers:
             x = layer(x)  # No need for padding mask since we handle masking explicitly
         # Final norm and projection
         x = self.predictor_norm(x)
+
+        if x.is_nested:
+            x_list = list(x.unbind())
+            restored_list = []
+            for i in range(0, len(x_list), self.c_in):
+                group = x_list[i:i+self.c_in]
+                stacked = torch.stack(group, dim=0)
+                stacked = stacked.reshape(-1, self.predictor_dim) # z: [nvars * num_patch x d_model]
+                restored_list.append(stacked)
+            x = torch.nested.as_nested_tensor(restored_list, layout=torch.jagged)
+        else:
+            x = x.reshape(B, self.c_in, -1, x.shape[-1])  # [B, C, n_patches, pred dim]
         x = self.predictor_proj(x)  # Project back to encoder dimension
+        if x.is_nested:
+            x_list = list(x.unbind())
+            for i in range(len(x_list)):
+                x_list[i] = x_list[i].reshape(self.c_in, -1, self.d_model) # reshape to [bs x nvars x n patch x predict dim]
+            x = torch.nested.as_nested_tensor(x_list, layout=torch.jagged)
         # Reshape back
-        x = x.reshape(B, self.c_in, -1, x.shape[-1])  # [B, C, n_patches, d_model]
         # Only return predictions for masked tokens
         if masks is not None:
-            if masks.ndim == 2:
-                target_mask = masks.unsqueeze(1)  # [B, 1, n_patches]
-                target_mask = target_mask.expand(-1, self.c_in, -1)  # [B, C, n_patches]
-            elif masks.ndim == 3:
-                target_mask = masks  # [B, C, n_patches]
-            x = x[target_mask]
-            x = x.reshape(B, self.c_in, -1, x.shape[-1]).permute(0, 1, 3, 2)
-        
+            target_mask = masks
+            if x.is_nested:
+                x_list = list(x.unbind())
+                for i in range(len(x_list)):
+                    seq_len = x_list[i].size(1)
+                    x_list[i] = x_list[i][target_mask[i,:, :seq_len]]
+                    x_list[i] = x_list[i].reshape(self.c_in, -1, self.d_model)
+                x = torch.nested.as_nested_tensor(x_list, layout=torch.jagged)
+            else:
+                x = x[target_mask]
+                x = x.reshape(B, self.c_in, -1, x.shape[-1])
+            x = x.transpose(-1,-2)
         return x
 
-# %% ../nbs/04_transformers.ipynb 9
+# %% ../nbs/04_transformers.ipynb 8
 class PatchTSJEPAEncoder(nn.Module):
      def __init__(self,
                   c_in:int, # the number of input channels
                   win_length, # the length of the patch of time/interval or short time ft windown length (when time_domain=False)
                   hop_length, # the length of the distance between each patch/fft
                   max_seq_len, # maximum sequence len
-                  time_domain=True,
                   pos_encoding_type='learned', # 'learned' or 'tAPE'
                   patch_encoder_type='linear', # 'linear' or 'conv'
-                  use_flash_attn=False, # indicator to use flash attention
                   use_revin=True, # if time_domain is true, whether or not to instance normalize time data
-                  dim1reduce=False, # indicator to normalize by timepoint in revin
                   affine=True, # if time_domain is true, whether or not to learn revin normalization parameters 
                   n_layers:int=4, # the number of transformer encoder layers to use
                   d_model=512, # the dimension of the input to the transofmrer encoder
                   n_heads=8, # the number of heads in each layer
                   shared_embedding=False, # indicator for whether or not each channel should be projected with its own set of linear weights to the encoder dimension
                   d_ff:int=2048, # the feedforward layer size in the transformer
-                  norm:str='BatchNorm', # BatchNorm or LayerNorm during trianing
                   attn_dropout:float=0., # dropout in attention
                   dropout:float=0.1, # dropout for linear layers
                   act:str="gelu", # activation function
-                  res_attention:bool=True, # whether to use residual attention
                   pre_norm:bool=False, # indicator to pre batch or layer norm 
                   ):
           super().__init__()
@@ -286,23 +273,17 @@ class PatchTSJEPAEncoder(nn.Module):
           self.d_model = d_model # original d_model
           self.use_revin = use_revin
           self.affine = affine
-          self.time_domain = time_domain
-          self.use_flash_attn = use_flash_attn
-
-          if use_flash_attn and res_attention:
-               warnings.warn("Flash attention is not yet implemented for residual attention, setting res_attention=False")
-               res_attention = False
+          self.hop_length = hop_length
+          self.max_seq_len = max_seq_len
           # Instance Normalization (full sequence)
           if self.use_revin:
-               self.revin = RevIN(num_features=self.c_in, affine=self.affine, dim_to_reduce=1 if dim1reduce else -1)
+               self.revin = RevIN(num_features=self.c_in, affine=self.affine, dim_to_reduce=-1)
           self.num_patch = int((max(max_seq_len, win_length)-win_length) // hop_length + 1)
           if ((max_seq_len-win_length) % hop_length != 0):
                # add one for padding if above is true, see create_patch fxn for more details
                self.num_patch += 1
           self.patch_len = win_length
-          self.patch_layer = Patch(patch_len=win_length, stride=hop_length, max_seq_len=max_seq_len)
-          if not self.time_domain:
-               self.fft = FFT(dim=-1)
+          self.patch_layer = Patch(patch_len=win_length, stride=hop_length)
           
           # Patch Embedding
           if patch_encoder_type == 'linear':
@@ -320,78 +301,74 @@ class PatchTSJEPAEncoder(nn.Module):
           # residual dropout
           self.dropout = nn.Dropout(dropout)
           # time series transformer layers/Encoder
-          self.layers = nn.ModuleList([TSTEncoderLayer(d_model=self.d_model, n_heads=n_heads, d_ff=d_ff, norm=norm,
-                                                       attn_dropout=attn_dropout, dropout=dropout, num_patches=self.num_patch,
-                                                       activation=act, res_attention=res_attention, use_flash_attn=use_flash_attn,
-                                                       pre_norm=pre_norm, store_attn=False) for i in range(n_layers)])
-          self.res_attention = res_attention
+          self.layers = nn.ModuleList([TSTEncoderLayer(d_model=self.d_model, n_heads=n_heads, d_ff=d_ff,
+                                                       attn_dropout=attn_dropout, dropout=dropout,activation=act,
+                                                       pre_norm=pre_norm) for _ in range(n_layers)])
 
-     def forward(self, z, padding_mask=None, mask=None):
+     def forward(self, z, mask=None, channel_mask=None):
           """
           input from ds is [bs x n_vars x max_seq_len]
           z: tensor [bs x nvars x d_model x num_patch]
+          mask: tensor [bs x n_vars x num_patch]
           """
-          bs = z.shape[0]
+          bs = z.size(0)
           # REVIN
           if self.use_revin:
                z = self.revin(z, mode=True) # z: [bs x n_vars x max_seq_len] dont passs sequence pad mask to revin if dim=(1,) - it doesnt matter
-
           z = self.patch_layer(z, constant_pad=True, constant_pad_value=0) # z: [bs x num_patch x n_vars x patch_len] pad with 0, same as input padded values
-          if not self.time_domain:
-               z = self.fft(z)
-          Y_patch_original = z.clone().detach()
-          # patching for pad mask
-
           # MASKING
           if mask is not None:
                # Expand mask for all channels
-               if mask.ndim == 2:
-                    mask = mask.unsqueeze(-1).unsqueeze(-1)  # [B, num_patch, 1, 1]
-                    mask = mask.expand(-1, -1, self.c_in, 1)  # [bs x num_patch x n_vars x 1]
-               elif mask.ndim == 3:
-                    mask = mask.permute(0, 2, 1) #  [bs x num_patch x n_vars]
-                    mask = mask.unsqueeze(-1) # [bs x num_patch x n_vars x 1]
-               else:
-                    raise ValueError(f"Mask must be 2 or 3 dimensions, got {mask.ndim}")
-               mask = mask.expand(-1, -1, -1, self.patch_len)  # [B, num_patch, n_vars, patch_len]
+               mask = mask.transpose(-1,-2) # [bs x num_patch x n_vars]
+               mask = mask.unsqueeze(-1) # [bs x num_patch x n_vars x 1]
+               #mask = mask.expand(-1, -1, -1, self.patch_len)  # [B, num_patch, n_vars, patch_len]
                # Zero out non-masked patches (this is the context)
                # invert the mask, if mask == 0.5, then 50% of patches are set to True
-               z = z.masked_fill(~mask, 0.0)  # Now zeros out everything NOT in context
+               if z.is_nested:
+                    z_list = list(z.unbind())
+                    for i in range(len(z_list)):
+                         seq_len = z_list[i].size(0)
+                         z_list[i] = z_list[i].masked_fill(~mask[i,:seq_len, :, :], 0.0)
+                    z = torch.nested.as_nested_tensor(z_list, layout=torch.jagged)
+               else:
+                    z = z.masked_fill(~mask, 0.0)  # Now zeros out everything NOT in context
 
           # EMBEDDING
           z = self.patch_encoder(z) # z: [bs x num_patch x nvars x d_model]
           z = z.transpose(1,2) # z: [bs x nvars x num_patch x d_model]
           # positional encoding
-          z = torch.reshape(z, (bs * self.c_in, self.num_patch, self.d_model)) # u: [bs * nvars x num_patch x d_model]
-
+          if not z.is_nested:
+               z = torch.reshape(z, (bs * self.c_in, self.num_patch, self.d_model)) # u: [bs * nvars x num_patch x d_model]
+          else:
+               z_list = list(z.unbind())
+               reshaped_list = []
+               for x in z_list:
+                    # x has shape [c_in, var_len, d_model]
+                    # Split into 7 separate tensors
+                    channel_tensors = list(x.unbind(0))
+                    reshaped_list.extend(channel_tensors)
+               z = torch.nested.as_nested_tensor(reshaped_list, layout=torch.jagged)
           z = self.pe(z) # z: [bs * nvars x num_patch x d_model]
-
           # residual dropout
           z = self.dropout(z) # z: [bs * nvars x num_patch x d_model] 
-          
-          if padding_mask is not None:
-               if self.time_domain:
-                    padding_mask = padding_mask.unsqueeze(1).expand(-1, self.c_in, -1) # key_padding_mask: [bs x n_vars x num_patch]
-               else:
-                    padding_mask = (padding_mask[:,:,:1]==0).unsqueeze(1).expand(-1, self.c_in, -1) # key padding mask is true for patches with non-zero,, only need one channel dimension since channels same
-               padding_mask = torch.reshape(padding_mask, (-1,self.num_patch)) # key_padding_mask: [bs * nvars x num_patch]
           # encoder layers
-          if self.res_attention:
-               scores = None
-               for mod in self.layers:
-                    z, scores = mod(z, prev=scores, key_padding_mask=padding_mask) # z: [bs * n_vars x num_patch x d_model], scores: [bs * n_vars x n_heads x num_patch x num_patch]
+          for mod in self.layers: 
+               z = mod(z, channel_mask=channel_mask) # z: [bs * n_vars x num_patch x d_model]
+          if z.is_nested:
+               z_list = list(z.unbind())
+               restored_list = []
+               for i in range(0, len(z_list), self.c_in):
+                    group = z_list[i:i+self.c_in]
+                    stacked = torch.stack(group, dim=0).transpose(0,1) # 1st dim is the jagged dimension
+                    restored_list.append(stacked)
+               z = torch.nested.as_nested_tensor(restored_list, layout=torch.jagged)
+               z = z.transpose(1,2)
           else:
-               for mod in self.layers: 
-                    z = mod(z, key_padding_mask=padding_mask) # z: [bs * n_vars x num_patch x d_model]
-          
-          z = torch.reshape(z, (-1, self.c_in, self.num_patch, self.d_model)) # z: [bs x nvars x num_patch x d_model]
-          z = z.permute(0,1,3,2) # z: [bs x nvars x d_model x num_patch]
-          
-          if mask is not None:
-               return z, Y_patch_original
+               z = torch.reshape(z, (-1, self.c_in, self.num_patch, self.d_model)) # z: [bs x nvars x num_patch x d_model]
+          z = z.permute(0,1,3,2) # z: [bs x nvars x d_model x num_patch] 
           return z
 
-# %% ../nbs/04_transformers.ipynb 11
+# %% ../nbs/04_transformers.ipynb 9
 class PatchTSJEPA(nn.Module):
      def __init__(self, 
                   encoder_kwargs: dict, 
@@ -399,7 +376,6 @@ class PatchTSJEPA(nn.Module):
                   pretrain=True, 
                   target_mask_range=(0.1,0.5), # the target can be up to 50% of the original x 
                   context_mask_range=(0.2,0.8), # the context can be up to 80% of masked out target (1-target_mask_ratio)
-                  mask_all_channels=True
                   ):
           super().__init__()
           self.context_encoder = PatchTSJEPAEncoder(**encoder_kwargs)
@@ -409,135 +385,119 @@ class PatchTSJEPA(nn.Module):
           self.target_mask_range = target_mask_range
           self.context_mask_range = context_mask_range
           self.num_patch = predictor_kwargs['num_patches']
-          self.mask_all_channels = mask_all_channels
           self.c_in = encoder_kwargs['c_in']
-          
-     def create_masks(self, batch_size, c_in, padding_mask=None):
+          self.win_length = encoder_kwargs['win_length']
+          self.hop_length = encoder_kwargs['hop_length']
+          self.max_seq_len = encoder_kwargs['max_seq_len']
+
+     def create_masks(self, x):
           """Create context and target masks for I-JEPA training
           Args:
                batch_size: int
-               padding_mask: [B, num_patches] boolean tensor where True indicates padding
           Returns:
-               context_mask: boolean mask where True indicates patches visible to predictor
-               target_mask: boolean mask where True indicates patches to predict
+               context_mask: bs x n_vars x num_patch boolean mask where True indicates patches visible to predictor
+               target_mask: bs x n_vars x num_patch boolean mask where True indicates patches to predict
           """
-          num_patches = self.num_patch
-          
-          # Initialize masks
-          if not self.mask_all_channels:
-               target_mask = torch.zeros((batch_size, c_in, num_patches), dtype=torch.bool)
+          bs = x.size(0)
+
+          nested_patches = []
+          if x.is_nested:
+               x_list = list(x.unbind())
+               target_mask_list = []
+               for x_i in x_list:
+                    n_patches = int((x_i.size(-1) - self.win_length) // self.hop_length + 1)
+                    if ((x_i.size(-1)-self.win_length) % self.hop_length != 0):
+                         n_patches += 1
+                    nested_patches.append(n_patches)
+                    target_mask_list.append(torch.zeros((n_patches, self.c_in), dtype=torch.bool))
+               target_mask = torch.nested.as_nested_tensor(target_mask_list, layout=torch.jagged)
+               target_mask = target_mask.transpose(1,2) # transpose so that the jagged dimension is the first dimension
           else:
-               target_mask = torch.zeros((batch_size, num_patches), dtype=torch.bool)
-          context_mask = torch.zeros_like(target_mask)
+               target_mask = torch.zeros((bs, self.c_in, self.num_patch), dtype=torch.bool) # [bs x n_vars x num_patch x patch_len]
+          context_mask = torch.zeros_like(target_mask) # [bs x n_vars x num_patch x patch_len]
           
           # target and context mask ratios, should be the same for each batch item
           target_ratio = self.target_mask_range[0] + torch.rand(1).item() * (self.target_mask_range[1] - self.target_mask_range[0])
           context_ratio = self.context_mask_range[0] + torch.rand(1).item() * (self.context_mask_range[1] - self.context_mask_range[0])
-          if not self.mask_all_channels:
-               # Generate one permutation per channel, to be used across all batch items
-               channel_perms = []
-               for _ in range(c_in):
-                    perm = torch.randperm(num_patches)
-                    num_target = int(num_patches * target_ratio)
-                    remaining = num_patches - num_target
+          if x.is_nested:
+               x_list = list(x.unbind())
+               target_list = list(target_mask.unbind())
+               context_list = list(context_mask.unbind())
+               for i,x_i in enumerate(x_list):
+                    perm = torch.randperm(nested_patches[i])
+                    num_target = int(nested_patches[i] * target_ratio)
+                    remaining = nested_patches[i] - num_target
                     num_context = int(remaining * context_ratio)
-                    
                     target_indices = perm[:num_target]
+                    target_list[i][:, target_indices] = True
                     context_indices = perm[num_target:num_target + num_context]
-                    channel_perms.append((target_indices, context_indices))
-               
-               # Apply the same channel-specific masks to all batch items
-               for i in range(batch_size):
-                    for c, (target_indices, context_indices) in enumerate(channel_perms):
-                         if padding_mask is not None:
-                              valid_mask = ~padding_mask[i]
-                              target_mask[i, c, target_indices[valid_mask[target_indices]]] = True
-                              context_mask[i, c, context_indices[valid_mask[context_indices]]] = True
-                         else:
-                              target_mask[i, c, target_indices] = True
-                              context_mask[i, c, context_indices] = True
+                    context_list[i][:, context_indices] = True
+                    assert torch.all((target_list[i] == True) & (context_list[i] == True)) == False, "target and context masks should not overlap"
+               ## finally convert them to padded tensors
+               context_mask = context_mask.to_padded_tensor(padding=0, output_size=(bs,self.c_in,self.num_patch))
+               target_mask = target_mask.to_padded_tensor(padding=0, output_size=(bs,self.c_in,self.num_patch))
           else:
-                # Original code for mask_all_channels=True
-               num_total = num_patches
-               perm = torch.randperm(num_total)
-               num_target = int(num_total * target_ratio)
-               remaining = num_total - num_target
+               perm = torch.randperm(self.num_patch)
+               num_target = int(self.num_patch * target_ratio)
+               remaining = self.num_patch - num_target
                num_context = int(remaining * context_ratio)
-               
+                    
                target_indices = perm[:num_target]
                context_indices = perm[num_target:num_target + num_context]
                
-               for i in range(batch_size):
-                    if padding_mask is not None:
-                         valid_mask = ~padding_mask[i]
-                         target_mask[i, target_indices[valid_mask[target_indices]]] = True
-                         context_mask[i, context_indices[valid_mask[context_indices]]] = True
-                    else:
-                         target_mask[i, target_indices] = True
-                         context_mask[i, context_indices] = True
+               for i in range(bs):
+                    target_mask[i, :, target_indices] = True
+                    context_mask[i, :, context_indices] = True
                
-          assert torch.all((target_mask == True) & (context_mask == True)) == False, "target and context masks should not overlap"
+               assert torch.all((target_mask == True) & (context_mask == True)) == False, "target and context masks should not overlap"
           # here, True means the values that are not masked out!!! need to be careful with masking functions in Torch. 
           ## torch.where does not need an inversion, torch.masked_fill does need an inversion
-          
           return context_mask, target_mask
-
-     def forward(self, x, sequence_padding_mask=None):
-          """Forward pass for both pretraining and inference"""
-
-          if sequence_padding_mask is not None:
-               # create a patched version of the mask for attention and loss masking
-               ## pad it as well, with 1 (which is the same padding as the padded input values)
-               if self.time_domain:
-                    padding_mask = self.patch_layer(sequence_padding_mask, constant_pad=True, constant_pad_value=1).detach() # patch_padding_mask: [bs x num_patch x 1 x patch_len]
-                    padding_mask = torch.any(padding_mask, -1).squeeze(-1)  # key_padding_mask: [bs x num_patch] calculate mask over patch len for each patch
-               else:
-                    # fft will be 0 for zero values / values with no frequency
-                    padding_mask = torch.any(x, -1) # calculate mask over patch len for each patch
-
+     
+     def _pretraining_forward(self, x):
+          """Forward pass during pretraining"""
+          # Create masks and prepare inputs
+          context_mask, target_mask = self.create_masks(x)
+          context_mask = context_mask.to(x.device)
+          target_mask = target_mask.to(x.device)
+          
+          
+          # Get encoded representations and apply masks
+          z_context = self.context_encoder(x, mask=context_mask)
+          
+          with torch.no_grad():
+               self.target_encoder.eval()
+               z_target = self.target_encoder(x, mask=None) # # z: [bs x nvars x d_model x num_patch] 
+          
+          # Process target mask and select masked patches
+          bs = z_target.size(0)
+          
+          z_target = z_target.transpose(-1,-2) # bs x nvars x num_patch x d_model
+          if z_target.is_nested:
+               z_target_list = list(z_target.unbind())
+               for i in range(len(z_target_list)):
+                    seq_len = z_target_list[i].size(1)
+                    z_target_list[i] = z_target_list[i][target_mask[i,:,:seq_len]]
+                    z_target_list[i] = z_target_list[i].reshape(self.c_in, -1, z_target_list[i].size(1))
+               z_target = torch.nested.as_nested_tensor(z_target_list, layout=torch.jagged)
           else:
-               padding_mask = None
-        
-
-
-          # Create masks for I-JEPA training
-          if self.pretrain or self.training:
-               context_mask, target_mask = self.create_masks(x.size(0),c_in=self.c_in, padding_mask=padding_mask)
-               context_mask = context_mask.to(x.device)
-               target_mask = target_mask.to(x.device)
-                    
-               # Get encoded representation and original patches
-               z_context, original_patches = self.context_encoder(x, 
-                                                       padding_mask=padding_mask,
-                                                       mask=context_mask)
-               with torch.no_grad():
-                    z_target = self.target_encoder(x, 
-                                              padding_mask=padding_mask,
-                                              mask=None) # target mask is applied in the embedding dimension
+               z_target = z_target[target_mask]
+               z_target = z_target.reshape(bs, self.c_in, -1, z_target.size(1))
+          z_target = z_target.transpose(-1,-2) # bs x nvars x d_model x num_patch
+          # Get predictions
+          pred = self.predictor(z_context, masks_x=context_mask, masks=target_mask)
                
-               bs, c_in, d_model, num_patches = z_target.shape
+          return pred, z_target, z_context, context_mask, target_mask
+     
+     def _inference_forward(self, x, channel_mask=None):
+        """Forward pass during inference"""
+        self.target_encoder.eval()
+        z = self.target_encoder(x, channel_mask=channel_mask)
+        return z
 
-               if target_mask.ndim == 2:
-                    target_mask = target_mask.unsqueeze(1)  # [B, 1, n_patches]
-                    target_mask = target_mask.expand(-1, self.c_in, -1)  # [B, C, n_patches]
-               elif target_mask.ndim == 3:
-                    target_mask = target_mask  # [B, C, n_patches]
-
-               # Select masked patches directly using the mask
-               z_target = z_target.transpose(2,3)
-               z_target = z_target[target_mask]  # [N, d_model] where N is number of masked positions
-               z_target = z_target.reshape(bs, self.c_in, -1, z_target.size(1)).permute(0, 1, 3, 2)
-               
-               if padding_mask is not None:
-                    padding_mask = padding_mask.reshape(-1, c_in, num_patches)[:,0,:] # key_padding_mask: [bs x num_patch]
-               
-               # Get predictions for masked patches
-               pred = self.predictor(z_context, masks_x=context_mask, masks=target_mask)
-               return pred, z_target, z_context, context_mask, target_mask, padding_mask
-          else:
-               # get the target encoder output!
-               z = self.target_encoder(x, padding_mask=padding_mask)
-               bs, c_in, d_model, num_patches = z.shape
-               if padding_mask is not None:
-                    padding_mask = padding_mask.reshape(-1, c_in, num_patches)[:,0,:] # key_padding_mask: [bs x num_patch]
-               return z, padding_mask
+     def forward(self, x, channel_mask=None):
+        """Main forward pass"""
+        if self.pretrain or self.training:
+            return self._pretraining_forward(x)
+        else:
+            return self._inference_forward(x, channel_mask=channel_mask)

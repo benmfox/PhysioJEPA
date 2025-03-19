@@ -155,12 +155,6 @@ ul.task-list li input[type="checkbox"] {
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./augmentations.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Augmentations</span></a>
-  </div>
-</li>
-        <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
   <a href="./layers.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Layers</span></a>
   </div>
@@ -233,7 +227,8 @@ ul.task-list li input[type="checkbox"] {
                      sample_seq_len_sec=None, sample_stride_sec=None,
                      frequency=125, butterworth_filters=None,
                      median_filter_kernel_size=None,
-                     clip_interpolations=None, nan_tolerance=0.2)</code></pre>
+                     clip_interpolations=None, nan_tolerance=0.2,
+                     require_all_channels=True)</code></pre>
 </blockquote>
 <p>*An abstract class representing a :class:<code>Dataset</code>.</p>
 <p>All datasets that represent a map from keys to data samples should subclass it. All subclasses should overwrite :meth:<code>__getitem__</code>, supporting fetching a data sample for a given key. Subclasses could also optionally overwrite :meth:<code>__len__</code>, which is expected to return the size of the dataset by many :class:<code>~torch.utils.data.Sampler</code> implementations and the default options of :class:<code>~torch.utils.data.DataLoader</code>. Subclasses could also optionally implement :meth:<code>__getitems__</code>, for speedup batched samples loading. This method accepts list of indices of samples of batch and returns list of samples.</p>
@@ -368,10 +363,16 @@ ul.task-list li input[type="checkbox"] {
 <td>0.2</td>
 <td>tolerance for nan values in the data - 0 means no nan allowed, 1 means 100% of nans allowed</td>
 </tr>
+<tr class="even">
+<td>require_all_channels</td>
+<td>bool</td>
+<td>True</td>
+<td>indicator to require all channels to be present in the sample, if False, will return samples with any of the channels and 0s for the missing channels</td>
+</tr>
 </tbody>
 </table>
 <hr>
-<p><a href="https://github.com/benmfox/PhysioJEPA/blob/main/physiojepa/bedside.py#L159" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<p><a href="https://github.com/benmfox/PhysioJEPA/blob/main/physiojepa/bedside.py#L162" target="_blank" style="float:right; font-size:smaller">source</a></p>
 </section>
 <section id="selfsuperviseddataset" class="level3">
 <h3 class="anchored" data-anchor-id="selfsuperviseddataset">SelfSupervisedDataset</h3>

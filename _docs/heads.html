@@ -104,8 +104,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <link rel="stylesheet" href="styles.css">
 <meta property="og:title" content="SSL, Fine Tuning, and Linear Probing Heads – PhysioJEPA">
+<meta property="og:description" content="PhysioJEPA">
 <meta property="og:site_name" content="PhysioJEPA">
 <meta name="twitter:title" content="SSL, Fine Tuning, and Linear Probing Heads – PhysioJEPA">
+<meta name="twitter:description" content="PhysioJEPA">
 <meta name="twitter:card" content="summary">
 </head>
 
@@ -186,12 +188,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./augmentations.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Augmentations</span></a>
-  </div>
-</li>
-        <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
   <a href="./layers.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Layers</span></a>
   </div>
@@ -245,10 +241,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="linear-probing-and-fine-tuning-heads" class="level2">
 <h2 class="anchored" data-anchor-id="linear-probing-and-fine-tuning-heads">Linear Probing and Fine Tuning Heads</h2>
 <hr>
+<p><a href="https://github.com/benmfox/PhysioJEPA/blob/main/physiojepa/heads.py#L12" target="_blank" style="float:right; font-size:smaller">source</a></p>
 <section id="avgpatchlogisticregression" class="level3">
 <h3 class="anchored" data-anchor-id="avgpatchlogisticregression">AvgPatchLogisticRegression</h3>
 <blockquote class="blockquote">
-<pre><code> AvgPatchLogisticRegression (c_in=7, input_size=512, dropout=0.0)</code></pre>
+<pre><code> AvgPatchLogisticRegression (c_in=7, input_size=512,
+                             missing_channel_indices=None, dropout=0.0)</code></pre>
 </blockquote>
 <p><em>Binary logistic regression with progressive dimension reduction</em></p>
 <div id="cell-4" class="cell">

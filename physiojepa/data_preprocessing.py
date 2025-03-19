@@ -41,7 +41,7 @@ def interpolate_nan_clip(x_in, physiological_range_clip=None, percentile_clip=No
         return x
 
 # %% ../nbs/08_data_preprocessing.ipynb 5
-def calculate_samples(idx, zarr_file, channels, frequency, sample_seq_len_sec, stride_sec, start_offset_sec=None, max_seq_len_sec=None, include_partial_samples=True, nan_tolerance=0.0):
+def calculate_samples(idx, zarr_file, channels, frequency, sample_seq_len_sec, stride_sec, start_offset_sec=None, max_seq_len_sec=None, include_partial_samples=True, require_all_channels=True, nan_tolerance=0.0):
     """
     Function to create a dataframe of samples and their sequence indices
     """
@@ -61,8 +61,8 @@ def calculate_samples(idx, zarr_file, channels, frequency, sample_seq_len_sec, s
             updated_channels.append(next((x for x in p if x in avail_channels), None))
     else:
         updated_channels = [p if p in avail_channels else None for p in channels]
-    if None not in updated_channels:
-        # all channels are present
+    if (None not in updated_channels) or (not require_all_channels and any(updated_channels)):
+        # all channels are present or at least one channel is present and require_all_channels is False
         ## all channels should be the same length
         if 'header' in root_grp.attrs:
             duration = int(root_grp.attrs['header']['Duration']) # duration in seconds
@@ -80,27 +80,28 @@ def calculate_samples(idx, zarr_file, channels, frequency, sample_seq_len_sec, s
             sample_index_df['zarr_index'] = idx # assign unique uuid to each sample
             if not sample_index_df.empty:
                 for channel in updated_channels:
-                    channel_data = root_grp[channel][:]
-                    sample_index_df[f'{channel}_sum_nan'] = sample_index_df.apply(
-                        lambda row: np.isnan(channel_data[row['start_idx']:row['end_idx']]).sum(), axis=1
-                    )
+                    if channel is not None:
+                        channel_data = root_grp[channel][:]
+                        sample_index_df[f'{channel}_sum_nan'] = sample_index_df.apply(
+                            lambda row: np.isnan(channel_data[row['start_idx']:row['end_idx']]).sum(), axis=1
+                        )
                 
                 # the maximum channel nan sum should be less than the nan tolerance
-                sample_index_df['all_channels_nan_max'] = sample_index_df[[f'{channel}_sum_nan' for channel in updated_channels]].max(axis=1)
+                sample_index_df['all_channels_nan_max'] = sample_index_df[[f'{channel}_sum_nan' for channel in updated_channels if channel is not None]].max(axis=1)
                 cutoff = nan_tolerance * sample_seq_len 
                 sample_index_df = sample_index_df[sample_index_df['all_channels_nan_max'] <= cutoff]
                             
                 sample_index_df['n_samples'] = len(sample_indices)
                 return sample_index_df
 
-def calculate_samples_mp(zarr_files, channels, frequency, sample_seq_len_sec, stride_sec, start_offset_sec = None, max_seq_len_sec=None, include_partial_samples=True, nan_tolerance=0.0):
+def calculate_samples_mp(zarr_files, channels, frequency, sample_seq_len_sec, stride_sec, start_offset_sec = None, max_seq_len_sec=None, include_partial_samples=True, nan_tolerance=0.0, require_all_channels=True):
     """
     Multiprocessing function to generate samples
     """
     final_df = pd.DataFrame(columns=['file', 'start_idx','end_idx','n_samples'])
     total_samples = 0
     with mp.Pool() as pool:
-        f = partial(calculate_samples, channels=channels, frequency=frequency, start_offset_sec=start_offset_sec, max_seq_len_sec=max_seq_len_sec, sample_seq_len_sec=sample_seq_len_sec, stride_sec=stride_sec, include_partial_samples=include_partial_samples, nan_tolerance=nan_tolerance)
+        f = partial(calculate_samples, channels=channels, frequency=frequency, start_offset_sec=start_offset_sec, max_seq_len_sec=max_seq_len_sec, sample_seq_len_sec=sample_seq_len_sec, stride_sec=stride_sec, include_partial_samples=include_partial_samples, nan_tolerance=nan_tolerance, require_all_channels=require_all_channels)
         results = pool.starmap_async(f, enumerate(zarr_files))
         pool.close()
         pool.join()

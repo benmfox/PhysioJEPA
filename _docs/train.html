@@ -154,12 +154,6 @@ ul.task-list li input[type="checkbox"] {
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./augmentations.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Augmentations</span></a>
-  </div>
-</li>
-        <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
   <a href="./layers.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Layers</span></a>
   </div>
@@ -215,15 +209,12 @@ ul.task-list li input[type="checkbox"] {
 <blockquote class="blockquote">
 <pre><code> PatchTSJEPALightning (learning_rate, train_size, batch_size, channels,
                        patchtsjepa_encoder_kwargs,
-                       patchtsjepa_predictor_kwargs,
-                       use_sequence_padding_mask=False,
-                       loss_func='smoothl1', max_lr=0.01,
-                       weight_decay=0.0, epochs=100,
+                       patchtsjepa_predictor_kwargs, loss_func,
+                       max_lr=0.01, weight_decay=0.0, epochs=100,
                        optimizer_type='adamw', scheduler_type='OneCycle',
                        target_mask_range=(0.1, 0.5),
-                       context_mask_range=(0.2, 0.8),
-                       mask_input_ratio=0.0, mask_all_channels=True,
-                       pretrain=True, ema_decay=0.996)</code></pre>
+                       context_mask_range=(0.2, 0.8), pretrain=True,
+                       ema_decay=0.996)</code></pre>
 </blockquote>
 <p><em>Hooks to be used in LightningModule.</em></p>
 <table class="caption-top table">
@@ -279,78 +270,60 @@ ul.task-list li input[type="checkbox"] {
 <td></td>
 </tr>
 <tr class="odd">
-<td>use_sequence_padding_mask</td>
-<td>bool</td>
-<td>False</td>
+<td>loss_func</td>
+<td></td>
+<td></td>
 <td></td>
 </tr>
 <tr class="even">
-<td>loss_func</td>
-<td>str</td>
-<td>smoothl1</td>
-<td></td>
-</tr>
-<tr class="odd">
 <td>max_lr</td>
 <td>float</td>
 <td>0.01</td>
 <td></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>weight_decay</td>
 <td>float</td>
 <td>0.0</td>
 <td></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>epochs</td>
 <td>int</td>
 <td>100</td>
 <td></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>optimizer_type</td>
 <td>str</td>
 <td>adamw</td>
 <td></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>scheduler_type</td>
 <td>str</td>
 <td>OneCycle</td>
 <td></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>target_mask_range</td>
 <td>tuple</td>
 <td>(0.1, 0.5)</td>
 <td>the target can be up to 50% of the original x</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>context_mask_range</td>
 <td>tuple</td>
 <td>(0.2, 0.8)</td>
 <td>the context can be up to 80% of masked out target (1-target_mask_ratio)</td>
 </tr>
-<tr class="even">
-<td>mask_input_ratio</td>
-<td>float</td>
-<td>0.0</td>
-<td></td>
-</tr>
 <tr class="odd">
-<td>mask_all_channels</td>
-<td>bool</td>
-<td>True</td>
-<td></td>
-</tr>
-<tr class="even">
 <td>pretrain</td>
 <td>bool</td>
 <td>True</td>
 <td></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>ema_decay</td>
 <td>float</td>
 <td>0.996</td>
@@ -359,26 +332,23 @@ ul.task-list li input[type="checkbox"] {
 </tbody>
 </table>
 <hr>
-<p><a href="https://github.com/benmfox/PhysioJEPA/blob/main/physiojepa/train.py#L129" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<p><a href="https://github.com/benmfox/PhysioJEPA/blob/main/physiojepa/train.py#L175" target="_blank" style="float:right; font-size:smaller">source</a></p>
 </section>
 <section id="patchtftsingleoutcomelightning" class="level3">
 <h3 class="anchored" data-anchor-id="patchtftsingleoutcomelightning">PatchTFTSingleOutcomeLightning</h3>
 <blockquote class="blockquote">
 <pre><code> PatchTFTSingleOutcomeLightning (learning_rate, train_size, batch_size,
-                                 linear_probing_head, metrics={},
-                                 drop_channel_indexes=None,
-                                 fine_tune=False, loss_fxn='CrossEntropy',
+                                 linear_probing_head, preloaded_model,
+                                 metrics={}, fine_tune=False,
+                                 loss_fxn='CrossEntropy',
                                  class_weights=None, gamma=2.0,
-                                 label_smoothing=0,
-                                 use_sequence_padding_mask=False,
-                                 y_padding_mask=-100, max_lr=0.01,
-                                 epochs=100, one_cycle_scheduler=True,
+                                 label_smoothing=0, y_padding_mask=-100,
+                                 max_lr=0.01, epochs=100,
                                  scheduler_type='OneCycle',
                                  optimizer_type='Adam', weight_decay=0.0,
-                                 pretrained_encoder_path=None,
-                                 preloaded_model=None,
                                  torch_model_name='model',
-                                 remove_pretrain_layers=['head'])</code></pre>
+                                 remove_pretrain_layers=['head'],
+                                 create_zero_channel_mask=False)</code></pre>
 </blockquote>
 <p><em>Hooks to be used in LightningModule.</em></p>
 <table class="caption-top table">
@@ -422,16 +392,16 @@ ul.task-list li input[type="checkbox"] {
 <td>model head to linear probe/train</td>
 </tr>
 <tr class="odd">
+<td>preloaded_model</td>
+<td></td>
+<td></td>
+<td>loaded pretrained model to use for linear probing</td>
+</tr>
+<tr class="even">
 <td>metrics</td>
 <td>dict</td>
 <td>{}</td>
 <td>name:function for metrics to log</td>
-</tr>
-<tr class="even">
-<td>drop_channel_indexes</td>
-<td>NoneType</td>
-<td>None</td>
-<td>indices of channels to drop from the model after encoding</td>
 </tr>
 <tr class="odd">
 <td>fine_tune</td>
@@ -464,34 +434,22 @@ ul.task-list li input[type="checkbox"] {
 <td>label smoothing for cross entropy loss</td>
 </tr>
 <tr class="even">
-<td>use_sequence_padding_mask</td>
-<td>bool</td>
-<td>False</td>
-<td>indicator to use the sequence padding mask when training/in the loss fxn</td>
-</tr>
-<tr class="odd">
 <td>y_padding_mask</td>
 <td>int</td>
 <td>-100</td>
 <td>padded value that was added to target and indice to ignore when computing loss</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>max_lr</td>
 <td>float</td>
 <td>0.01</td>
 <td>maximum learning rate for one_cycle_scheduler</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>epochs</td>
 <td>int</td>
 <td>100</td>
 <td>number of epochs for one_cycle_scheduler</td>
-</tr>
-<tr class="even">
-<td>one_cycle_scheduler</td>
-<td>bool</td>
-<td>True</td>
-<td>indicator to use a one cycle scheduler to vary the learning rate</td>
 </tr>
 <tr class="odd">
 <td>scheduler_type</td>
@@ -512,18 +470,6 @@ ul.task-list li input[type="checkbox"] {
 <td>weight decay for Adam optimizer</td>
 </tr>
 <tr class="even">
-<td>pretrained_encoder_path</td>
-<td>NoneType</td>
-<td>None</td>
-<td>path of the pretrained model to use for linear probing</td>
-</tr>
-<tr class="odd">
-<td>preloaded_model</td>
-<td>NoneType</td>
-<td>None</td>
-<td>loaded pretrained model to use for linear probing</td>
-</tr>
-<tr class="even">
 <td>torch_model_name</td>
 <td>str</td>
 <td>model</td>
@@ -534,6 +480,12 @@ ul.task-list li input[type="checkbox"] {
 <td>list</td>
 <td>[‘head’]</td>
 <td>layers within the lightning model or lightning model.pytorch_model to remove</td>
+</tr>
+<tr class="even">
+<td>create_zero_channel_mask</td>
+<td>bool</td>
+<td>False</td>
+<td>create a zero channel mask for the encoder when the a data channel is all zeros</td>
 </tr>
 </tbody>
 </table>

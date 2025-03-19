@@ -6,6 +6,7 @@ __all__ = ['AvgPatchLogisticRegression']
 # %% ../nbs/11_heads.ipynb 3
 import torch
 from torch import nn
+from .layers import LearnableMaskedChannelTokens
 
 # %% ../nbs/11_heads.ipynb 5
 class AvgPatchLogisticRegression(nn.Module):
@@ -15,13 +16,19 @@ class AvgPatchLogisticRegression(nn.Module):
     def __init__(self, 
                  c_in=7,           
                  input_size=512,   
+                 missing_channel_indices=None,
                  dropout=0.
                  ):
         super().__init__()
         self.c_in = c_in
         self.input_size = input_size 
         self.dropout = dropout
-        
+        self.missing_channel_indices = missing_channel_indices
+        if self.missing_channel_indices is not None:
+            # expects : [bs x nvars x d_model x num_patch] 
+            self.masked_channel_token_layer = LearnableMaskedChannelTokens(missing_channel_indices=self.missing_channel_indices, d_model=self.input_size) 
+        else:
+            self.masked_channel_token_layer = nn.Identity()
         # Then reduce across patches using average pooling
         self.pool_patches = nn.AdaptiveAvgPool1d(output_size=1)
                 
@@ -31,7 +38,7 @@ class AvgPatchLogisticRegression(nn.Module):
         
         self.sigmoid = nn.Sigmoid()
 
-    def forward(self, x, return_softmax=False):
+    def forward(self, x, return_softmax=False, channel_mask=None):
         """
         Args:
              in: [bs x n channels x d model x n patches]
@@ -40,7 +47,10 @@ class AvgPatchLogisticRegression(nn.Module):
             Binary predictions [bs x 2 x 1]
         """
         bs = x.size(0)
-        
+        #if channel_mask is not None:
+        #    x[channel_mask, :, :] = 0.
+
+        x = self.masked_channel_token_layer(x)
         # Reduce embedding dimension first
         x = x.reshape(bs * self.c_in, self.input_size, -1)  # Combine batch and channel dims [bs*c_in x input_size x n_patches]
         # Reduce patch dimension

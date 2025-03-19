@@ -189,12 +189,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./augmentations.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Augmentations</span></a>
-  </div>
-</li>
-        <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
   <a href="./layers.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Layers</span></a>
   </div>
@@ -278,18 +272,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li><code>convert_to_zarr01.py</code>: Converts the MIMIC-III dataset to zarr files and creates ABP hypotension labels</li>
 <li><code>train_patch_hypotension_model_jepa.py</code>: Trains the initial foundational transformer model</li>
 <li><code>train_patch_hypotension_model_ss_head.py</code>: Trains the probing head for hypotension classification</li>
+<li><code>hypotension_ablate_channels.py</code>: Ablates channels from the JEPA model and probes the effect on hypotension classification</li>
 </ul></li>
 </ul></li>
-<li><code>additional_hypotension_label_processing.ipynb</code>: Additional processing for hypotension labels into 10 min bins</li>
+<li><code>additional_label_processing.ipynb</code>: Additional processing for hypotension and shock index labels derivation</li>
 </ul>
 </section>
 <section id="model-training-pipeline" class="level3">
 <h3 class="anchored" data-anchor-id="model-training-pipeline">Model Training Pipeline</h3>
 <ol type="1">
-<li>Hyperparameter Tuning (<code>jobs/bedside_hypotension/hypertune_hypotension_model.py</code>)
-<ul>
-<li>Idenitfied optimal hyperparameters for the PatchTST encoder model using a fully supervised approach</li>
-</ul></li>
 <li>JEPA Model Training (<code>jobs/bedside_hypotension/train_patch_hypotension_model_jepa.py</code>)
 <ul>
 <li>Trains the context and target transformers on bedside hypotension data zarr files</li>
@@ -298,6 +289,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>Probe Training (<code>jobs/bedside_hypotension/train_patch_hypotension_model_ss_head.py</code>)
 <ul>
 <li>Trains a classification head on top of the JEPA model</li>
+</ul></li>
+<li>Ablation (<code>jobs/bedside_hypotension/hypotension_ablate_channels.py</code>)
+<ul>
+<li>Ablates channels from the JEPA model and probes the effect on hypotension classification</li>
 </ul></li>
 </ol>
 </section>

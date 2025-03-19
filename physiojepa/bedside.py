@@ -37,7 +37,8 @@ class ForecastingDataset(Dataset):
                  butterworth_filters=None, # dictionary of low pass, high pass, and bandpass dictionary to perform on channels
                  median_filter_kernel_size=None, # size of median filter to perform on channels
                  clip_interpolations=None, # dictionary of channels:{'phys_range':..., 'percentiles':...} for filtering and interpolation of filtered values
-                 nan_tolerance=0.2 # tolerance for nan values in the data - 0 means no nan allowed, 1 means 100% of nans allowed
+                 nan_tolerance=0.2, # tolerance for nan values in the data - 0 means no nan allowed, 1 means 100% of nans allowed
+                 require_all_channels=True # indicator to require all channels to be present in the sample, if False, will return samples with any of the channels and 0s for the missing channels
                  ):
         if forecast_window_sec % 60 != 0:
             warnings.warn("The forecast_window_sec shoud likely be divisible by 60, since outcomes are typically labeled every 60 sec.")
@@ -45,7 +46,6 @@ class ForecastingDataset(Dataset):
         self.zarr_files = zarr_files
         self.channels = channels
         self.forecast_window_sec = forecast_window_sec
-        self.forecast_window = forecast_window_sec * frequency
         self.forecast_within = forecast_within
         self.sample_seq_len_sec = sample_seq_len_sec
         self.frequency = frequency
@@ -58,7 +58,7 @@ class ForecastingDataset(Dataset):
         if sample_df is None:
             assert sample_seq_len_sec is not None and sample_stride_sec is not None, "You must provide sample sequence lengths and strides if you do not pass a sample_df"
             print(f"Calculating samples with {sample_seq_len_sec} sec length and {sample_stride_sec} sec stride")
-            self.sample_df, _ = calculate_samples_mp(zarr_files, channels=channels, max_seq_len_sec=max_seq_len_sec, sample_seq_len_sec=sample_seq_len_sec, frequency=frequency, stride_sec=sample_stride_sec, include_partial_samples=False, nan_tolerance=nan_tolerance)
+            self.sample_df, _ = calculate_samples_mp(zarr_files, channels=channels, max_seq_len_sec=max_seq_len_sec, sample_seq_len_sec=sample_seq_len_sec, frequency=frequency, stride_sec=sample_stride_sec, include_partial_samples=False, nan_tolerance=nan_tolerance, require_all_channels=require_all_channels)
         else:
             self.sample_df = sample_df.copy()
         
@@ -133,16 +133,19 @@ class ForecastingDataset(Dataset):
         Y = torch.tensor([y], dtype=torch.int64)
         signals = []
         for channel in self.channels:
-            temp = root_grp[channel][sample['start_idx']:sample['end_idx']]
-            if self.clip_interpolations is not None and channel in self.clip_interpolations:
-                temp = interpolate_nan_clip(temp, physiological_range_clip=self.clip_interpolations[channel]['phys_range'], percentile_clip=self.clip_interpolations[channel]['percentiles'])
-            if self.median_filter_kernel_size is not None:
-                temp = median_filter(temp, size=self.median_filter_kernel_size, mode='nearest')
-            if self.butterworth_filters is not None and channel in self.butterworth_filters:
-                freq_range = self.butterworth_filters[channel]
-                btype = 'highpass' if freq_range[0] is None else 'lowpass' if freq_range[1] is None else 'bandpass'
-                freq_range = freq_range[1] if freq_range[0] is None else freq_range[0] if freq_range[1] is None else freq_range
-                temp = butterworth(temp, freq_range=freq_range, btype=btype, fs=self.frequency, order=2)
+            if channel in root_grp.array_keys():
+                temp = root_grp[channel][sample['start_idx']:sample['end_idx']]
+                if self.clip_interpolations is not None and channel in self.clip_interpolations:
+                    temp = interpolate_nan_clip(temp, physiological_range_clip=self.clip_interpolations[channel]['phys_range'], percentile_clip=self.clip_interpolations[channel]['percentiles'])
+                if self.median_filter_kernel_size is not None:
+                    temp = median_filter(temp, size=self.median_filter_kernel_size, mode='nearest')
+                if self.butterworth_filters is not None and channel in self.butterworth_filters:
+                    freq_range = self.butterworth_filters[channel]
+                    btype = 'highpass' if freq_range[0] is None else 'lowpass' if freq_range[1] is None else 'bandpass'
+                    freq_range = freq_range[1] if freq_range[0] is None else freq_range[0] if freq_range[1] is None else freq_range
+                    temp = butterworth(temp, freq_range=freq_range, btype=btype, fs=self.frequency, order=2)
+            else:
+                temp = np.zeros((sample['end_idx'] - sample['start_idx'],))
             # if channel == 'ABP':
             #     temp = (temp < 65).astype(np.int32)
             signals.append(temp)

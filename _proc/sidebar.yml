@@ -8,6 +8,5 @@ website:
       - 06_train.ipynb
       - 07_loss.ipynb
       - 08_data_preprocessing.ipynb
-      - 09_augmentations.ipynb
       - 10_layers.ipynb
       - 11_heads.ipynb

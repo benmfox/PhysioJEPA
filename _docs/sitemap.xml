@@ -2,42 +2,38 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://benmfox.github.io/PhysioJEPA/index.html</loc>
-    <lastmod>2025-02-10T23:20:57.759Z</lastmod>
+    <lastmod>2025-03-19T22:04:56.341Z</lastmod>
   </url>
   <url>
     <loc>https://benmfox.github.io/PhysioJEPA/data_preprocessing.html</loc>
-    <lastmod>2025-02-10T22:37:07.567Z</lastmod>
+    <lastmod>2025-03-19T22:04:14.950Z</lastmod>
   </url>
   <url>
     <loc>https://benmfox.github.io/PhysioJEPA/loss.html</loc>
-    <lastmod>2025-02-10T22:37:08.647Z</lastmod>
-  </url>
-  <url>
-    <loc>https://benmfox.github.io/PhysioJEPA/bedside.html</loc>
-    <lastmod>2025-02-10T22:54:25.602Z</lastmod>
-  </url>
-  <url>
-    <loc>https://benmfox.github.io/PhysioJEPA/signal.html</loc>
-    <lastmod>2025-02-10T22:37:09.083Z</lastmod>
-  </url>
-  <url>
-    <loc>https://benmfox.github.io/PhysioJEPA/heads.html</loc>
-    <lastmod>2025-02-10T22:37:07.771Z</lastmod>
+    <lastmod>2025-03-19T22:04:15.694Z</lastmod>
   </url>
   <url>
     <loc>https://benmfox.github.io/PhysioJEPA/train.html</loc>
-    <lastmod>2025-02-10T22:54:25.719Z</lastmod>
+    <lastmod>2025-03-19T22:04:16.905Z</lastmod>
   </url>
   <url>
-    <loc>https://benmfox.github.io/PhysioJEPA/augmentations.html</loc>
-    <lastmod>2025-02-10T22:37:09.999Z</lastmod>
+    <loc>https://benmfox.github.io/PhysioJEPA/heads.html</loc>
+    <lastmod>2025-03-19T22:04:15.594Z</lastmod>
+  </url>
+  <url>
+    <loc>https://benmfox.github.io/PhysioJEPA/signal.html</loc>
+    <lastmod>2025-03-19T22:04:15.996Z</lastmod>
+  </url>
+  <url>
+    <loc>https://benmfox.github.io/PhysioJEPA/bedside.html</loc>
+    <lastmod>2025-03-19T22:04:16.404Z</lastmod>
   </url>
   <url>
     <loc>https://benmfox.github.io/PhysioJEPA/transformers.html</loc>
-    <lastmod>2025-02-10T22:54:25.007Z</lastmod>
+    <lastmod>2025-03-19T22:04:15.750Z</lastmod>
   </url>
   <url>
     <loc>https://benmfox.github.io/PhysioJEPA/layers.html</loc>
-    <lastmod>2025-02-10T22:37:09.317Z</lastmod>
+    <lastmod>2025-03-19T22:04:15.779Z</lastmod>
   </url>
 </urlset>

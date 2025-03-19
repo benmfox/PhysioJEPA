@@ -188,12 +188,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./augmentations.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Augmentations</span></a>
-  </div>
-</li>
-        <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
   <a href="./layers.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Layers</span></a>
   </div>
@@ -257,20 +251,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="tstencoderlayer" class="level3">
 <h3 class="anchored" data-anchor-id="tstencoderlayer">TSTEncoderLayer</h3>
 <blockquote class="blockquote">
-<pre><code> TSTEncoderLayer (d_model, n_heads, d_ff=256, store_attn=False,
-                  norm='BatchNorm', relative_attn_type='vanilla',
-                  use_flash_attn=False, num_patches=None, attn_dropout=0,
-                  dropout=0.0, bias=True, activation='gelu',
-                  res_attention=False, pre_norm=False)</code></pre>
+<pre><code> TSTEncoderLayer (d_model, n_heads, d_ff=256, attn_dropout=0, dropout=0.0,
+                  bias=True, activation='gelu', pre_norm=False)</code></pre>
 </blockquote>
 <p>*Base class for all neural network modules.</p>
 <p>Your models should also subclass this class.</p>
-<p>Modules can also contain other Modules, allowing to nest them in a tree structure. You can assign the submodules as regular attributes::</p>
+<p>Modules can also contain other Modules, allowing them to be nested in a tree structure. You can assign the submodules as regular attributes::</p>
 <pre><code>import torch.nn as nn
 import torch.nn.functional as F
 
 class Model(nn.Module):
-    def __init__(self):
+    def __init__(self) -&gt; None:
         super().__init__()
         self.conv1 = nn.Conv2d(1, 20, 5)
         self.conv2 = nn.Conv2d(20, 20, 5)
@@ -278,7 +269,7 @@ class Model(nn.Module):
     def forward(self, x):
         x = F.relu(self.conv1(x))
         return F.relu(self.conv2(x))</code></pre>
-<p>Submodules assigned in this way will be registered, and will have their parameters converted too when you call :meth:<code>to</code>, etc.</p>
+<p>Submodules assigned in this way will be registered, and will also have their parameters converted when you call :meth:<code>to</code>, etc.</p>
 <p>.. note:: As per the example above, an <code>__init__()</code> call to the parent class must be made before assignment on the child.</p>
 <table class="caption-top table">
 <caption>ivar training: Boolean represents whether this module is in training or evaluation mode. :vartype training: bool*</caption>
@@ -316,63 +307,27 @@ class Model(nn.Module):
 <td>dimension of feedforward layer in each transformer layer</td>
 </tr>
 <tr class="even">
-<td>store_attn</td>
-<td>bool</td>
-<td>False</td>
-<td>indicator of whether or not to store attention</td>
-</tr>
-<tr class="odd">
-<td>norm</td>
-<td>str</td>
-<td>BatchNorm</td>
-<td></td>
-</tr>
-<tr class="even">
-<td>relative_attn_type</td>
-<td>str</td>
-<td>vanilla</td>
-<td>options include vaniall or eRPE</td>
-</tr>
-<tr class="odd">
-<td>use_flash_attn</td>
-<td>bool</td>
-<td>False</td>
-<td>indicator to use flash attention</td>
-</tr>
-<tr class="even">
-<td>num_patches</td>
-<td>NoneType</td>
-<td>None</td>
-<td>num patches required for eRPE attn</td>
-</tr>
-<tr class="odd">
 <td>attn_dropout</td>
 <td>int</td>
 <td>0</td>
 <td></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>dropout</td>
 <td>float</td>
 <td>0.0</td>
 <td></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>bias</td>
 <td>bool</td>
 <td>True</td>
 <td></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>activation</td>
 <td>str</td>
 <td>gelu</td>
-<td></td>
-</tr>
-<tr class="odd">
-<td>res_attention</td>
-<td>bool</td>
-<td>False</td>
 <td></td>
 </tr>
 <tr class="even">
@@ -388,15 +343,14 @@ class Model(nn.Module):
 <section id="physiojepa" class="level2">
 <h2 class="anchored" data-anchor-id="physiojepa">PhysioJEPA</h2>
 <hr>
-<p><a href="https://github.com/benmfox/PhysioJEPA/blob/main/physiojepa/transformers.py#L117" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<p><a href="https://github.com/benmfox/PhysioJEPA/blob/main/physiojepa/transformers.py#L80" target="_blank" style="float:right; font-size:smaller">source</a></p>
 <section id="patchtsjepapredictor" class="level3">
 <h3 class="anchored" data-anchor-id="patchtsjepapredictor">PatchTSJEPAPredictor</h3>
 <blockquote class="blockquote">
 <pre><code> PatchTSJEPAPredictor (c_in, num_patches, d_model=512, predictor_dim=384,
-                       n_heads=4, n_layers=2, d_ff=1024, norm='BatchNorm',
+                       n_heads=4, n_layers=2, d_ff=1024,
                        pos_encoding_type='learned', dropout=0.1,
-                       attn_dropout=0.0, act='gelu', pre_norm=False,
-                       use_flash_attn=False)</code></pre>
+                       attn_dropout=0.0, act='gelu', pre_norm=False)</code></pre>
 </blockquote>
 <p><em>Predictor network for PatchTSJEPA encoder for time series adaptation</em></p>
 <table class="caption-top table">
@@ -458,98 +412,59 @@ class Model(nn.Module):
 <td></td>
 </tr>
 <tr class="even">
-<td>norm</td>
-<td>str</td>
-<td>BatchNorm</td>
-<td></td>
-</tr>
-<tr class="odd">
 <td>pos_encoding_type</td>
 <td>str</td>
 <td>learned</td>
 <td>‘learned’ or ‘tAPE’</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>dropout</td>
 <td>float</td>
 <td>0.1</td>
 <td></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>attn_dropout</td>
 <td>float</td>
 <td>0.0</td>
 <td></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>act</td>
 <td>str</td>
 <td>gelu</td>
 <td></td>
 </tr>
-<tr class="odd">
-<td>pre_norm</td>
-<td>bool</td>
-<td>False</td>
-<td></td>
-</tr>
 <tr class="even">
-<td>use_flash_attn</td>
+<td>pre_norm</td>
 <td>bool</td>
 <td>False</td>
 <td></td>
 </tr>
 </tbody>
 </table>
-<div id="cell-6" class="cell">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> PatchTSJEPAPredictor(c_in<span class="op">=</span><span class="dv">7</span>, </span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>                           num_patches<span class="op">=</span><span class="dv">480</span>, </span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>                           d_model<span class="op">=</span><span class="dv">512</span>, </span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>                           predictor_dim<span class="op">=</span><span class="dv">384</span>, </span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>                           n_heads<span class="op">=</span><span class="dv">8</span>, </span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>                           n_layers<span class="op">=</span><span class="dv">4</span>, </span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>                           d_ff<span class="op">=</span><span class="dv">2048</span>, </span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>                           norm<span class="op">=</span><span class="st">'BatchNorm'</span>, </span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>                           dropout<span class="op">=</span><span class="fl">0.1</span>, </span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>                           attn_dropout<span class="op">=</span><span class="fl">0.</span>, </span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>                           pos_encoding_type<span class="op">=</span><span class="st">'learned'</span>,</span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>                           act<span class="op">=</span><span class="st">"gelu"</span>, </span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>                           pre_norm<span class="op">=</span><span class="va">False</span>, </span>
-<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>                           use_flash_attn<span class="op">=</span><span class="va">False</span>)</span>
-<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> torch.randn(<span class="dv">1</span>, <span class="dv">7</span>, <span class="dv">512</span>, <span class="dv">480</span>)</span>
-<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>z <span class="op">=</span> model(x)</span>
-<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>z.shape</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
-<pre><code>torch.Size([1, 7, 480, 512])</code></pre>
-</div>
-</div>
 <hr>
-<p><a href="https://github.com/benmfox/PhysioJEPA/blob/main/physiojepa/transformers.py#L258" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<p><a href="https://github.com/benmfox/PhysioJEPA/blob/main/physiojepa/transformers.py#L250" target="_blank" style="float:right; font-size:smaller">source</a></p>
 </section>
 <section id="patchtsjepaencoder" class="level3">
 <h3 class="anchored" data-anchor-id="patchtsjepaencoder">PatchTSJEPAEncoder</h3>
 <blockquote class="blockquote">
 <pre><code> PatchTSJEPAEncoder (c_in:int, win_length, hop_length, max_seq_len,
-                     time_domain=True, pos_encoding_type='learned',
-                     patch_encoder_type='linear', use_flash_attn=False,
-                     use_revin=True, dim1reduce=False, affine=True,
-                     n_layers:int=4, d_model=512, n_heads=8,
+                     pos_encoding_type='learned',
+                     patch_encoder_type='linear', use_revin=True,
+                     affine=True, n_layers:int=4, d_model=512, n_heads=8,
                      shared_embedding=False, d_ff:int=2048,
-                     norm:str='BatchNorm', attn_dropout:float=0.0,
-                     dropout:float=0.1, act:str='gelu',
-                     res_attention:bool=True, pre_norm:bool=False)</code></pre>
+                     attn_dropout:float=0.0, dropout:float=0.1,
+                     act:str='gelu', pre_norm:bool=False)</code></pre>
 </blockquote>
 <p>*Base class for all neural network modules.</p>
 <p>Your models should also subclass this class.</p>
-<p>Modules can also contain other Modules, allowing to nest them in a tree structure. You can assign the submodules as regular attributes::</p>
+<p>Modules can also contain other Modules, allowing them to be nested in a tree structure. You can assign the submodules as regular attributes::</p>
 <pre><code>import torch.nn as nn
 import torch.nn.functional as F
 
 class Model(nn.Module):
-    def __init__(self):
+    def __init__(self) -&gt; None:
         super().__init__()
         self.conv1 = nn.Conv2d(1, 20, 5)
         self.conv2 = nn.Conv2d(20, 20, 5)
@@ -557,7 +472,7 @@ class Model(nn.Module):
     def forward(self, x):
         x = F.relu(self.conv1(x))
         return F.relu(self.conv2(x))</code></pre>
-<p>Submodules assigned in this way will be registered, and will have their parameters converted too when you call :meth:<code>to</code>, etc.</p>
+<p>Submodules assigned in this way will be registered, and will also have their parameters converted when you call :meth:<code>to</code>, etc.</p>
 <p>.. note:: As per the example above, an <code>__init__()</code> call to the parent class must be made before assignment on the child.</p>
 <table class="caption-top table">
 <caption>ivar training: Boolean represents whether this module is in training or evaluation mode. :vartype training: bool*</caption>
@@ -601,28 +516,16 @@ class Model(nn.Module):
 <td>maximum sequence len</td>
 </tr>
 <tr class="odd">
-<td>time_domain</td>
-<td>bool</td>
-<td>True</td>
-<td></td>
-</tr>
-<tr class="even">
 <td>pos_encoding_type</td>
 <td>str</td>
 <td>learned</td>
 <td>‘learned’ or ‘tAPE’</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>patch_encoder_type</td>
 <td>str</td>
 <td>linear</td>
 <td>‘linear’ or ‘conv’</td>
-</tr>
-<tr class="even">
-<td>use_flash_attn</td>
-<td>bool</td>
-<td>False</td>
-<td>indicator to use flash attention</td>
 </tr>
 <tr class="odd">
 <td>use_revin</td>
@@ -631,52 +534,40 @@ class Model(nn.Module):
 <td>if time_domain is true, whether or not to instance normalize time data</td>
 </tr>
 <tr class="even">
-<td>dim1reduce</td>
-<td>bool</td>
-<td>False</td>
-<td>indicator to normalize by timepoint in revin</td>
-</tr>
-<tr class="odd">
 <td>affine</td>
 <td>bool</td>
 <td>True</td>
 <td>if time_domain is true, whether or not to learn revin normalization parameters</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>n_layers</td>
 <td>int</td>
 <td>4</td>
 <td>the number of transformer encoder layers to use</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>d_model</td>
 <td>int</td>
 <td>512</td>
 <td>the dimension of the input to the transofmrer encoder</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>n_heads</td>
 <td>int</td>
 <td>8</td>
 <td>the number of heads in each layer</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>shared_embedding</td>
 <td>bool</td>
 <td>False</td>
 <td>indicator for whether or not each channel should be projected with its own set of linear weights to the encoder dimension</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>d_ff</td>
 <td>int</td>
 <td>2048</td>
 <td>the feedforward layer size in the transformer</td>
-</tr>
-<tr class="odd">
-<td>norm</td>
-<td>str</td>
-<td>BatchNorm</td>
-<td>BatchNorm or LayerNorm during trianing</td>
 </tr>
 <tr class="even">
 <td>attn_dropout</td>
@@ -697,12 +588,6 @@ class Model(nn.Module):
 <td>activation function</td>
 </tr>
 <tr class="odd">
-<td>res_attention</td>
-<td>bool</td>
-<td>True</td>
-<td>whether to use residual attention</td>
-</tr>
-<tr class="even">
 <td>pre_norm</td>
 <td>bool</td>
 <td>False</td>
@@ -710,53 +595,23 @@ class Model(nn.Module):
 </tr>
 </tbody>
 </table>
-<div id="cell-8" class="cell">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> PatchTSJEPAEncoder(c_in<span class="op">=</span><span class="dv">7</span>, </span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>                           win_length<span class="op">=</span><span class="dv">750</span>, </span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>                           hop_length<span class="op">=</span><span class="dv">750</span>, </span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>                           max_seq_len<span class="op">=</span><span class="dv">1</span><span class="op">*</span><span class="dv">3600</span><span class="op">*</span><span class="dv">100</span>, </span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>                           time_domain<span class="op">=</span><span class="va">True</span>, </span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>                           use_revin<span class="op">=</span><span class="va">True</span>, </span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>                           dim1reduce<span class="op">=</span><span class="va">False</span>, </span>
-<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>                           affine<span class="op">=</span><span class="va">True</span>, </span>
-<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>                           n_layers<span class="op">=</span><span class="dv">4</span>, </span>
-<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>                           d_model<span class="op">=</span><span class="dv">256</span>, </span>
-<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>                           n_heads<span class="op">=</span><span class="dv">8</span>, </span>
-<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>                           shared_embedding<span class="op">=</span><span class="va">False</span>, </span>
-<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>                           d_ff<span class="op">=</span><span class="dv">2048</span>, </span>
-<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>                           norm<span class="op">=</span><span class="st">'BatchNorm'</span>, </span>
-<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>                           attn_dropout<span class="op">=</span><span class="fl">0.</span>, </span>
-<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>                           dropout<span class="op">=</span><span class="fl">0.1</span>, </span>
-<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>                           act<span class="op">=</span><span class="st">"gelu"</span>, </span>
-<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>                           res_attention<span class="op">=</span><span class="va">True</span>, </span>
-<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>                           pre_norm<span class="op">=</span><span class="va">False</span>)</span>
-<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> torch.randn(<span class="dv">1</span>, <span class="dv">7</span>, <span class="dv">1</span><span class="op">*</span><span class="dv">3600</span><span class="op">*</span><span class="dv">100</span>)</span>
-<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a>z <span class="op">=</span> model(x)</span>
-<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a>z.shape</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
-<pre><code>torch.Size([1, 7, 256, 480])</code></pre>
-</div>
-</div>
 <hr>
-<p><a href="https://github.com/benmfox/PhysioJEPA/blob/main/physiojepa/transformers.py#L395" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<p><a href="https://github.com/benmfox/PhysioJEPA/blob/main/physiojepa/transformers.py#L372" target="_blank" style="float:right; font-size:smaller">source</a></p>
 </section>
 <section id="patchtsjepa" class="level3">
 <h3 class="anchored" data-anchor-id="patchtsjepa">PatchTSJEPA</h3>
 <blockquote class="blockquote">
 <pre><code> PatchTSJEPA (encoder_kwargs:dict, predictor_kwargs:dict, pretrain=True,
-              target_mask_range=(0.1, 0.5), context_mask_range=(0.2, 0.8),
-              mask_all_channels=True)</code></pre>
+              target_mask_range=(0.1, 0.5), context_mask_range=(0.2, 0.8))</code></pre>
 </blockquote>
 <p>*Base class for all neural network modules.</p>
 <p>Your models should also subclass this class.</p>
-<p>Modules can also contain other Modules, allowing to nest them in a tree structure. You can assign the submodules as regular attributes::</p>
+<p>Modules can also contain other Modules, allowing them to be nested in a tree structure. You can assign the submodules as regular attributes::</p>
 <pre><code>import torch.nn as nn
 import torch.nn.functional as F
 
 class Model(nn.Module):
-    def __init__(self):
+    def __init__(self) -&gt; None:
         super().__init__()
         self.conv1 = nn.Conv2d(1, 20, 5)
         self.conv2 = nn.Conv2d(20, 20, 5)
@@ -764,7 +619,7 @@ class Model(nn.Module):
     def forward(self, x):
         x = F.relu(self.conv1(x))
         return F.relu(self.conv2(x))</code></pre>
-<p>Submodules assigned in this way will be registered, and will have their parameters converted too when you call :meth:<code>to</code>, etc.</p>
+<p>Submodules assigned in this way will be registered, and will also have their parameters converted when you call :meth:<code>to</code>, etc.</p>
 <p>.. note:: As per the example above, an <code>__init__()</code> call to the parent class must be made before assignment on the child.</p>
 <table class="caption-top table">
 <caption>ivar training: Boolean represents whether this module is in training or evaluation mode. :vartype training: bool*</caption>
@@ -813,101 +668,19 @@ class Model(nn.Module):
 <td>(0.2, 0.8)</td>
 <td>the context can be up to 80% of masked out target (1-target_mask_ratio)</td>
 </tr>
-<tr class="even">
-<td>mask_all_channels</td>
-<td>bool</td>
-<td>True</td>
-<td></td>
-</tr>
 </tbody>
 </table>
-<div id="cell-10" class="cell">
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>d_model <span class="op">=</span> <span class="dv">512</span></span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>encoder_kwargs <span class="op">=</span> {<span class="st">'c_in'</span>: , <span class="st">'win_length'</span>: <span class="dv">600</span>, <span class="st">'hop_length'</span>: <span class="dv">600</span>, <span class="st">'max_seq_len'</span>: <span class="dv">1</span><span class="op">*</span><span class="dv">3600</span><span class="op">*</span><span class="dv">100</span>, <span class="st">'time_domain'</span>: <span class="va">True</span>, <span class="st">'use_revin'</span>: <span class="va">True</span>, <span class="st">'dim1reduce'</span>: <span class="va">False</span>, <span class="st">'affine'</span>: <span class="va">True</span>, <span class="st">'n_layers'</span>: <span class="dv">4</span>, <span class="st">'d_model'</span>: d_model, <span class="st">'n_heads'</span>: <span class="dv">8</span>, <span class="st">'shared_embedding'</span>: <span class="va">False</span>, <span class="st">'d_ff'</span>: <span class="dv">2048</span>, <span class="st">'norm'</span>: <span class="st">'BatchNorm'</span>, <span class="st">'attn_dropout'</span>: <span class="fl">0.</span>, <span class="st">'dropout'</span>: <span class="fl">0.1</span>, <span class="st">'act'</span>: <span class="st">"gelu"</span>, <span class="st">'res_attention'</span>: <span class="va">False</span>, <span class="st">'pre_norm'</span>: <span class="va">False</span>}</span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>predictor_kwargs <span class="op">=</span> {<span class="st">'c_in'</span>: <span class="dv">7</span>, <span class="st">'num_patches'</span>: <span class="dv">600</span>, <span class="st">'d_model'</span>: d_model, <span class="st">'predictor_dim'</span>: <span class="dv">256</span>, <span class="st">'n_heads'</span>: <span class="dv">4</span>, <span class="st">'n_layers'</span>: <span class="dv">2</span>, <span class="st">'d_ff'</span>: <span class="dv">1024</span>, <span class="st">'norm'</span>: <span class="st">'BatchNorm'</span>, <span class="st">'dropout'</span>: <span class="fl">0.1</span>, <span class="st">'attn_dropout'</span>: <span class="fl">0.</span>, <span class="st">'act'</span>: <span class="st">"gelu"</span>, <span class="st">'pre_norm'</span>: <span class="va">False</span>, <span class="st">'use_flash_attn'</span>: <span class="va">False</span>}</span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> PatchTSJEPA(encoder_kwargs<span class="op">=</span>encoder_kwargs, predictor_kwargs<span class="op">=</span>predictor_kwargs, pretrain<span class="op">=</span><span class="va">True</span>, target_mask_range<span class="op">=</span>(<span class="fl">0.1</span>,<span class="fl">0.5</span>), context_mask_range<span class="op">=</span>(<span class="fl">0.2</span>,<span class="fl">0.8</span>), mask_all_channels<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> torch.randn(<span class="dv">2</span>, <span class="dv">7</span>, <span class="dv">1</span><span class="op">*</span><span class="dv">3600</span><span class="op">*</span><span class="dv">100</span>)</span>
-<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>pred, z_target, z_context, context_mask, target_mask, padding_mask <span class="op">=</span> model(x)</span>
-<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>pred.shape, z_target.shape, z_context.shape, context_mask.shape, target_mask.shape</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
-<pre><code>(torch.Size([2, 7, 512, 171]),
- torch.Size([2, 7, 512, 171]),
- torch.Size([2, 7, 512, 600]),
- torch.Size([2, 600]),
- torch.Size([2, 7, 600]))</code></pre>
-</div>
-</div>
-<div id="cell-11" class="cell">
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>d_model <span class="op">=</span> <span class="dv">512</span></span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>encoder_kwargs <span class="op">=</span> {<span class="st">'c_in'</span>: <span class="dv">7</span>, <span class="st">'win_length'</span>: <span class="dv">600</span>, <span class="st">'hop_length'</span>: <span class="dv">600</span>, <span class="st">'max_seq_len'</span>: <span class="dv">1</span><span class="op">*</span><span class="dv">3600</span><span class="op">*</span><span class="dv">100</span>, <span class="st">'time_domain'</span>: <span class="va">True</span>, <span class="st">'use_revin'</span>: <span class="va">True</span>, <span class="st">'dim1reduce'</span>: <span class="va">False</span>, <span class="st">'affine'</span>: <span class="va">True</span>, <span class="st">'n_layers'</span>: <span class="dv">4</span>, <span class="st">'d_model'</span>: d_model, <span class="st">'n_heads'</span>: <span class="dv">8</span>, <span class="st">'shared_embedding'</span>: <span class="va">False</span>, <span class="st">'d_ff'</span>: <span class="dv">2048</span>, <span class="st">'norm'</span>: <span class="st">'BatchNorm'</span>, <span class="st">'attn_dropout'</span>: <span class="fl">0.</span>, <span class="st">'dropout'</span>: <span class="fl">0.1</span>, <span class="st">'act'</span>: <span class="st">"gelu"</span>, <span class="st">'res_attention'</span>: <span class="va">False</span>, <span class="st">'pre_norm'</span>: <span class="va">False</span>}</span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>predictor_kwargs <span class="op">=</span> {<span class="st">'c_in'</span>: <span class="dv">7</span>, <span class="st">'num_patches'</span>: <span class="dv">600</span>, <span class="st">'d_model'</span>: d_model, <span class="st">'predictor_dim'</span>: <span class="dv">256</span>, <span class="st">'n_heads'</span>: <span class="dv">4</span>, <span class="st">'n_layers'</span>: <span class="dv">2</span>, <span class="st">'d_ff'</span>: <span class="dv">1024</span>, <span class="st">'norm'</span>: <span class="st">'BatchNorm'</span>, <span class="st">'dropout'</span>: <span class="fl">0.1</span>, <span class="st">'attn_dropout'</span>: <span class="fl">0.</span>, <span class="st">'act'</span>: <span class="st">"gelu"</span>, <span class="st">'pre_norm'</span>: <span class="va">False</span>, <span class="st">'use_flash_attn'</span>: <span class="va">False</span>}</span>
-<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> PatchTSJEPA(encoder_kwargs<span class="op">=</span>encoder_kwargs, predictor_kwargs<span class="op">=</span>predictor_kwargs, pretrain<span class="op">=</span><span class="va">False</span>, target_mask_ratio<span class="op">=</span><span class="fl">0.5</span>, context_mask_ratio<span class="op">=</span><span class="fl">0.5</span>, mask_all_channels<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>model.<span class="bu">eval</span>()</span>
-<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> torch.randn(<span class="dv">2</span>, <span class="dv">7</span>, <span class="dv">1</span><span class="op">*</span><span class="dv">3600</span><span class="op">*</span><span class="dv">100</span>)</span>
-<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>z_context, padding_mask <span class="op">=</span> model(x)</span>
-<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>z_context.shape</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
-<pre><code>torch.Size([2, 7, 512, 600])</code></pre>
-</div>
-</div>
-<div id="cell-12" class="cell">
-<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>encoder_arch <span class="op">=</span> <span class="bu">dict</span>(c_in<span class="op">=</span><span class="dv">5</span>,</span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>                  win_length<span class="op">=</span><span class="dv">125</span>, <span class="co"># the length of the patch of time/interval or short time ft windown length (when time_domain=False)</span></span>
-<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>                  hop_length<span class="op">=</span><span class="dv">125</span>, <span class="co"># the length of the distance between each patch/fft</span></span>
-<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>                  max_seq_len<span class="op">=</span><span class="dv">45</span><span class="op">*</span><span class="dv">125</span><span class="op">*</span><span class="dv">60</span>, <span class="co"># maximum sequence len</span></span>
-<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>                  time_domain<span class="op">=</span><span class="va">True</span>,</span>
-<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>                  pos_encoding_type<span class="op">=</span><span class="st">'tAPE'</span>,</span>
-<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>                  use_flash_attn<span class="op">=</span><span class="va">False</span>, <span class="co"># indicator to use flash attention</span></span>
-<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>                  use_revin<span class="op">=</span><span class="va">True</span>, <span class="co"># if time_domain is true, whether or not to instance normalize time data</span></span>
-<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>                  dim1reduce<span class="op">=</span><span class="va">False</span>, <span class="co"># indicator to normalize by timepoint in revin</span></span>
-<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>                  affine<span class="op">=</span><span class="va">True</span>, <span class="co"># if time_domain is true, whether or not to learn revin normalization parameters </span></span>
-<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>                  n_layers<span class="op">=</span><span class="dv">3</span>, <span class="co"># the number of transformer encoder layers to use</span></span>
-<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a>                  d_model<span class="op">=</span><span class="dv">256</span>, <span class="co"># the dimension of the input to the transofmrer encoder</span></span>
-<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a>                  n_heads<span class="op">=</span><span class="dv">4</span>, <span class="co"># the number of heads in each layer</span></span>
-<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a>                  shared_embedding<span class="op">=</span><span class="va">False</span>, <span class="co"># indicator for whether or not each channel should be projected with its own set of linear weights to the encoder dimension</span></span>
-<span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a>                  d_ff<span class="op">=</span><span class="dv">512</span>, <span class="co"># the feedforward layer size in the transformer</span></span>
-<span id="cb16-16"><a href="#cb16-16" aria-hidden="true" tabindex="-1"></a>                  norm<span class="op">=</span><span class="st">'LayerNorm'</span>, <span class="co"># BatchNorm or LayerNorm during trianing</span></span>
-<span id="cb16-17"><a href="#cb16-17" aria-hidden="true" tabindex="-1"></a>                  attn_dropout<span class="op">=</span><span class="fl">0.</span>, <span class="co"># dropout in attention</span></span>
-<span id="cb16-18"><a href="#cb16-18" aria-hidden="true" tabindex="-1"></a>                  dropout<span class="op">=</span><span class="fl">0.1</span>, <span class="co"># dropout for linear layers</span></span>
-<span id="cb16-19"><a href="#cb16-19" aria-hidden="true" tabindex="-1"></a>                  act<span class="op">=</span><span class="st">"gelu"</span>, <span class="co"># activation function</span></span>
-<span id="cb16-20"><a href="#cb16-20" aria-hidden="true" tabindex="-1"></a>                  res_attention<span class="op">=</span><span class="va">True</span>, <span class="co"># whether to use residual attention</span></span>
-<span id="cb16-21"><a href="#cb16-21" aria-hidden="true" tabindex="-1"></a>                  pre_norm<span class="op">=</span><span class="va">False</span>)</span>
-<span id="cb16-22"><a href="#cb16-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-23"><a href="#cb16-23" aria-hidden="true" tabindex="-1"></a>predictor_arch <span class="op">=</span> <span class="bu">dict</span>(c_in<span class="op">=</span><span class="dv">5</span>,</span>
-<span id="cb16-24"><a href="#cb16-24" aria-hidden="true" tabindex="-1"></a>                      num_patches<span class="op">=</span><span class="dv">2700</span>,         <span class="co"># number of patches from encoder</span></span>
-<span id="cb16-25"><a href="#cb16-25" aria-hidden="true" tabindex="-1"></a>                      d_model<span class="op">=</span><span class="dv">256</span>,        <span class="co"># encoder embedding dimension</span></span>
-<span id="cb16-26"><a href="#cb16-26" aria-hidden="true" tabindex="-1"></a>                      predictor_dim<span class="op">=</span><span class="dv">128</span>,  <span class="co"># predictor embedding dimension (typically smaller)</span></span>
-<span id="cb16-27"><a href="#cb16-27" aria-hidden="true" tabindex="-1"></a>                      n_heads<span class="op">=</span><span class="dv">2</span>,</span>
-<span id="cb16-28"><a href="#cb16-28" aria-hidden="true" tabindex="-1"></a>                      n_layers<span class="op">=</span><span class="dv">1</span>,</span>
-<span id="cb16-29"><a href="#cb16-29" aria-hidden="true" tabindex="-1"></a>                      d_ff<span class="op">=</span><span class="dv">256</span>,</span>
-<span id="cb16-30"><a href="#cb16-30" aria-hidden="true" tabindex="-1"></a>                      pos_encoding_type<span class="op">=</span><span class="st">'learned'</span>,</span>
-<span id="cb16-31"><a href="#cb16-31" aria-hidden="true" tabindex="-1"></a>                      norm<span class="op">=</span><span class="st">'LayerNorm'</span>,</span>
-<span id="cb16-32"><a href="#cb16-32" aria-hidden="true" tabindex="-1"></a>                      dropout<span class="op">=</span><span class="fl">0.1</span>,</span>
-<span id="cb16-33"><a href="#cb16-33" aria-hidden="true" tabindex="-1"></a>                      attn_dropout<span class="op">=</span><span class="fl">0.0</span>,</span>
-<span id="cb16-34"><a href="#cb16-34" aria-hidden="true" tabindex="-1"></a>                      act<span class="op">=</span><span class="st">"gelu"</span>,</span>
-<span id="cb16-35"><a href="#cb16-35" aria-hidden="true" tabindex="-1"></a>                      pre_norm<span class="op">=</span><span class="va">False</span>,</span>
-<span id="cb16-36"><a href="#cb16-36" aria-hidden="true" tabindex="-1"></a>                      use_flash_attn<span class="op">=</span><span class="va">False</span>)</span>
-<span id="cb16-37"><a href="#cb16-37" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> PatchTSJEPA(encoder_kwargs<span class="op">=</span>encoder_arch, predictor_kwargs<span class="op">=</span>predictor_arch, pretrain<span class="op">=</span><span class="va">True</span>, target_mask_range<span class="op">=</span>(<span class="fl">0.1</span>,<span class="fl">0.5</span>), context_mask_range<span class="op">=</span>(<span class="fl">0.2</span>,<span class="fl">0.8</span>), mask_all_channels<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb16-38"><a href="#cb16-38" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-39"><a href="#cb16-39" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> torch.randn(<span class="dv">2</span>, <span class="dv">5</span>, <span class="dv">45</span><span class="op">*</span><span class="dv">125</span><span class="op">*</span><span class="dv">60</span>)</span>
-<span id="cb16-40"><a href="#cb16-40" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-41"><a href="#cb16-41" aria-hidden="true" tabindex="-1"></a>pred, z_target, z_context, context_mask, target_mask, padding_mask <span class="op">=</span> model(x)</span>
-<span id="cb16-42"><a href="#cb16-42" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-43"><a href="#cb16-43" aria-hidden="true" tabindex="-1"></a>pred.shape, z_target.shape, z_context.shape, context_mask.shape, target_mask.shape </span>
-<span id="cb16-44"><a href="#cb16-44" aria-hidden="true" tabindex="-1"></a><span class="co">#torch.Size([2, 5, 2700, 256]) torch.Size([2, 5, 2700])</span></span>
-<span id="cb16-45"><a href="#cb16-45" aria-hidden="true" tabindex="-1"></a><span class="co">#torch.Size([2990, 256])</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
-<pre><code>(torch.Size([2, 5, 256, 523]),
- torch.Size([2, 5, 256, 523]),
- torch.Size([2, 5, 256, 2700]),
- torch.Size([2, 2700]),
- torch.Size([2, 5, 2700]))</code></pre>
-</div>
+<div id="cell-8" class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>d_model <span class="op">=</span> <span class="dv">1024</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>encoder_kwargs <span class="op">=</span> {<span class="st">'c_in'</span>: <span class="dv">7</span>, <span class="st">'win_length'</span>: <span class="dv">500</span>, <span class="st">'hop_length'</span>: <span class="dv">500</span>, <span class="st">'max_seq_len'</span>: <span class="dv">1</span><span class="op">*</span><span class="dv">3600</span><span class="op">*</span><span class="dv">100</span>, <span class="st">'use_revin'</span>: <span class="va">True</span>, <span class="st">'affine'</span>: <span class="va">True</span>, <span class="st">'n_layers'</span>: <span class="dv">4</span>, <span class="st">'d_model'</span>: d_model, <span class="st">'n_heads'</span>: <span class="dv">8</span>, <span class="st">'shared_embedding'</span>: <span class="va">False</span>, <span class="st">'d_ff'</span>: <span class="dv">2048</span>, <span class="st">'attn_dropout'</span>: <span class="fl">0.</span>, <span class="st">'dropout'</span>: <span class="fl">0.1</span>, <span class="st">'act'</span>: <span class="st">"gelu"</span>, <span class="st">'pre_norm'</span>: <span class="va">False</span>}</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>predictor_kwargs <span class="op">=</span> {<span class="st">'c_in'</span>: <span class="dv">7</span>, <span class="st">'num_patches'</span>: <span class="dv">720</span>, <span class="st">'d_model'</span>: d_model, <span class="st">'predictor_dim'</span>: <span class="dv">256</span>, <span class="st">'n_heads'</span>: <span class="dv">4</span>, <span class="st">'n_layers'</span>: <span class="dv">2</span>, <span class="st">'d_ff'</span>: <span class="dv">1024</span>, <span class="st">'dropout'</span>: <span class="fl">0.1</span>, <span class="st">'attn_dropout'</span>: <span class="fl">0.</span>, <span class="st">'act'</span>: <span class="st">"gelu"</span>, <span class="st">'pre_norm'</span>: <span class="va">False</span>}</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> PatchTSJEPA(encoder_kwargs<span class="op">=</span>encoder_kwargs, predictor_kwargs<span class="op">=</span>predictor_kwargs, pretrain<span class="op">=</span><span class="va">True</span>, target_mask_range<span class="op">=</span>(<span class="fl">0.1</span>,<span class="fl">0.5</span>), context_mask_range<span class="op">=</span>(<span class="fl">0.2</span>,<span class="fl">0.8</span>))</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="co"># x = torch.randn(2, 7, 1*3600*100)</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a><span class="co"># pred, z_target, z_context, context_mask, target_mask = model(x)</span></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a><span class="co"># pred.shape, z_target.shape, z_context.shape, context_mask.shape, target_mask.shape</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 
 

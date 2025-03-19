@@ -189,12 +189,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./augmentations.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Augmentations</span></a>
-  </div>
-</li>
-        <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
   <a href="./layers.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text">Layers</span></a>
   </div>
@@ -218,7 +212,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#linear-layers-for-patches" id="toc-linear-layers-for-patches" class="nav-link active" data-scroll-target="#linear-layers-for-patches">Linear Layers for Patches</a>
   <ul class="collapse">
   <li><a href="#patchencoder" id="toc-patchencoder" class="nav-link" data-scroll-target="#patchencoder">PatchEncoder</a></li>
-  <li><a href="#patchencoderconv" id="toc-patchencoderconv" class="nav-link" data-scroll-target="#patchencoderconv">PatchEncoderConv</a></li>
   </ul></li>
   <li><a href="#positional-encoding-layers" id="toc-positional-encoding-layers" class="nav-link" data-scroll-target="#positional-encoding-layers">Positional Encoding Layers</a>
   <ul class="collapse">
@@ -229,25 +222,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <ul class="collapse">
   <li><a href="#revin" id="toc-revin" class="nav-link" data-scroll-target="#revin">RevIN</a></li>
   </ul></li>
-  <li><a href="#misc" id="toc-misc" class="nav-link" data-scroll-target="#misc">Misc</a>
-  <ul class="collapse">
-  <li><a href="#get_activation_fn" id="toc-get_activation_fn" class="nav-link" data-scroll-target="#get_activation_fn">get_activation_fn</a></li>
-  <li><a href="#identity" id="toc-identity" class="nav-link" data-scroll-target="#identity">Identity</a></li>
-  <li><a href="#transpose" id="toc-transpose" class="nav-link" data-scroll-target="#transpose">Transpose</a></li>
-  </ul></li>
   <li><a href="#attention" id="toc-attention" class="nav-link" data-scroll-target="#attention">Attention</a>
   <ul class="collapse">
   <li><a href="#multiheadflashattention" id="toc-multiheadflashattention" class="nav-link" data-scroll-target="#multiheadflashattention">MultiheadFlashAttention</a></li>
-  <li><a href="#scaleddotproductattention" id="toc-scaleddotproductattention" class="nav-link" data-scroll-target="#scaleddotproductattention">ScaledDotProductAttention</a></li>
-  <li><a href="#multiheadattentioncustom" id="toc-multiheadattentioncustom" class="nav-link" data-scroll-target="#multiheadattentioncustom">MultiheadAttentionCustom</a></li>
-  <li><a href="#attention_rel_scl" id="toc-attention_rel_scl" class="nav-link" data-scroll-target="#attention_rel_scl">Attention_Rel_Scl</a></li>
   </ul></li>
-  <li><a href="#pretraining-heads" id="toc-pretraining-heads" class="nav-link" data-scroll-target="#pretraining-heads">Pretraining Heads</a></li>
   <li><a href="#miscellaneous" id="toc-miscellaneous" class="nav-link" data-scroll-target="#miscellaneous">Miscellaneous</a>
   <ul class="collapse">
-  <li><a href="#identity-1" id="toc-identity-1" class="nav-link" data-scroll-target="#identity-1">Identity</a></li>
-  <li><a href="#get_activation_fn-1" id="toc-get_activation_fn-1" class="nav-link" data-scroll-target="#get_activation_fn-1">get_activation_fn</a></li>
-  <li><a href="#transpose-1" id="toc-transpose-1" class="nav-link" data-scroll-target="#transpose-1">Transpose</a></li>
+  <li><a href="#learnablemaskedchanneltokens" id="toc-learnablemaskedchanneltokens" class="nav-link" data-scroll-target="#learnablemaskedchanneltokens">LearnableMaskedChannelTokens</a></li>
+  <li><a href="#identity" id="toc-identity" class="nav-link" data-scroll-target="#identity">Identity</a></li>
+  <li><a href="#get_activation_fn" id="toc-get_activation_fn" class="nav-link" data-scroll-target="#get_activation_fn">get_activation_fn</a></li>
+  <li><a href="#transpose" id="toc-transpose" class="nav-link" data-scroll-target="#transpose">Transpose</a></li>
   </ul></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/benmfox/PhysioJEPA/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></nav>
@@ -283,6 +267,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="linear-layers-for-patches" class="level2">
 <h2 class="anchored" data-anchor-id="linear-layers-for-patches">Linear Layers for Patches</h2>
 <hr>
+<p><a href="https://github.com/benmfox/PhysioJEPA/blob/main/physiojepa/layers.py#L18" target="_blank" style="float:right; font-size:smaller">source</a></p>
 <section id="patchencoder" class="level3">
 <h3 class="anchored" data-anchor-id="patchencoder">PatchEncoder</h3>
 <blockquote class="blockquote">
@@ -290,12 +275,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </blockquote>
 <p>*Base class for all neural network modules.</p>
 <p>Your models should also subclass this class.</p>
-<p>Modules can also contain other Modules, allowing to nest them in a tree structure. You can assign the submodules as regular attributes::</p>
+<p>Modules can also contain other Modules, allowing them to be nested in a tree structure. You can assign the submodules as regular attributes::</p>
 <pre><code>import torch.nn as nn
 import torch.nn.functional as F
 
 class Model(nn.Module):
-    def __init__(self):
+    def __init__(self) -&gt; None:
         super().__init__()
         self.conv1 = nn.Conv2d(1, 20, 5)
         self.conv2 = nn.Conv2d(20, 20, 5)
@@ -303,7 +288,7 @@ class Model(nn.Module):
     def forward(self, x):
         x = F.relu(self.conv1(x))
         return F.relu(self.conv2(x))</code></pre>
-<p>Submodules assigned in this way will be registered, and will have their parameters converted too when you call :meth:<code>to</code>, etc.</p>
+<p>Submodules assigned in this way will be registered, and will also have their parameters converted when you call :meth:<code>to</code>, etc.</p>
 <p>.. note:: As per the example above, an <code>__init__()</code> call to the parent class must be made before assignment on the child.</p>
 <table class="caption-top table">
 <caption>ivar training: Boolean represents whether this module is in training or evaluation mode. :vartype training: bool*</caption>
@@ -336,19 +321,12 @@ class Model(nn.Module):
 </tr>
 </tbody>
 </table>
-<hr>
-</section>
-<section id="patchencoderconv" class="level3">
-<h3 class="anchored" data-anchor-id="patchencoderconv">PatchEncoderConv</h3>
-<blockquote class="blockquote">
-<pre><code> PatchEncoderConv (c_in, patch_len, kernel_size, d_model,
-                   shared_embedding=False)</code></pre>
-</blockquote>
 </section>
 </section>
 <section id="positional-encoding-layers" class="level2">
 <h2 class="anchored" data-anchor-id="positional-encoding-layers">Positional Encoding Layers</h2>
 <hr>
+<p><a href="https://github.com/benmfox/PhysioJEPA/blob/main/physiojepa/layers.py#L66" target="_blank" style="float:right; font-size:smaller">source</a></p>
 <section id="positionalencoding" class="level3">
 <h3 class="anchored" data-anchor-id="positionalencoding">PositionalEncoding</h3>
 <blockquote class="blockquote">
@@ -356,12 +334,12 @@ class Model(nn.Module):
 </blockquote>
 <p>*Base class for all neural network modules.</p>
 <p>Your models should also subclass this class.</p>
-<p>Modules can also contain other Modules, allowing to nest them in a tree structure. You can assign the submodules as regular attributes::</p>
+<p>Modules can also contain other Modules, allowing them to be nested in a tree structure. You can assign the submodules as regular attributes::</p>
 <pre><code>import torch.nn as nn
 import torch.nn.functional as F
 
 class Model(nn.Module):
-    def __init__(self):
+    def __init__(self) -&gt; None:
         super().__init__()
         self.conv1 = nn.Conv2d(1, 20, 5)
         self.conv2 = nn.Conv2d(20, 20, 5)
@@ -369,7 +347,7 @@ class Model(nn.Module):
     def forward(self, x):
         x = F.relu(self.conv1(x))
         return F.relu(self.conv2(x))</code></pre>
-<p>Submodules assigned in this way will be registered, and will have their parameters converted too when you call :meth:<code>to</code>, etc.</p>
+<p>Submodules assigned in this way will be registered, and will also have their parameters converted when you call :meth:<code>to</code>, etc.</p>
 <p>.. note:: As per the example above, an <code>__init__()</code> call to the parent class must be made before assignment on the child.</p>
 <table class="caption-top table">
 <caption>ivar training: Boolean represents whether this module is in training or evaluation mode. :vartype training: bool*</caption>
@@ -391,6 +369,7 @@ class Model(nn.Module):
 </tbody>
 </table>
 <hr>
+<p><a href="https://github.com/benmfox/PhysioJEPA/blob/main/physiojepa/layers.py#L99" target="_blank" style="float:right; font-size:smaller">source</a></p>
 </section>
 <section id="tape" class="level3">
 <h3 class="anchored" data-anchor-id="tape">tAPE</h3>
@@ -429,6 +408,7 @@ class Model(nn.Module):
 <section id="reversible-instance-normalization" class="level2">
 <h2 class="anchored" data-anchor-id="reversible-instance-normalization">Reversible Instance Normalization</h2>
 <hr>
+<p><a href="https://github.com/benmfox/PhysioJEPA/blob/main/physiojepa/layers.py#L135" target="_blank" style="float:right; font-size:smaller">source</a></p>
 <section id="revin" class="level3">
 <h3 class="anchored" data-anchor-id="revin">RevIN</h3>
 <blockquote class="blockquote">
@@ -436,12 +416,12 @@ class Model(nn.Module):
 </blockquote>
 <p>*Base class for all neural network modules.</p>
 <p>Your models should also subclass this class.</p>
-<p>Modules can also contain other Modules, allowing to nest them in a tree structure. You can assign the submodules as regular attributes::</p>
+<p>Modules can also contain other Modules, allowing them to be nested in a tree structure. You can assign the submodules as regular attributes::</p>
 <pre><code>import torch.nn as nn
 import torch.nn.functional as F
 
 class Model(nn.Module):
-    def __init__(self):
+    def __init__(self) -&gt; None:
         super().__init__()
         self.conv1 = nn.Conv2d(1, 20, 5)
         self.conv2 = nn.Conv2d(20, 20, 5)
@@ -449,7 +429,7 @@ class Model(nn.Module):
     def forward(self, x):
         x = F.relu(self.conv1(x))
         return F.relu(self.conv2(x))</code></pre>
-<p>Submodules assigned in this way will be registered, and will have their parameters converted too when you call :meth:<code>to</code>, etc.</p>
+<p>Submodules assigned in this way will be registered, and will also have their parameters converted when you call :meth:<code>to</code>, etc.</p>
 <p>.. note:: As per the example above, an <code>__init__()</code> call to the parent class must be made before assignment on the child.</p>
 <table class="caption-top table">
 <caption>ivar training: Boolean represents whether this module is in training or evaluation mode. :vartype training: bool*</caption>
@@ -496,69 +476,10 @@ class Model(nn.Module):
 </table>
 </section>
 </section>
-<section id="misc" class="level2">
-<h2 class="anchored" data-anchor-id="misc">Misc</h2>
-<hr>
-<section id="get_activation_fn" class="level3">
-<h3 class="anchored" data-anchor-id="get_activation_fn">get_activation_fn</h3>
-<blockquote class="blockquote">
-<pre><code> get_activation_fn (activation)</code></pre>
-</blockquote>
-<hr>
-</section>
-<section id="identity" class="level3">
-<h3 class="anchored" data-anchor-id="identity">Identity</h3>
-<blockquote class="blockquote">
-<pre><code> Identity ()</code></pre>
-</blockquote>
-<p>*Base class for all neural network modules.</p>
-<p>Your models should also subclass this class.</p>
-<p>Modules can also contain other Modules, allowing to nest them in a tree structure. You can assign the submodules as regular attributes::</p>
-<pre><code>import torch.nn as nn
-import torch.nn.functional as F
-
-class Model(nn.Module):
-    def __init__(self):
-        super().__init__()
-        self.conv1 = nn.Conv2d(1, 20, 5)
-        self.conv2 = nn.Conv2d(20, 20, 5)
-
-    def forward(self, x):
-        x = F.relu(self.conv1(x))
-        return F.relu(self.conv2(x))</code></pre>
-<p>Submodules assigned in this way will be registered, and will have their parameters converted too when you call :meth:<code>to</code>, etc.</p>
-<p>.. note:: As per the example above, an <code>__init__()</code> call to the parent class must be made before assignment on the child.</p>
-<p>:ivar training: Boolean represents whether this module is in training or evaluation mode. :vartype training: bool*</p>
-<hr>
-</section>
-<section id="transpose" class="level3">
-<h3 class="anchored" data-anchor-id="transpose">Transpose</h3>
-<blockquote class="blockquote">
-<pre><code> Transpose (*dims, contiguous=False)</code></pre>
-</blockquote>
-<p>*Base class for all neural network modules.</p>
-<p>Your models should also subclass this class.</p>
-<p>Modules can also contain other Modules, allowing to nest them in a tree structure. You can assign the submodules as regular attributes::</p>
-<pre><code>import torch.nn as nn
-import torch.nn.functional as F
-
-class Model(nn.Module):
-    def __init__(self):
-        super().__init__()
-        self.conv1 = nn.Conv2d(1, 20, 5)
-        self.conv2 = nn.Conv2d(20, 20, 5)
-
-    def forward(self, x):
-        x = F.relu(self.conv1(x))
-        return F.relu(self.conv2(x))</code></pre>
-<p>Submodules assigned in this way will be registered, and will have their parameters converted too when you call :meth:<code>to</code>, etc.</p>
-<p>.. note:: As per the example above, an <code>__init__()</code> call to the parent class must be made before assignment on the child.</p>
-<p>:ivar training: Boolean represents whether this module is in training or evaluation mode. :vartype training: bool*</p>
-</section>
-</section>
 <section id="attention" class="level2">
 <h2 class="anchored" data-anchor-id="attention">Attention</h2>
 <hr>
+<p><a href="https://github.com/benmfox/PhysioJEPA/blob/main/physiojepa/layers.py#L201" target="_blank" style="float:right; font-size:smaller">source</a></p>
 <section id="multiheadflashattention" class="level3">
 <h3 class="anchored" data-anchor-id="multiheadflashattention">MultiheadFlashAttention</h3>
 <blockquote class="blockquote">
@@ -568,199 +489,63 @@ class Model(nn.Module):
 </blockquote>
 <p>*Multihead attention layer with optional causal masking. Uses flash attention when available in PyTorch 2.0+.</p>
 <p>Args: n_heads (int): Number of attention heads d_model (int): Embedding dimension qkv_bias (bool, optional): Use bias in linear layers. Defaults to False. is_causal (bool, optional): Use causal masking. Defaults to False. attn_dropout (float, optional): Attention dropout probability. Defaults to 0.0. proj_dropout (float, optional): Dropout probability. Defaults to 0.0.</p>
-<p>Note that when passing in a key paddings mask, it should be a boolean tensor of shape [bs x seq_len] where a True value indicates that the key at that position should be ignored for the purposes of attention. This is contrary to what the PyTorch documentation suggests, but is correct in this module.*</p>
-<div id="cell-16" class="cell">
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>mha <span class="op">=</span> MultiheadFlashAttention(d_model<span class="op">=</span><span class="dv">512</span>, n_heads<span class="op">=</span><span class="dv">8</span>, attn_dropout<span class="op">=</span><span class="fl">0.</span>, proj_dropout<span class="op">=</span><span class="fl">0.</span>)</span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> torch.randn(<span class="dv">2</span><span class="op">*</span><span class="dv">7</span>,<span class="dv">100</span>,<span class="dv">512</span>) <span class="co"># [bs * n_vars x n_patches x d_model]</span></span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>key_padding_mask <span class="op">=</span> torch.zeros(<span class="dv">2</span><span class="op">*</span><span class="dv">7</span>, <span class="dv">100</span>, dtype<span class="op">=</span>torch.<span class="bu">bool</span>)</span>
-<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>key_padding_mask[:, <span class="op">-</span><span class="dv">2</span>:] <span class="op">=</span> <span class="va">True</span>  <span class="co"># mask last 2 positions</span></span>
-<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>output <span class="op">=</span> mha(x, key_padding_mask<span class="op">=</span>key_padding_mask)</span>
-<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>output.shape</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Note that instead of a key padding mask, we can use a nested tensor to mask out the padding tokens.*</p>
+<div id="cell-11" class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>mha <span class="op">=</span> MultiheadFlashAttention(d_model<span class="op">=</span><span class="dv">512</span>, n_heads<span class="op">=</span><span class="dv">8</span>, attn_dropout<span class="op">=</span><span class="fl">0.</span>, proj_dropout<span class="op">=</span><span class="fl">0.</span>)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> torch.randn(<span class="dv">2</span><span class="op">*</span><span class="dv">7</span>,<span class="dv">100</span>,<span class="dv">512</span>) <span class="co"># [bs * n_vars x n_patches x d_model]</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>key_padding_mask <span class="op">=</span> torch.zeros(<span class="dv">2</span><span class="op">*</span><span class="dv">7</span>, <span class="dv">100</span>, dtype<span class="op">=</span>torch.<span class="bu">bool</span>)</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>key_padding_mask[:, <span class="op">-</span><span class="dv">2</span>:] <span class="op">=</span> <span class="va">True</span>  <span class="co"># mask last 2 positions</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>output <span class="op">=</span> mha(x, key_padding_mask<span class="op">=</span>key_padding_mask)</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>output.shape</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <pre><code>torch.Size([14, 100, 512])</code></pre>
 </div>
 </div>
-<hr>
 </section>
-<section id="scaleddotproductattention" class="level3">
-<h3 class="anchored" data-anchor-id="scaleddotproductattention">ScaledDotProductAttention</h3>
-<blockquote class="blockquote">
-<pre><code> ScaledDotProductAttention (d_model, n_heads, attn_dropout=0.0,
-                            res_attention=False, lsa=False)</code></pre>
-</blockquote>
-<p><em>Scaled Dot-Product Attention module (Attention is all you need by Vaswani et al., 2017) with optional residual attention from previous layer (Realformer: Transformer likes residual attention by He et al, 2020) and locality self sttention (Vision Transformer for Small-Size Datasets by Lee et al, 2021)</em></p>
-<hr>
-</section>
-<section id="multiheadattentioncustom" class="level3">
-<h3 class="anchored" data-anchor-id="multiheadattentioncustom">MultiheadAttentionCustom</h3>
-<blockquote class="blockquote">
-<pre><code> MultiheadAttentionCustom (d_model, n_heads, d_k=None, d_v=None,
-                           res_attention=False, attn_dropout=0.0,
-                           proj_dropout=0.0, qkv_bias=True, lsa=False)</code></pre>
-</blockquote>
-<p>*Base class for all neural network modules.</p>
-<p>Your models should also subclass this class.</p>
-<p>Modules can also contain other Modules, allowing to nest them in a tree structure. You can assign the submodules as regular attributes::</p>
-<pre><code>import torch.nn as nn
-import torch.nn.functional as F
-
-class Model(nn.Module):
-    def __init__(self):
-        super().__init__()
-        self.conv1 = nn.Conv2d(1, 20, 5)
-        self.conv2 = nn.Conv2d(20, 20, 5)
-
-    def forward(self, x):
-        x = F.relu(self.conv1(x))
-        return F.relu(self.conv2(x))</code></pre>
-<p>Submodules assigned in this way will be registered, and will have their parameters converted too when you call :meth:<code>to</code>, etc.</p>
-<p>.. note:: As per the example above, an <code>__init__()</code> call to the parent class must be made before assignment on the child.</p>
-<p>:ivar training: Boolean represents whether this module is in training or evaluation mode. :vartype training: bool*</p>
-<div id="cell-19" class="cell">
-<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>mha_attn <span class="op">=</span> MultiheadAttentionCustom(d_model<span class="op">=</span><span class="dv">512</span>, n_heads<span class="op">=</span><span class="dv">8</span>, attn_dropout<span class="op">=</span><span class="fl">0.</span>, proj_dropout<span class="op">=</span><span class="fl">0.</span>, res_attention<span class="op">=</span><span class="va">False</span>)</span>
-<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>mha_attn</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
-<pre><code>MultiheadAttentionCustom(
-  (W_Q): Linear(in_features=512, out_features=512, bias=True)
-  (W_K): Linear(in_features=512, out_features=512, bias=True)
-  (W_V): Linear(in_features=512, out_features=512, bias=True)
-  (sdp_attn): ScaledDotProductAttention(
-    (attn_dropout): Dropout(p=0.0, inplace=False)
-  )
-  (to_out): Sequential(
-    (0): Linear(in_features=512, out_features=512, bias=True)
-    (1): Dropout(p=0.0, inplace=False)
-  )
-)</code></pre>
-</div>
-</div>
-<hr>
-</section>
-<section id="attention_rel_scl" class="level3">
-<h3 class="anchored" data-anchor-id="attention_rel_scl">Attention_Rel_Scl</h3>
-<blockquote class="blockquote">
-<pre><code> Attention_Rel_Scl (d_model:int, n_heads:int, seq_len:int, d_k:int=None,
-                    d_v:int=None, res_attention:bool=False,
-                    attn_dropout:float=0.0, lsa:bool=False,
-                    proj_dropout:float=0.0, qkv_bias:bool=True)</code></pre>
-</blockquote>
-<p>*Base class for all neural network modules.</p>
-<p>Your models should also subclass this class.</p>
-<p>Modules can also contain other Modules, allowing to nest them in a tree structure. You can assign the submodules as regular attributes::</p>
-<pre><code>import torch.nn as nn
-import torch.nn.functional as F
-
-class Model(nn.Module):
-    def __init__(self):
-        super().__init__()
-        self.conv1 = nn.Conv2d(1, 20, 5)
-        self.conv2 = nn.Conv2d(20, 20, 5)
-
-    def forward(self, x):
-        x = F.relu(self.conv1(x))
-        return F.relu(self.conv2(x))</code></pre>
-<p>Submodules assigned in this way will be registered, and will have their parameters converted too when you call :meth:<code>to</code>, etc.</p>
-<p>.. note:: As per the example above, an <code>__init__()</code> call to the parent class must be made before assignment on the child.</p>
-<table class="caption-top table">
-<caption>ivar training: Boolean represents whether this module is in training or evaluation mode. :vartype training: bool*</caption>
-<colgroup>
-<col style="width: 6%">
-<col style="width: 25%">
-<col style="width: 34%">
-<col style="width: 34%">
-</colgroup>
-<thead>
-<tr class="header">
-<th></th>
-<th><strong>Type</strong></th>
-<th><strong>Default</strong></th>
-<th><strong>Details</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>d_model</td>
-<td>int</td>
-<td></td>
-<td>Embedding dimension</td>
-</tr>
-<tr class="even">
-<td>n_heads</td>
-<td>int</td>
-<td></td>
-<td>number of attention heads</td>
-</tr>
-<tr class="odd">
-<td>seq_len</td>
-<td>int</td>
-<td></td>
-<td>sequence length or num patches</td>
-</tr>
-<tr class="even">
-<td>d_k</td>
-<td>int</td>
-<td>None</td>
-<td>key dimension</td>
-</tr>
-<tr class="odd">
-<td>d_v</td>
-<td>int</td>
-<td>None</td>
-<td>value dimension</td>
-</tr>
-<tr class="even">
-<td>res_attention</td>
-<td>bool</td>
-<td>False</td>
-<td>whether to use residual attention</td>
-</tr>
-<tr class="odd">
-<td>attn_dropout</td>
-<td>float</td>
-<td>0.0</td>
-<td>dropout for attention</td>
-</tr>
-<tr class="even">
-<td>lsa</td>
-<td>bool</td>
-<td>False</td>
-<td>whether to use LSA, trainable paramater for scaling</td>
-</tr>
-<tr class="odd">
-<td>proj_dropout</td>
-<td>float</td>
-<td>0.0</td>
-<td>dropout for projection</td>
-</tr>
-<tr class="even">
-<td>qkv_bias</td>
-<td>bool</td>
-<td>True</td>
-<td>bias for q, k, v</td>
-</tr>
-</tbody>
-</table>
-</section>
-</section>
-<section id="pretraining-heads" class="level2">
-<h2 class="anchored" data-anchor-id="pretraining-heads">Pretraining Heads</h2>
 </section>
 <section id="miscellaneous" class="level2">
 <h2 class="anchored" data-anchor-id="miscellaneous">Miscellaneous</h2>
 <hr>
-<section id="identity-1" class="level3">
-<h3 class="anchored" data-anchor-id="identity-1">Identity</h3>
+<p><a href="https://github.com/benmfox/PhysioJEPA/blob/main/physiojepa/layers.py#L315" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="learnablemaskedchanneltokens" class="level3">
+<h3 class="anchored" data-anchor-id="learnablemaskedchanneltokens">LearnableMaskedChannelTokens</h3>
+<blockquote class="blockquote">
+<pre><code> LearnableMaskedChannelTokens (missing_channel_indices, d_model)</code></pre>
+</blockquote>
+<p>*Base class for all neural network modules.</p>
+<p>Your models should also subclass this class.</p>
+<p>Modules can also contain other Modules, allowing them to be nested in a tree structure. You can assign the submodules as regular attributes::</p>
+<pre><code>import torch.nn as nn
+import torch.nn.functional as F
+
+class Model(nn.Module):
+    def __init__(self) -&gt; None:
+        super().__init__()
+        self.conv1 = nn.Conv2d(1, 20, 5)
+        self.conv2 = nn.Conv2d(20, 20, 5)
+
+    def forward(self, x):
+        x = F.relu(self.conv1(x))
+        return F.relu(self.conv2(x))</code></pre>
+<p>Submodules assigned in this way will be registered, and will also have their parameters converted when you call :meth:<code>to</code>, etc.</p>
+<p>.. note:: As per the example above, an <code>__init__()</code> call to the parent class must be made before assignment on the child.</p>
+<p>:ivar training: Boolean represents whether this module is in training or evaluation mode. :vartype training: bool*</p>
+<hr>
+<p><a href="https://github.com/benmfox/PhysioJEPA/blob/main/physiojepa/layers.py#L341" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="identity" class="level3">
+<h3 class="anchored" data-anchor-id="identity">Identity</h3>
 <blockquote class="blockquote">
 <pre><code> Identity ()</code></pre>
 </blockquote>
 <p>*Base class for all neural network modules.</p>
 <p>Your models should also subclass this class.</p>
-<p>Modules can also contain other Modules, allowing to nest them in a tree structure. You can assign the submodules as regular attributes::</p>
+<p>Modules can also contain other Modules, allowing them to be nested in a tree structure. You can assign the submodules as regular attributes::</p>
 <pre><code>import torch.nn as nn
 import torch.nn.functional as F
 
 class Model(nn.Module):
-    def __init__(self):
+    def __init__(self) -&gt; None:
         super().__init__()
         self.conv1 = nn.Conv2d(1, 20, 5)
         self.conv2 = nn.Conv2d(20, 20, 5)
@@ -768,31 +553,33 @@ class Model(nn.Module):
     def forward(self, x):
         x = F.relu(self.conv1(x))
         return F.relu(self.conv2(x))</code></pre>
-<p>Submodules assigned in this way will be registered, and will have their parameters converted too when you call :meth:<code>to</code>, etc.</p>
+<p>Submodules assigned in this way will be registered, and will also have their parameters converted when you call :meth:<code>to</code>, etc.</p>
 <p>.. note:: As per the example above, an <code>__init__()</code> call to the parent class must be made before assignment on the child.</p>
 <p>:ivar training: Boolean represents whether this module is in training or evaluation mode. :vartype training: bool*</p>
 <hr>
+<p><a href="https://github.com/benmfox/PhysioJEPA/blob/main/physiojepa/layers.py#L357" target="_blank" style="float:right; font-size:smaller">source</a></p>
 </section>
-<section id="get_activation_fn-1" class="level3">
-<h3 class="anchored" data-anchor-id="get_activation_fn-1">get_activation_fn</h3>
+<section id="get_activation_fn" class="level3">
+<h3 class="anchored" data-anchor-id="get_activation_fn">get_activation_fn</h3>
 <blockquote class="blockquote">
 <pre><code> get_activation_fn (activation)</code></pre>
 </blockquote>
 <hr>
+<p><a href="https://github.com/benmfox/PhysioJEPA/blob/main/physiojepa/layers.py#L348" target="_blank" style="float:right; font-size:smaller">source</a></p>
 </section>
-<section id="transpose-1" class="level3">
-<h3 class="anchored" data-anchor-id="transpose-1">Transpose</h3>
+<section id="transpose" class="level3">
+<h3 class="anchored" data-anchor-id="transpose">Transpose</h3>
 <blockquote class="blockquote">
 <pre><code> Transpose (*dims, contiguous=False)</code></pre>
 </blockquote>
 <p>*Base class for all neural network modules.</p>
 <p>Your models should also subclass this class.</p>
-<p>Modules can also contain other Modules, allowing to nest them in a tree structure. You can assign the submodules as regular attributes::</p>
+<p>Modules can also contain other Modules, allowing them to be nested in a tree structure. You can assign the submodules as regular attributes::</p>
 <pre><code>import torch.nn as nn
 import torch.nn.functional as F
 
 class Model(nn.Module):
-    def __init__(self):
+    def __init__(self) -&gt; None:
         super().__init__()
         self.conv1 = nn.Conv2d(1, 20, 5)
         self.conv2 = nn.Conv2d(20, 20, 5)
@@ -800,7 +587,7 @@ class Model(nn.Module):
     def forward(self, x):
         x = F.relu(self.conv1(x))
         return F.relu(self.conv2(x))</code></pre>
-<p>Submodules assigned in this way will be registered, and will have their parameters converted too when you call :meth:<code>to</code>, etc.</p>
+<p>Submodules assigned in this way will be registered, and will also have their parameters converted when you call :meth:<code>to</code>, etc.</p>
 <p>.. note:: As per the example above, an <code>__init__()</code> call to the parent class must be made before assignment on the child.</p>
 <p>:ivar training: Boolean represents whether this module is in training or evaluation mode. :vartype training: bool*</p>
 
