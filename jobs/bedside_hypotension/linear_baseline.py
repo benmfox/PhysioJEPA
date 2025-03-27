@@ -3,12 +3,11 @@ import pandas as pd
 from physiojepa.bedside import ForecastingDataset
 import numpy as np
 from pathlib import Path
+from torch.utils.data import DataLoader
 import lightning.pytorch as pl
 import torch
-from torch.utils.data import DataLoader
 
-from physiojepa.train import PatchTFTSingleOutcomeLightning, PatchTSJEPALightning
-from physiojepa.heads import AvgPatchLogisticRegression
+from physiojepa.train import LinearBaselineSupervised
 from sklearn.model_selection import StratifiedGroupKFold
 
 from lightning.pytorch.callbacks import ModelCheckpoint
@@ -18,20 +17,17 @@ from torchmetrics.classification import AUROC, MulticlassAUROC, AveragePrecision
 
 random_state = 12
 torch.set_float32_matmul_precision('medium')
-perform_cross_validation = False
 
 metrics = {"auroc":AUROC(task='binary')}
-
-scheduler_type = 'onecycle'
 
 wandb_offline = False
 
 val_check_interval = 1.0
 weight_decay = 1e-3
-precision = '16-mixed'
+precision = '32'
 loss_fxn = 'CrossEntropy'
 fine_tune = False
-label_smoothing = 0. 
+label_smoothing = 0. # only works for ce loss
 gamma = 2.
 
 BATCHSIZE = 16
@@ -50,24 +46,23 @@ data_dir = ''
 models_dir = ""
 model_run = ''
 name = ''
-create_zero_channel_mask = False
+y_outcome = 'shock_index_class'
 
-pretrained_model_name = ''
-encoder = PatchTSJEPALightning.load_from_checkpoint(checkpoint_path=os.path.join(models_dir, pretrained_model_name), map_location='cpu')
-encoder.pretrain = False
-encoder.model.pretrain = False
+perform_cv=True
 
-d_model = 512
 
 outcome_df_path = ''
 outcome_df = pd.read_csv(outcome_df_path)
 outcome_df['Time Stamp (seconds)'] = outcome_df['Time Stamp (seconds)'].round()
 
+if y_outcome == 'shock_index_class':
+    zarr_files_shock_index = outcome_df.loc[outcome_df['shock_index_class'].isin([0,1]), 'file'].unique().tolist()
 zarr_files = outcome_df.file.unique().tolist()
+
 groups = [Path(i).stem.split('-')[0] for i in zarr_files]
 labels = outcome_df['hypotension'].values.tolist()
 outcome_df.drop(columns=['unique_identifier'], inplace=True)
-zarr_to_ignore = []
+zarr_to_ignore = ['']
 zarr_files = [z for z in zarr_files if z not in zarr_to_ignore]
 groups = zarr_files
 
@@ -76,9 +71,16 @@ train_idxs, test_idxs = next(splitter.split(X=zarr_files,  y=labels, groups=grou
 
 train_zarrs = [zarr_files[i] for i in train_idxs]
 test_zarrs = [zarr_files[i] for i in test_idxs]
-groups = [Path(i).stem.split('-')[0] for i in train_zarrs]
 
-train_labels = [labels[i] for i in train_idxs]
+if y_outcome == 'shock_index_class':
+    train_zarrs = [z for z in train_zarrs if z in zarr_files_shock_index]
+    test_zarrs = [z for z in test_zarrs if z in zarr_files_shock_index]
+    file_label_dict = dict(zip(outcome_df['file'].unique().tolist(), outcome_df['shock_index_class'].tolist()))
+    train_labels = [file_label_dict[i] for i in train_zarrs]
+else:
+    train_labels = [labels[i] for i in train_idxs]
+
+groups = [Path(i).stem.split('-')[0] for i in train_zarrs]
 
 splitter2 = StratifiedGroupKFold(n_splits=10,  shuffle=True, random_state=random_state)
 train_idxs, val_idxs = next(splitter2.split(X=train_zarrs, y=train_labels, groups=groups))
@@ -87,14 +89,8 @@ val_zarrs = [train_zarrs[i] for i in val_idxs]
 train_zarrs = [train_zarrs[i] for i in train_idxs]
 
 channels = ['ABP', 'II', 'V', 'PLETH','RESP'] # this is the order of the SS model: ['ABP', 'II', 'V', 'PLETH','RESP']
-channels_for_dl = ['dummy', 'II', 'V', 'PLETH','RESP']
-
 c_in = len(channels)
-c_in_head = c_in
 
-class_weights = None
-
-y_padding_mask = 2
 frequency = 125
 forecast_window_sec = 60*5 
 sample_seq_len_seconds = int(60*30) 
@@ -104,7 +100,11 @@ overlap = 0.
 hop_length=win_length - int(overlap*win_length)
 max_seq_len = sample_seq_len_seconds*frequency
 
-dataset_filename = f"{frequency}Hz_{''.join(channels)}channels_{sample_seq_len_seconds}sec_segment_{sample_stride_sec}sec_stride_SS"
+
+if y_outcome != 'shock_index_class':
+    dataset_filename = f"{frequency}Hz_{''.join(channels)}channels_{sample_seq_len_seconds}sec_segment_{sample_stride_sec}sec_stride_SS"
+else:
+    dataset_filename = f"{frequency}Hz_{''.join(channels)}channels_{sample_seq_len_seconds}sec_segment_{sample_stride_sec}sec_stride_SS_shock_index_class"
 
 
 n_patches = (max(max_seq_len, win_length)-win_length) // hop_length + 1
@@ -126,20 +126,10 @@ if Path(os.path.join(models_dir, f'{dataset_filename}-test_samples.csv.gz')).exi
 else:
     sample_df_test = None
 
-forecast_within = False
-include_labels_in_x = False
-nan_tolerance = 0.2
-
-lp_arch = dict(c_in=c_in_head, 
-                input_size = d_model,
-                #missing_channel_indices=[i for i in range(c_in_head) if channels_for_dl[i] == 'dummy'],
-                dropout=0.5)
-
-lp_model = AvgPatchLogisticRegression(**lp_arch)
+y_padding_mask = 2 
+nan_tolerance = 0.2 # maxiumum amount of missing data allowed in a single channel 
 
 wandb_logger = WandbLogger(project=f"{model_run}", offline=wandb_offline, name=name, save_dir=models_dir)
-wandb_logger.log_hyperparams({**dict(encoder.hparams), **{f"lp_head_{k}":v for k,v in lp_arch.items()}})
-add_params = {'encoder_path':pretrained_model_name}
 
 if __name__ == "__main__":
     pl.seed_everything(random_state)
@@ -155,11 +145,11 @@ if __name__ == "__main__":
                            }
     train_ds = ForecastingDataset(
                  zarr_files=train_zarrs,
-                 channels=channels_for_dl, 
+                 channels=channels, 
                  forecast_window_sec = forecast_window_sec,
                  outcome_df = outcome_df,
-                 include_labels_in_x=include_labels_in_x, 
-                 forecast_within=forecast_within, 
+                 include_labels_in_x=False, 
+                 forecast_within=False, 
                  sample_df = sample_df_train,
                  max_seq_len_sec=None, 
                  sample_seq_len_sec=sample_seq_len_seconds, 
@@ -174,12 +164,12 @@ if __name__ == "__main__":
 
     val_ds = ForecastingDataset(
                  zarr_files=val_zarrs,
-                 channels=channels_for_dl, 
+                 channels=channels, 
                  sample_df = sample_df_val,
                  forecast_window_sec = forecast_window_sec,
                  outcome_df = outcome_df,
-                 forecast_within=forecast_within, 
-                 include_labels_in_x=include_labels_in_x, 
+                 forecast_within=False, 
+                 include_labels_in_x=False, 
                  max_seq_len_sec=None, 
                  sample_seq_len_sec=sample_seq_len_seconds, 
                  sample_stride_sec=sample_stride_sec,
@@ -193,12 +183,12 @@ if __name__ == "__main__":
 
     test_ds = ForecastingDataset(
                     zarr_files=test_zarrs,
-                    channels=channels_for_dl, 
+                    channels=channels, 
                     sample_df=sample_df_test,
                     forecast_window_sec = forecast_window_sec,
                     outcome_df = outcome_df,
-                    forecast_within=forecast_within, 
-                    include_labels_in_x=include_labels_in_x, 
+                    forecast_within=False, 
+                    include_labels_in_x=False, 
                     max_seq_len_sec=None, 
                     sample_seq_len_sec=sample_seq_len_seconds, 
                     sample_stride_sec=sample_stride_sec,
@@ -222,13 +212,24 @@ if __name__ == "__main__":
     if not Path(os.path.join(models_dir, f"{dataset_filename}-test_samples.csv.gz")).exists():
         test_ds.sample_df.to_csv(os.path.join(models_dir, f"{dataset_filename}-test_samples.csv.gz"), compression='gzip', index=True)
     # cross fold validation
-    auroc_scores = []
-    avg_prec_scores = []
-    accuracy_scores = []
-    if perform_cross_validation:
+    linear_arch = dict( c_in=c_in, 
+                  win_length=win_length, 
+                  hop_length=hop_length, 
+                  max_seq_len=max_seq_len, 
+                  use_revin=True, 
+                  affine=True, 
+                  d_model=512, 
+                  shared_embedding=False, 
+                  dropout=0.1, 
+                  augmentations=[], # no augs
+    )
+    if perform_cv:
         inner_splitter = StratifiedGroupKFold(n_splits=5)
-        train_zarrs = train_ds.sample_df.file.unique().tolist() # need to extract exact train zarrs
-        label_dict = dict(zip(outcome_df.file.unique().tolist(), outcome_df.hypotension.tolist()))
+        auroc_scores = []
+        avg_prec_scores = []
+        accuracy_scores = []
+        train_zarrs = train_ds.sample_df.file.unique().tolist() 
+        label_dict = dict(zip(outcome_df.file.unique().tolist(), outcome_df[y_outcome].tolist()))
         train_labels = [label_dict[i] for i in train_zarrs]
         groups = [Path(i).stem.split('-')[0] for i in train_zarrs]
 
@@ -237,26 +238,20 @@ if __name__ == "__main__":
             fold_val_ds = torch.utils.data.Subset(train_ds, fold_val_idx)
             fold_train_loader = DataLoader(fold_train_ds, batch_size=BATCHSIZE, shuffle=True, drop_last=False, num_workers=num_workers, persistent_workers=True, pin_memory=False)
             fold_val_loader = DataLoader(fold_val_ds, batch_size=BATCHSIZE, shuffle=False, drop_last=False, num_workers=num_workers, persistent_workers=True, pin_memory=False)
-            patchmeupe2e_model = PatchTFTSingleOutcomeLightning(learning_rate=learning_rate, 
-                                        train_size=len(train_ds), 
-                                        batch_size=BATCHSIZE,
-                                        linear_probing_head=lp_model,
-                                        preloaded_model=encoder, 
-                                        label_smoothing=label_smoothing,
-                                        metrics=metrics, 
-                                        weight_decay=weight_decay,
-                                        gamma=gamma,
-                                        fine_tune=fine_tune,
-                                        loss_fxn=loss_fxn,
-                                        class_weights=class_weights,
-                                        y_padding_mask=y_padding_mask,
-                                        torch_model_name='model', 
-                                        remove_pretrain_layers=['head', 'mask'],
-                                        scheduler_type='OneCycle',
-                                        optimizer_type='adamw',
-                                        max_lr=max_lr, 
-                                        epochs=EPOCHS,
-                                        create_zero_channel_mask=create_zero_channel_mask)
+            patchmeupe2e_model = LinearBaselineSupervised(linear_patch_kwargs=linear_arch,
+                 learning_rate=learning_rate,
+                 train_loader_size=len(train_loader),
+                 metrics=metrics, 
+                 loss_fxn=loss_fxn, 
+                 gamma=gamma, 
+                 class_weights=None, 
+                 label_smoothing=label_smoothing, 
+                 y_padding_mask=y_padding_mask, 
+                 max_lr=max_lr, 
+                 epochs=EPOCHS, 
+                 optimizer_type='AdamW',
+                 scheduler_type='OneCycle',
+                 weight_decay=weight_decay)
 
             fold_filename = f"{model_run}-{fold}-{name}" + "{epoch:02d}-Focal:{val_loss:.5f}-CE:{val_ce_loss:.5f}"
             fold_callbacks = []
@@ -297,27 +292,22 @@ if __name__ == "__main__":
             auroc_scores.append(auroc_metric(fold_val_preds_cat, fold_val_targets_cat)[1])
             avg_prec_scores.append(avg_prec_metric(fold_val_preds_cat, fold_val_targets_cat)[1])
             accuracy_scores.append(accuracy_metric(fold_val_preds_cat, fold_val_targets_cat)[1])
-    # fit final model to all train data
-    patchmeupe2e_model = PatchTFTSingleOutcomeLightning(learning_rate=learning_rate, 
-                                    train_size=len(train_ds), 
-                                    batch_size=BATCHSIZE,
-                                    linear_probing_head=lp_model,
-                                    preloaded_model=encoder, 
-                                    label_smoothing=label_smoothing,
-                                    metrics=metrics, 
-                                    weight_decay=weight_decay,
-                                    gamma=gamma,
-                                    fine_tune=fine_tune,
-                                    loss_fxn=loss_fxn,
-                                    class_weights=class_weights,
-                                    y_padding_mask=y_padding_mask,
-                                    torch_model_name='model', 
-                                    remove_pretrain_layers=['head', 'mask'],
-                                    scheduler_type='OneCycle',
-                                    optimizer_type='adamw',
-                                    max_lr=max_lr, 
-                                    epochs=EPOCHS,
-                                    create_zero_channel_mask=create_zero_channel_mask)
+    
+    patchmeupe2e_model = LinearBaselineSupervised(linear_patch_kwargs=linear_arch,
+                 learning_rate=learning_rate,
+                 train_loader_size=len(train_loader),
+                 metrics=metrics, # name:function for metrics to log
+                 loss_fxn=loss_fxn, 
+                 gamma=gamma, 
+                 class_weights=None, 
+                 label_smoothing=label_smoothing, 
+                 y_padding_mask=y_padding_mask, 
+                 max_lr=max_lr, 
+                 epochs=EPOCHS, 
+                 optimizer_type='AdamW',
+                 scheduler_type='OneCycle',
+                 weight_decay=weight_decay)
+    
     filename = f"{model_run}-{name}" + "{epoch:02d}-Focal:{val_loss:.5f}-CE:{val_ce_loss:.5f}"
     checkpoint_callback = ModelCheckpoint(dirpath=models_dir, save_top_k=1, monitor="val_loss", mode='min', filename=filename)
     checkpoint_callback2 = ModelCheckpoint(dirpath=models_dir, save_top_k=1, monitor="val_auroc", mode='max', filename=filename)
@@ -362,16 +352,16 @@ if __name__ == "__main__":
     auroc_metric = MulticlassAUROC(num_classes=2,  average='none', ignore_index=y_padding_mask)
     avg_prec_metric = AveragePrecision(task='multiclass', num_classes=2, average='none', ignore_index=y_padding_mask)
     accuracy_metric = MulticlassAccuracy(num_classes=2, average='none', ignore_index=y_padding_mask)
-
+    
     print("Val AUC", auroc_metric(val_preds_cat, val_targets_cat)[1])
     print("Test AUC", auroc_metric(test_preds_cat, test_targets_cat)[1])
 
-    print('Validation set metrics')
-    print(auroc_scores)
-    print(avg_prec_scores)
-    print(accuracy_scores)
+    if perform_cv:
+        print('Validation set metrics')
+        print(auroc_scores)
+        print(avg_prec_scores)
+        print(accuracy_scores)
 
-    if perform_cross_validation:
         print('Validation set metrics with 95% confidence intervals:')
         
         def calc_confidence_interval(scores, confidence=0.95):
@@ -404,11 +394,7 @@ if __name__ == "__main__":
     print('AP', avg_prec_metric(test_preds_cat, test_targets_cat))
     print('Accuracy', accuracy_metric(test_preds_cat, test_targets_cat))
     
-    channels_for_dl_str = '-'.join([channels[i] for i in range(c_in_head) if channels_for_dl[i] != 'dummy'])
-    torch.save(val_preds_cat, f'Ablation-{channels_for_dl_str}-{name}-val-preds.pt')
-    torch.save(val_targets_cat, f'Ablation-{channels_for_dl_str}-{name}-val-targets.pt')
-    torch.save(test_preds_cat, f'Ablation-{channels_for_dl_str}-{name}-test-preds.pt')
-    torch.save(test_targets_cat, f'Ablation-{channels_for_dl_str}-{name}-test-targets.pt')
-
-
-
+    torch.save(val_preds_cat, f'CHIL-Revisions-JEPA-ABP-Baseline-linear-{y_outcome}-val-preds.pt')
+    torch.save(val_targets_cat, f'CHIL-Revisions-JEPA-ABP-Baseline-linear-{y_outcome}-val-targets.pt')
+    torch.save(test_preds_cat, f'CHIL-Revisions-JEPA-ABP-Baseline-linear-{y_outcome}-test-preds.pt')
+    torch.save(test_targets_cat, f'CHIL-Revisions-JEPA-ABP-Baseline-linear-{y_outcome}-test-targets.pt')

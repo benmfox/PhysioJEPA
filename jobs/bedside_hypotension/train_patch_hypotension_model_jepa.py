@@ -1,15 +1,15 @@
 import os
 import pandas as pd
-from physio_jepa.bedside import SelfSupervisedDataset, CLIP_INTERPOLATE_RANGES
+from physiojepa.bedside import SelfSupervisedDataset
 from pathlib import Path
 from torch.utils.data import DataLoader
 import lightning.pytorch as pl
 import torch
 
-from physio_jepa.train import PatchTSJEPALightning
+from physiojepa.train import PatchTSJEPALightning
 from sklearn.model_selection import StratifiedGroupKFold
 
-from physio_jepa.loss import mse_loss
+from physiojepa.loss import mse_loss
 
 from lightning.pytorch.callbacks import ModelCheckpoint
 import wandb

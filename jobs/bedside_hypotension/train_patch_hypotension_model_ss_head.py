@@ -1,14 +1,14 @@
 import os
 import pandas as pd
-from physio_jepa.bedside import ForecastingDataset, CLIP_INTERPOLATE_RANGES
+from physiojepa.bedside import ForecastingDataset
 import numpy as np
 from pathlib import Path
 from torch.utils.data import DataLoader
 import lightning.pytorch as pl
 import torch
 
-from physio_jepa.train import PatchTFTSingleOutcomeLightning, PatchTSJEPALightning
-from physio_jepa.heads import AvgPatchLogisticRegression
+from physiojepa.train import PatchTFTSingleOutcomeLightning, PatchTSJEPALightning
+from physiojepa.heads import AvgPatchLogisticRegression
 from sklearn.model_selection import StratifiedGroupKFold
 
 from lightning.pytorch.callbacks import ModelCheckpoint
@@ -239,7 +239,7 @@ if __name__ == "__main__":
     avg_prec_scores = []
     accuracy_scores = []
     train_zarrs = train_ds.sample_df.file.unique().tolist() # need to extract exact train zarrs
-    label_dict = dict(zip(outcome_df.file.unique().tolist(), outcome_df.hypotension.tolist()))
+    label_dict = dict(zip(outcome_df.file.unique().tolist(), outcome_df[y_outcome].tolist()))
     train_labels = [label_dict[i] for i in train_zarrs]
     groups = [Path(i).stem.split('-')[0] for i in train_zarrs]
     #train_idxs, test_idxs = next(splitter.split(X=train_zarrs,  y=train_labels, groups=groups)) # enumerate([(train_idxs, test_idxs)])

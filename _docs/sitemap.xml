@@ -2,38 +2,38 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://benmfox.github.io/PhysioJEPA/index.html</loc>
-    <lastmod>2025-03-19T22:14:54.300Z</lastmod>
+    <lastmod>2025-03-27T14:38:51.298Z</lastmod>
   </url>
   <url>
     <loc>https://benmfox.github.io/PhysioJEPA/data_preprocessing.html</loc>
-    <lastmod>2025-03-19T22:14:54.258Z</lastmod>
-  </url>
-  <url>
-    <loc>https://benmfox.github.io/PhysioJEPA/loss.html</loc>
-    <lastmod>2025-03-19T22:14:54.899Z</lastmod>
-  </url>
-  <url>
-    <loc>https://benmfox.github.io/PhysioJEPA/train.html</loc>
-    <lastmod>2025-03-19T22:14:56.288Z</lastmod>
-  </url>
-  <url>
-    <loc>https://benmfox.github.io/PhysioJEPA/heads.html</loc>
-    <lastmod>2025-03-19T22:14:54.847Z</lastmod>
-  </url>
-  <url>
-    <loc>https://benmfox.github.io/PhysioJEPA/signal.html</loc>
-    <lastmod>2025-03-19T22:14:55.335Z</lastmod>
+    <lastmod>2025-03-27T14:38:51.258Z</lastmod>
   </url>
   <url>
     <loc>https://benmfox.github.io/PhysioJEPA/bedside.html</loc>
-    <lastmod>2025-03-19T22:14:55.563Z</lastmod>
+    <lastmod>2025-03-27T14:38:52.551Z</lastmod>
   </url>
   <url>
-    <loc>https://benmfox.github.io/PhysioJEPA/transformers.html</loc>
-    <lastmod>2025-03-19T22:14:54.985Z</lastmod>
+    <loc>https://benmfox.github.io/PhysioJEPA/train.html</loc>
+    <lastmod>2025-03-27T14:38:53.096Z</lastmod>
+  </url>
+  <url>
+    <loc>https://benmfox.github.io/PhysioJEPA/heads.html</loc>
+    <lastmod>2025-03-27T14:38:51.894Z</lastmod>
+  </url>
+  <url>
+    <loc>https://benmfox.github.io/PhysioJEPA/signal.html</loc>
+    <lastmod>2025-03-27T14:38:52.272Z</lastmod>
+  </url>
+  <url>
+    <loc>https://benmfox.github.io/PhysioJEPA/models.html</loc>
+    <lastmod>2025-03-27T14:38:51.904Z</lastmod>
+  </url>
+  <url>
+    <loc>https://benmfox.github.io/PhysioJEPA/loss.html</loc>
+    <lastmod>2025-03-27T14:38:51.918Z</lastmod>
   </url>
   <url>
     <loc>https://benmfox.github.io/PhysioJEPA/layers.html</loc>
-    <lastmod>2025-03-19T22:14:54.954Z</lastmod>
+    <lastmod>2025-03-27T14:38:51.882Z</lastmod>
   </url>
 </urlset>

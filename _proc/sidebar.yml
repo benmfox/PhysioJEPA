@@ -4,7 +4,7 @@ website:
       - index.ipynb
       - 00_bedside.ipynb
       - 03_signal.ipynb
-      - 04_transformers.ipynb
+      - 04_models.ipynb
       - 06_train.ipynb
       - 07_loss.ipynb
       - 08_data_preprocessing.ipynb

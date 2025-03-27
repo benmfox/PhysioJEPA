@@ -165,7 +165,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./transformers.html" class="sidebar-item-text sidebar-link">
+  <a href="./models.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Transformers</span></a>
   </div>
 </li>
@@ -211,6 +211,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <ul>
   <li><a href="#linear-layers-for-patches" id="toc-linear-layers-for-patches" class="nav-link active" data-scroll-target="#linear-layers-for-patches">Linear Layers for Patches</a>
   <ul class="collapse">
+  <li><a href="#patch" id="toc-patch" class="nav-link" data-scroll-target="#patch">Patch</a></li>
+  <li><a href="#create_patch" id="toc-create_patch" class="nav-link" data-scroll-target="#create_patch">create_patch</a></li>
   <li><a href="#patchencoder" id="toc-patchencoder" class="nav-link" data-scroll-target="#patchencoder">PatchEncoder</a></li>
   </ul></li>
   <li><a href="#positional-encoding-layers" id="toc-positional-encoding-layers" class="nav-link" data-scroll-target="#positional-encoding-layers">Positional Encoding Layers</a>
@@ -267,7 +269,40 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="linear-layers-for-patches" class="level2">
 <h2 class="anchored" data-anchor-id="linear-layers-for-patches">Linear Layers for Patches</h2>
 <hr>
-<p><a href="https://github.com/benmfox/PhysioJEPA/blob/main/physiojepa/layers.py#L18" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="patch" class="level3">
+<h3 class="anchored" data-anchor-id="patch">Patch</h3>
+<blockquote class="blockquote">
+<pre><code> Patch (patch_len, stride)</code></pre>
+</blockquote>
+<p>*Base class for all neural network modules.</p>
+<p>Your models should also subclass this class.</p>
+<p>Modules can also contain other Modules, allowing them to be nested in a tree structure. You can assign the submodules as regular attributes::</p>
+<pre><code>import torch.nn as nn
+import torch.nn.functional as F
+
+class Model(nn.Module):
+    def __init__(self) -&gt; None:
+        super().__init__()
+        self.conv1 = nn.Conv2d(1, 20, 5)
+        self.conv2 = nn.Conv2d(20, 20, 5)
+
+    def forward(self, x):
+        x = F.relu(self.conv1(x))
+        return F.relu(self.conv2(x))</code></pre>
+<p>Submodules assigned in this way will be registered, and will also have their parameters converted when you call :meth:<code>to</code>, etc.</p>
+<p>.. note:: As per the example above, an <code>__init__()</code> call to the parent class must be made before assignment on the child.</p>
+<p>:ivar training: Boolean represents whether this module is in training or evaluation mode. :vartype training: bool*</p>
+<hr>
+</section>
+<section id="create_patch" class="level3">
+<h3 class="anchored" data-anchor-id="create_patch">create_patch</h3>
+<blockquote class="blockquote">
+<pre><code> create_patch (xb, patch_len, stride, constant_pad=False,
+               constant_pad_value=0)</code></pre>
+</blockquote>
+<p><em>xb: [bs x n_vars x seq_len]</em></p>
+<hr>
+</section>
 <section id="patchencoder" class="level3">
 <h3 class="anchored" data-anchor-id="patchencoder">PatchEncoder</h3>
 <blockquote class="blockquote">
@@ -326,7 +361,6 @@ class Model(nn.Module):
 <section id="positional-encoding-layers" class="level2">
 <h2 class="anchored" data-anchor-id="positional-encoding-layers">Positional Encoding Layers</h2>
 <hr>
-<p><a href="https://github.com/benmfox/PhysioJEPA/blob/main/physiojepa/layers.py#L66" target="_blank" style="float:right; font-size:smaller">source</a></p>
 <section id="positionalencoding" class="level3">
 <h3 class="anchored" data-anchor-id="positionalencoding">PositionalEncoding</h3>
 <blockquote class="blockquote">
@@ -369,7 +403,6 @@ class Model(nn.Module):
 </tbody>
 </table>
 <hr>
-<p><a href="https://github.com/benmfox/PhysioJEPA/blob/main/physiojepa/layers.py#L99" target="_blank" style="float:right; font-size:smaller">source</a></p>
 </section>
 <section id="tape" class="level3">
 <h3 class="anchored" data-anchor-id="tape">tAPE</h3>
@@ -408,7 +441,6 @@ class Model(nn.Module):
 <section id="reversible-instance-normalization" class="level2">
 <h2 class="anchored" data-anchor-id="reversible-instance-normalization">Reversible Instance Normalization</h2>
 <hr>
-<p><a href="https://github.com/benmfox/PhysioJEPA/blob/main/physiojepa/layers.py#L135" target="_blank" style="float:right; font-size:smaller">source</a></p>
 <section id="revin" class="level3">
 <h3 class="anchored" data-anchor-id="revin">RevIN</h3>
 <blockquote class="blockquote">
@@ -479,7 +511,6 @@ class Model(nn.Module):
 <section id="attention" class="level2">
 <h2 class="anchored" data-anchor-id="attention">Attention</h2>
 <hr>
-<p><a href="https://github.com/benmfox/PhysioJEPA/blob/main/physiojepa/layers.py#L201" target="_blank" style="float:right; font-size:smaller">source</a></p>
 <section id="multiheadflashattention" class="level3">
 <h3 class="anchored" data-anchor-id="multiheadflashattention">MultiheadFlashAttention</h3>
 <blockquote class="blockquote">
@@ -490,13 +521,13 @@ class Model(nn.Module):
 <p>*Multihead attention layer with optional causal masking. Uses flash attention when available in PyTorch 2.0+.</p>
 <p>Args: n_heads (int): Number of attention heads d_model (int): Embedding dimension qkv_bias (bool, optional): Use bias in linear layers. Defaults to False. is_causal (bool, optional): Use causal masking. Defaults to False. attn_dropout (float, optional): Attention dropout probability. Defaults to 0.0. proj_dropout (float, optional): Dropout probability. Defaults to 0.0.</p>
 <p>Note that instead of a key padding mask, we can use a nested tensor to mask out the padding tokens.*</p>
-<div id="cell-11" class="cell">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>mha <span class="op">=</span> MultiheadFlashAttention(d_model<span class="op">=</span><span class="dv">512</span>, n_heads<span class="op">=</span><span class="dv">8</span>, attn_dropout<span class="op">=</span><span class="fl">0.</span>, proj_dropout<span class="op">=</span><span class="fl">0.</span>)</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> torch.randn(<span class="dv">2</span><span class="op">*</span><span class="dv">7</span>,<span class="dv">100</span>,<span class="dv">512</span>) <span class="co"># [bs * n_vars x n_patches x d_model]</span></span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>key_padding_mask <span class="op">=</span> torch.zeros(<span class="dv">2</span><span class="op">*</span><span class="dv">7</span>, <span class="dv">100</span>, dtype<span class="op">=</span>torch.<span class="bu">bool</span>)</span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>key_padding_mask[:, <span class="op">-</span><span class="dv">2</span>:] <span class="op">=</span> <span class="va">True</span>  <span class="co"># mask last 2 positions</span></span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>output <span class="op">=</span> mha(x, key_padding_mask<span class="op">=</span>key_padding_mask)</span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>output.shape</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="cell-13" class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>mha <span class="op">=</span> MultiheadFlashAttention(d_model<span class="op">=</span><span class="dv">512</span>, n_heads<span class="op">=</span><span class="dv">8</span>, attn_dropout<span class="op">=</span><span class="fl">0.</span>, proj_dropout<span class="op">=</span><span class="fl">0.</span>)</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> torch.randn(<span class="dv">2</span><span class="op">*</span><span class="dv">7</span>,<span class="dv">100</span>,<span class="dv">512</span>) <span class="co"># [bs * n_vars x n_patches x d_model]</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>key_padding_mask <span class="op">=</span> torch.zeros(<span class="dv">2</span><span class="op">*</span><span class="dv">7</span>, <span class="dv">100</span>, dtype<span class="op">=</span>torch.<span class="bu">bool</span>)</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>key_padding_mask[:, <span class="op">-</span><span class="dv">2</span>:] <span class="op">=</span> <span class="va">True</span>  <span class="co"># mask last 2 positions</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>output <span class="op">=</span> mha(x, key_padding_mask<span class="op">=</span>key_padding_mask)</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>output.shape</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <pre><code>torch.Size([14, 100, 512])</code></pre>
 </div>
@@ -506,7 +537,6 @@ class Model(nn.Module):
 <section id="miscellaneous" class="level2">
 <h2 class="anchored" data-anchor-id="miscellaneous">Miscellaneous</h2>
 <hr>
-<p><a href="https://github.com/benmfox/PhysioJEPA/blob/main/physiojepa/layers.py#L315" target="_blank" style="float:right; font-size:smaller">source</a></p>
 <section id="learnablemaskedchanneltokens" class="level3">
 <h3 class="anchored" data-anchor-id="learnablemaskedchanneltokens">LearnableMaskedChannelTokens</h3>
 <blockquote class="blockquote">
@@ -531,7 +561,6 @@ class Model(nn.Module):
 <p>.. note:: As per the example above, an <code>__init__()</code> call to the parent class must be made before assignment on the child.</p>
 <p>:ivar training: Boolean represents whether this module is in training or evaluation mode. :vartype training: bool*</p>
 <hr>
-<p><a href="https://github.com/benmfox/PhysioJEPA/blob/main/physiojepa/layers.py#L341" target="_blank" style="float:right; font-size:smaller">source</a></p>
 </section>
 <section id="identity" class="level3">
 <h3 class="anchored" data-anchor-id="identity">Identity</h3>
@@ -557,7 +586,6 @@ class Model(nn.Module):
 <p>.. note:: As per the example above, an <code>__init__()</code> call to the parent class must be made before assignment on the child.</p>
 <p>:ivar training: Boolean represents whether this module is in training or evaluation mode. :vartype training: bool*</p>
 <hr>
-<p><a href="https://github.com/benmfox/PhysioJEPA/blob/main/physiojepa/layers.py#L357" target="_blank" style="float:right; font-size:smaller">source</a></p>
 </section>
 <section id="get_activation_fn" class="level3">
 <h3 class="anchored" data-anchor-id="get_activation_fn">get_activation_fn</h3>
@@ -565,7 +593,6 @@ class Model(nn.Module):
 <pre><code> get_activation_fn (activation)</code></pre>
 </blockquote>
 <hr>
-<p><a href="https://github.com/benmfox/PhysioJEPA/blob/main/physiojepa/layers.py#L348" target="_blank" style="float:right; font-size:smaller">source</a></p>
 </section>
 <section id="transpose" class="level3">
 <h3 class="anchored" data-anchor-id="transpose">Transpose</h3>

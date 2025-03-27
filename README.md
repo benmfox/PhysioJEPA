@@ -45,6 +45,8 @@ new functionality. Then, run `nbdev_prepare` to generate the
       head for hypotension classification
     - `hypotension_ablate_channels.py`: Ablates channels from the JEPA
       model and probes the effect on hypotension classification
+    - `linear_baseline.py`: Trains a linear baseline for hypotension and
+      shock index classification
 - `additional_label_processing.ipynb`: Additional processing for
   hypotension and shock index labels derivation
 
@@ -62,6 +64,9 @@ new functionality. Then, run `nbdev_prepare` to generate the
 3.  Ablation (`jobs/bedside_hypotension/hypotension_ablate_channels.py`)
     - Ablates channels from the JEPA model and probes the effect on
       hypotension classification
+4.  Linear Baseline (`jobs/bedside_hypotension/linear_baseline.py`)
+    - Trains a linear baseline for hypotension and shock index
+      classification
 
 ## Technical Details
 

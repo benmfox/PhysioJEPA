@@ -165,7 +165,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./transformers.html" class="sidebar-item-text sidebar-link">
+  <a href="./models.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Transformers</span></a>
   </div>
 </li>
@@ -273,6 +273,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li><code>train_patch_hypotension_model_jepa.py</code>: Trains the initial foundational transformer model</li>
 <li><code>train_patch_hypotension_model_ss_head.py</code>: Trains the probing head for hypotension classification</li>
 <li><code>hypotension_ablate_channels.py</code>: Ablates channels from the JEPA model and probes the effect on hypotension classification</li>
+<li><code>linear_baseline.py</code>: Trains a linear baseline for hypotension and shock index classification</li>
 </ul></li>
 </ul></li>
 <li><code>additional_label_processing.ipynb</code>: Additional processing for hypotension and shock index labels derivation</li>
@@ -293,6 +294,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>Ablation (<code>jobs/bedside_hypotension/hypotension_ablate_channels.py</code>)
 <ul>
 <li>Ablates channels from the JEPA model and probes the effect on hypotension classification</li>
+</ul></li>
+<li>Linear Baseline (<code>jobs/bedside_hypotension/linear_baseline.py</code>)
+<ul>
+<li>Trains a linear baseline for hypotension and shock index classification</li>
 </ul></li>
 </ol>
 </section>
