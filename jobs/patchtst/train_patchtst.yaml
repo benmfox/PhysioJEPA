@@ -1,0 +1,89 @@
+# PatchTST Training Configuration
+
+run_config:
+  model_type: 'TST'
+  wandb_project: "Bedside PatchTST Self Supervised Training"
+  model_run: "1"
+  name: "PatchTST"
+  random_state: 12
+  precision: "bf16-mixed"
+  test_n_samples: 0 # use a few thousand samples
+
+# Data Paths
+paths:
+  data_dir: "zarr_store/allzarr/"
+  models_dir: "models_bedside_self_supervised/"
+  outcome_df_path: 'hypotension_labels_mimic_all_events_rolling5min.csv.gz'
+  dataset_filename: "125Hz_ABPIIPLETHchannels_1800sec_segment_1800sec_stride_all"
+
+# Dataset Configuration
+dataset:
+  channels: ['ABP', 'II', 'PLETH']
+  frequency: 125
+  patch_seconds: 1
+  overlap: 0.0
+  seq_len_sec: 1800 # this will create 1 sample == 30 seconds of data
+  sample_stride_sec: 1800
+  max_seq_len_sec: 1800  
+  min_seq_len_sec: 1800  
+  constant_nan_tolerance: 0.2
+  use_transforms: false
+  normalize_signals: true
+  require_all_channels: true
+  y_outcome: 'hypotension_label'
+
+# Model Architecture
+encoder:
+  d_model: 512 
+  n_heads: 8
+  d_ff: 2048
+  num_layers: 3
+  augmentations: ['patch_mask']
+  mask_ratio: [0.1, 0.4]
+  shared_embedding: false
+  pretrain_head: true
+  dropout: 0.1
+  attn_dropout: 0.
+  act: "gelu"
+  pre_norm: false
+  pe_type: "rotary"
+  qkv_bias: true
+  init_std: 0.02
+  tokenizer_type: "simple"
+  tokenizer_kwargs:
+    depth: 1 # depth of 3 is min to have residual
+    bottleneck_channels: 112 #1 6 * 7
+    residual: true # residual doesnt run when c in is 1
+    kernel_size: 40
+    bottleneck: true # there is no bottleneck if in channels is 1
+
+# Training Configuration
+training:
+  n_gpus: 2 # this needs to match lsf job
+  batch_size: 32
+  epochs: 100
+  num_workers: 14 # leave 2 for other processes
+  accumulate_grad_batches: 1
+  huber_delta: 1
+  val_check_interval: 1.0
+  use_gradient_clipping: true
+  gradient_clip_val: 1.
+  gradient_clip_algorithm: "norm"
+  use_lr_finder: false
+  loss_fxn: "mse"
+# Optimizer Configuration
+optimizer:
+  learning_rate: 0.00001
+  weight_decay: 0.04
+  use_weight_decay_scheduler: true
+  final_weight_decay: 0.4
+  optimizer_type: "adamw"
+
+# OneCycle Scheduler Parameters
+scheduler:
+  scheduler_type: "onecycle"
+  max_lr: 0.0006
+  div_factor: 25
+  final_div_factor: 100
+  pct_start: 0.3
+  anneal_strategy: "cos"

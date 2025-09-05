@@ -1,0 +1,80 @@
+# Bedside Hypotension Prediction - Patch Model with SS Head
+
+run_config:
+  model_type: "patchtst_ss_head"
+  wandb_project: "Shock Index PatchTST Prediction"
+  model_run: "1"
+  name: "patchtst_attentive_classifier_si"
+  random_state: 16
+  precision: "bf16-mixed"
+
+# Data Paths
+paths:
+  data_dir: "zarr_store/allzarr/"
+  encoder_dir: "models_bedside_self_supervised/"
+  pretrained_encoder_path: 'last.ckpt'
+  models_dir: "models_shock_patchtst_supervised/"
+  outcome_df_path: 'shock_index_labels_mimic_all_events_rolling5min.csv.gz'
+  dataset_filename: '125Hz_II_V_1800sec_shock_index_label_0.2_nan_tolerance_rolling5min_all_events_5min_forecast_n'
+
+# Dataset Configuration
+dataset:
+  channels: ["ABP", "II", "PLETH"]
+  frequency: 125
+  forecast_window_sec: [300]  # 5 minutes
+  sample_seq_len_seconds: 1800  # 30 minutes
+  win_length: 125  # 1 second at 125Hz
+  overlap: 0.0
+  constant_nan_tolerance: 0.2
+  y_padding_mask: -100
+  y_outcome: "shock_index_label"
+  require_all_channels: true
+  normalize_signals: true
+  use_transforms: true
+  infer_forecast_windows: false
+
+# Model Parameters - Probing Head Architecture
+lp_head:
+  mlp_ratio: 4.0
+  depth: 1
+  init_std: 0.02
+  qkv_bias: true
+  num_classes: 1
+  complete_block: true
+  affine: false
+
+# Training Configuration
+training:
+  batch_size: 128
+  epochs: 20
+  n_gpus: 1
+  num_workers: 16
+  accumulate_grad_batches: 1
+  val_check_interval: 1.0
+  gradient_clip_val: 1.0
+  use_gradient_clipping: true
+  fine_tune: false
+  perform_cv: false
+  mixup: true
+  mixup_alpha: 0.2
+  use_class_weights: true
+  use_lr_finder: false
+
+# Optimizer Configuration
+optimizer:
+  learning_rate: 0.000001
+  weight_decay: 0.01
+  use_weight_decay_scheduler: false
+  final_weight_decay: 0.4
+  optimizer_type: "AdamW"
+
+# OneCycle Scheduler Parameters
+scheduler:
+  scheduler_type: "OneCycle"
+  max_lr:  0.001
+  div_factor: 25
+  final_div_factor: 10000
+  pct_start: 0.3
+  anneal_strategy: "cos"
+
+

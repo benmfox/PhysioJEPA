@@ -244,8 +244,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#repository-structure" id="toc-repository-structure" class="nav-link" data-scroll-target="#repository-structure">Repository Structure</a>
   <ul class="collapse">
   <li><a href="#directory-structure" id="toc-directory-structure" class="nav-link" data-scroll-target="#directory-structure">Directory Structure:</a></li>
-  <li><a href="#model-training-pipeline" id="toc-model-training-pipeline" class="nav-link" data-scroll-target="#model-training-pipeline">Model Training Pipeline</a></li>
-  <li><a href="#technical-details" id="toc-technical-details" class="nav-link" data-scroll-target="#technical-details">Technical Details</a></li>
   </ul></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/benmfox/PhysioJEPA/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></nav>
@@ -297,47 +295,30 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li><code>nbs/</code>: Contains the source notebooks that generate the Python package</li>
 <li><code>jobs/</code>: Contains processing and training scripts
 <ul>
-<li><code>bedside_hypotension/</code>:
+<li><code>convert_to_zarr.py</code>: Converts the MIMIC-III dataset to zarr files</li>
+<li><code>label_processing/</code>
 <ul>
-<li><code>convert_to_zarr01.py</code>: Converts the MIMIC-III dataset to zarr files and creates ABP hypotension labels</li>
-<li><code>train_patch_hypotension_model_jepa.py</code>: Trains the initial foundational transformer model</li>
-<li><code>train_patch_hypotension_model_ss_head.py</code>: Trains the probing head for hypotension classification</li>
-<li><code>hypotension_ablate_channels.py</code>: Ablates channels from the JEPA model and probes the effect on hypotension classification</li>
-<li><code>linear_baseline.py</code>: Trains a linear baseline for hypotension and shock index classification</li>
+<li><code>create_hypotension_outcome_df.py</code>: Creates minute level hypotension and shock labels from Zarr file ABP waveforms</li>
+<li><code>create_hypotension_shock_labels.ipynb</code>: Creates training labels (5-min continuous minutes of shock or hypotension) from minute level labels</li>
+</ul></li>
+<li><code>jepa/</code>:
+<ul>
+<li><code>train_patch_jepa.py</code>: Trains the initial JEPA foundational transformer model (3 channel, 30 min segments) using the <code>train_patch_jepa.yaml</code> config</li>
+<li><code>train_hypotension.py</code>: Trains the Attentive classifier to predict hypotension using the trained JEPA encoder with the <code>train_hypotension.yaml</code> config</li>
+<li><code>train_shock_index.py</code>: Trains the Attentive classifier to predict shock index using the trained JEPA encoder with the <code>train_shock_index.yaml</code> config</li>
+</ul></li>
+<li><code>patchtst/</code>:
+<ul>
+<li><code>train_patchtst.py</code>: Trains the initial PatchTST foundational transformer model (3 channel, 30 min segments) using the <code>train_patchtst.yaml</code> config</li>
+<li><code>train_hypotension.py</code>: Trains the Attentive classifier to predict hypotension using the trained PatchTST encoder with the <code>train_hypotension.yaml</code> config</li>
+<li><code>train_shock_index.py</code>: Trains the Attentive classifier to predict shock index using the trained PatchTST encoder with the <code>train_shock_index.yaml</code> config</li>
+</ul></li>
+<li><code>baselines/</code>:
+<ul>
+<li><code>fcn_baseline_hypotension.py</code>: Trains a supervised FCN model to predict hypotension using the <code>fcn_baseline_hypotension.yaml</code> config</li>
+<li><code>fcn_baseline_si.py</code>: Trains a supervised FCN model to predict hypotension using the <code>fcn_baseline_si.yaml</code> config</li>
 </ul></li>
 </ul></li>
-<li><code>additional_label_processing.ipynb</code>: Additional processing for hypotension and shock index labels derivation</li>
-</ul>
-</section>
-<section id="model-training-pipeline" class="level3">
-<h3 class="anchored" data-anchor-id="model-training-pipeline">Model Training Pipeline</h3>
-<ol type="1">
-<li>JEPA Model Training (<code>jobs/bedside_hypotension/train_patch_hypotension_model_jepa.py</code>)
-<ul>
-<li>Trains the context and target transformers on bedside hypotension data zarr files</li>
-<li>Creates general purpose 45-min representations of bedside hypotension signals</li>
-</ul></li>
-<li>Probe Training (<code>jobs/bedside_hypotension/train_patch_hypotension_model_ss_head.py</code>)
-<ul>
-<li>Trains a classification head on top of the JEPA model</li>
-</ul></li>
-<li>Ablation (<code>jobs/bedside_hypotension/hypotension_ablate_channels.py</code>)
-<ul>
-<li>Ablates channels from the JEPA model and probes the effect on hypotension classification</li>
-</ul></li>
-<li>Linear Baseline (<code>jobs/bedside_hypotension/linear_baseline.py</code>)
-<ul>
-<li>Trains a linear baseline for hypotension and shock index classification</li>
-</ul></li>
-</ol>
-</section>
-<section id="technical-details" class="level2">
-<h2 class="anchored" data-anchor-id="technical-details">Technical Details</h2>
-<ul>
-<li>We trained the JEPA model on 2x H100 80gb GPUs using PyTorch Lightning.</li>
-<li>We trained the probe model on 1x H100 80gb GPU using PyTorch Lightning.</li>
-<li>We monitored training using the <a href="https://wandb.ai/">Weights and Biases</a> platform.</li>
-<li>We performed hyperparameter optimization using Optuna.</li>
 </ul>
 
 

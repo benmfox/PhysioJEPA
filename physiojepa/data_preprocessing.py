@@ -115,11 +115,9 @@ def calculate_samples(zarr_file, channels, frequency, sample_seq_len_sec, stride
                         channel_data = root_grp[channel][:]
                         signal_header = root_grp[channel].attrs.asdict()#.get('signal_header', None)
                         if 'signal_header' in signal_header:
-                            # for sleep files
                             signal_header = signal_header['signal_header']
                             channel_frequency = signal_header.get('sample_frequency', None)
                         elif 'sampling_frequency' in signal_header:
-                            # for bedmaster files
                             channel_frequency = signal_header['sampling_frequency']
                         else:
                             warnings.warn(f"Channel {channel} has no signal header for file {zarr_file}. Skipping missingness and constant checks.")

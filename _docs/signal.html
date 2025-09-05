@@ -209,6 +209,11 @@ ul.task-list li input[type="checkbox"] {
   <li><a href="#iir_filter" id="toc-iir_filter" class="nav-link" data-scroll-target="#iir_filter">iir_filter</a></li>
   <li><a href="#resample_waveform" id="toc-resample_waveform" class="nav-link" data-scroll-target="#resample_waveform">resample_waveform</a></li>
   <li><a href="#butterworth" id="toc-butterworth" class="nav-link" data-scroll-target="#butterworth">butterworth</a></li>
+  <li><a href="#preprocess_abp_signal" id="toc-preprocess_abp_signal" class="nav-link" data-scroll-target="#preprocess_abp_signal">preprocess_abp_signal</a></li>
+  <li><a href="#jsqi_complete" id="toc-jsqi_complete" class="nav-link" data-scroll-target="#jsqi_complete">jSQI_complete</a></li>
+  <li><a href="#localfun_area" id="toc-localfun_area" class="nav-link" data-scroll-target="#localfun_area">localfun_area</a></li>
+  <li><a href="#abp_features" id="toc-abp_features" class="nav-link" data-scroll-target="#abp_features">abp_features</a></li>
+  <li><a href="#wabp_onset_detector" id="toc-wabp_onset_detector" class="nav-link" data-scroll-target="#wabp_onset_detector">wabp_onset_detector</a></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/benmfox/PhysioJEPA/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></nav>
     </div>
@@ -443,6 +448,56 @@ ul.task-list li input[type="checkbox"] {
 </tr>
 </tbody>
 </table>
+<hr>
+</section>
+<section id="preprocess_abp_signal" class="level3">
+<h3 class="anchored" data-anchor-id="preprocess_abp_signal">preprocess_abp_signal</h3>
+<blockquote class="blockquote">
+<pre><code> preprocess_abp_signal (abp_signal, fs)</code></pre>
+</blockquote>
+<p>*ABP preprocessing with all features and quality assessment.</p>
+<p>returns averaged sbp, dbp, map, hr for given abp_signal*</p>
+<hr>
+</section>
+<section id="jsqi_complete" class="level3">
+<h3 class="anchored" data-anchor-id="jsqi_complete">jSQI_complete</h3>
+<blockquote class="blockquote">
+<pre><code> jSQI_complete (features, onset, abp, fs=125)</code></pre>
+</blockquote>
+<p>*ABP waveform signal quality index calculation. From physionet: https://physionet.org/content/cardiac-output/1.0.0/code/2analyze/jSQI.m</p>
+<p>Args: features: Features extracted from ABP (nx12 array from abpfeature function) onset: Onset times of ABP beats abp: Arterial blood pressure waveform fs: Sampling frequency (default 125 Hz)</p>
+<p>Returns: BeatQ: SQI of each beat (nx10 array): 0=good, 1=bad Col 0: logical OR of cols 1 thru 9 Col 1: P not physiologic (&lt;20 or &gt;300 mmHg) Col 2: MAP not physiologic (&lt;30 or &gt;200 mmHg) Col 3: HR not physiologic (&lt;20 or &gt;200 bpm) Col 4: PP not physiologic (&lt;20 mmHg) Col 5: abnormal Psys (beat-to-beat change &gt; 20 mmHg) Col 6: abnormal Pdias (beat-to-beat change &gt; 20 mmHg) Col 7: abnormal period (beat-to-beat change &gt; 1/2 sec) Col 8: abnormal P(onset) (beat-to-beat change &gt; 20 mmHg) Col 9: noisy beat (mean of negative dP &lt; -3) r: fraction of good beats in ABP*</p>
+<hr>
+</section>
+<section id="localfun_area" class="level3">
+<h3 class="anchored" data-anchor-id="localfun_area">localfun_area</h3>
+<blockquote class="blockquote">
+<pre><code> localfun_area (abp, onset, end_sys, P_dias, fs=125)</code></pre>
+</blockquote>
+<p>*Helper function to calculate systolic area. From physionet: https://physionet.org/content/cardiac-output/1.0.0/code/2analyze/abpfeature.m</p>
+<p>Args: abp: ABP signal onset: Onset times end_sys: End of systole times P_dias: Diastolic pressures fs: Sampling frequency</p>
+<p>Returns: sys_area: Systolic area [mmHg*sec]*</p>
+<hr>
+</section>
+<section id="abp_features" class="level3">
+<h3 class="anchored" data-anchor-id="abp_features">abp_features</h3>
+<blockquote class="blockquote">
+<pre><code> abp_features (abp, onset_times, fs=125)</code></pre>
+</blockquote>
+<p>*ABP waveform feature extractor. From physionet: https://physionet.org/content/cardiac-output/1.0.0/code/2analyze/abpfeature.m</p>
+<p>Args: abp: ABP waveform (sampled at fs Hz) onset_times: Array of onset times in samples fs: Sampling frequency (default 125 Hz)</p>
+<p>Returns: features: Array with beat-to-beat ABP features (12 columns) Col 0: Time of systole [samples] Col 1: Systolic BP [mmHg] Col 2: Time of diastole [samples] Col 3: Diastolic BP [mmHg] Col 4: Pulse pressure [mmHg] Col 5: Mean pressure [mmHg] Col 6: Beat Period [samples] Col 7: mean_dyneg Col 8: End of systole time 0.3<em>sqrt(RR) method Col 9: Area under systole 0.3</em>sqrt(RR) method Col 10: End of systole time 1st min-slope method Col 11: Area under systole 1st min-slope method Col 12: HR*</p>
+<hr>
+</section>
+<section id="wabp_onset_detector" class="level3">
+<h3 class="anchored" data-anchor-id="wabp_onset_detector">wabp_onset_detector</h3>
+<blockquote class="blockquote">
+<pre><code> wabp_onset_detector (abp_signal, fs=125)</code></pre>
+</blockquote>
+<p>*ABP onset detector adapted from physionet at: https://physionet.org/content/cardiac-output/1.0.0/code/2analyze/wabp.m Detects onset of each beat in ABP waveform.</p>
+<p>This was written for a 125 Hz ABP signal. Specific params could likely be adjusted for different frequencies.</p>
+<p>Args: abp_signal: ABP waveform in mmHg fs: sampling frequency (default 125 Hz)</p>
+<p>Returns: onset_indices: array of onset sample indices*</p>
 
 
 </section>

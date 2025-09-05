@@ -1,0 +1,75 @@
+# Bedside Hypotension Prediction
+
+run_config:
+  model_type: "fcn"
+  wandb_project: "Shock Supervised Baselines"
+  model_run: "1"
+  name: "fcn_baseline"
+  random_state: 16
+  precision: "32"
+
+# Data Paths
+paths:
+  data_dir: "zarr_store/allzarr/"
+  models_dir: "models_shock_baseline/"
+  outcome_df_path: 'shock_index_labels_mimic_all_events_rolling5min.csv.gz'
+  dataset_filename: '125Hz_II_V_1800sec_shock_index_label_0.2_nan_tolerance_rolling5min_all_events_5min_forecast_n'
+
+# Dataset Configuration
+dataset:
+  channels: ["ABP", "II", "PLETH"]
+  frequency: 125
+  forecast_window_sec: [300]  # 5,10,15 minutes
+  sample_seq_len_seconds: 1800  # 5 minutes
+  win_length: 125  # 1 second at 125Hz
+  overlap: 0.0
+  constant_nan_tolerance: 0.2
+  y_padding_mask: -100
+  y_outcome: "shock_index_label"
+  require_all_channels: true
+  normalize_signals: true
+  use_transforms: true
+  infer_forecast_windows: false
+
+# Model Parameters
+arch:
+  c_in: 3
+  layers: [128, 256, 128] # kwargs for the encoder layer
+  kernel_sizes: [7, 5, 3]
+  n_classes: 1
+
+# Training Configuration
+training:
+  batch_size: 16
+  epochs: 20
+  n_gpus: 2
+  num_workers: 16
+  accumulate_grad_batches: 1
+  val_check_interval: 1.0
+  gradient_clip_val: 1.
+  use_gradient_clipping: true
+  loss_fxn: "CrossEntropy"
+  fine_tune: false
+  label_smoothing: 0.0
+  gamma: 2.0
+  perform_cv: false
+  mixup: true
+  mixup_alpha: 0.2
+  use_class_weights: true
+
+# Optimizer Configuration
+optimizer:
+  learning_rate: 0.00001
+  weight_decay: 0.001
+  use_weight_decay_scheduler: false
+  final_weight_decay: 0.4
+  optimizer_type: "AdamW"
+
+# OneCycle Scheduler Parameters
+scheduler:
+  scheduler_type: "OneCycle"
+  max_lr: 0.00001
+  div_factor: 25
+  final_div_factor: 10000
+  pct_start: 0.3
+  anneal_strategy: "cos"
