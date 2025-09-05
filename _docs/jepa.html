@@ -6,9 +6,9 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="description" content="Im lost too.">
+<meta name="description" content="I guess so!">
 
-<title>Loss functions – PhysioJEPA</title>
+<title>JEPA For Time Series – PhysioJEPA</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -70,11 +70,11 @@ ul.task-list li input[type="checkbox"] {
 
 
 <link rel="stylesheet" href="styles.css">
-<meta property="og:title" content="Loss functions – PhysioJEPA">
-<meta property="og:description" content="Im lost too.">
+<meta property="og:title" content="JEPA For Time Series – PhysioJEPA">
+<meta property="og:description" content="I guess so!">
 <meta property="og:site_name" content="PhysioJEPA">
-<meta name="twitter:title" content="Loss functions – PhysioJEPA">
-<meta name="twitter:description" content="Im lost too.">
+<meta name="twitter:title" content="JEPA For Time Series – PhysioJEPA">
+<meta name="twitter:description" content="I guess so!">
 <meta name="twitter:card" content="summary">
 </head>
 
@@ -99,7 +99,7 @@ ul.task-list li input[type="checkbox"] {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./loss.html">Loss functions</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./jepa.html">JEPA For Time Series</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
     </div>
@@ -143,7 +143,7 @@ ul.task-list li input[type="checkbox"] {
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./loss.html" class="sidebar-item-text sidebar-link active">
+  <a href="./loss.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Loss functions</span></a>
   </div>
 </li>
@@ -173,7 +173,7 @@ ul.task-list li input[type="checkbox"] {
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./jepa.html" class="sidebar-item-text sidebar-link">
+  <a href="./jepa.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text">JEPA For Time Series</span></a>
   </div>
 </li>
@@ -205,15 +205,18 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#mse_variance_loss" id="toc-mse_variance_loss" class="nav-link active" data-scroll-target="#mse_variance_loss">mse_variance_loss</a></li>
-  <li><a href="#smoothl1_loss" id="toc-smoothl1_loss" class="nav-link" data-scroll-target="#smoothl1_loss">smoothl1_loss</a></li>
-  <li><a href="#huber_loss" id="toc-huber_loss" class="nav-link" data-scroll-target="#huber_loss">huber_loss</a></li>
-  <li><a href="#cosine_similarity_loss" id="toc-cosine_similarity_loss" class="nav-link" data-scroll-target="#cosine_similarity_loss">cosine_similarity_loss</a></li>
-  <li><a href="#mape" id="toc-mape" class="nav-link" data-scroll-target="#mape">mape</a></li>
-  <li><a href="#mae_loss" id="toc-mae_loss" class="nav-link" data-scroll-target="#mae_loss">mae_loss</a></li>
-  <li><a href="#mse_loss" id="toc-mse_loss" class="nav-link" data-scroll-target="#mse_loss">mse_loss</a></li>
-  <li><a href="#crossentropyloss" id="toc-crossentropyloss" class="nav-link" data-scroll-target="#crossentropyloss">CrossEntropyLoss</a></li>
-  <li><a href="#focalloss" id="toc-focalloss" class="nav-link" data-scroll-target="#focalloss">FocalLoss</a></li>
+  <li><a href="#torch" id="toc-torch" class="nav-link active" data-scroll-target="#torch">Torch</a>
+  <ul class="collapse">
+  <li><a href="#create_masks" id="toc-create_masks" class="nav-link" data-scroll-target="#create_masks">create_masks</a></li>
+  <li><a href="#apply_masks" id="toc-apply_masks" class="nav-link" data-scroll-target="#apply_masks">apply_masks</a></li>
+  <li><a href="#jepablock" id="toc-jepablock" class="nav-link" data-scroll-target="#jepablock">JEPABlock</a></li>
+  <li><a href="#encoder" id="toc-encoder" class="nav-link" data-scroll-target="#encoder">Encoder</a></li>
+  <li><a href="#mse_variance_loss" id="toc-mse_variance_loss" class="nav-link" data-scroll-target="#mse_variance_loss">mse_variance_loss</a></li>
+  <li><a href="#loss_pred" id="toc-loss_pred" class="nav-link" data-scroll-target="#loss_pred">loss_pred</a></li>
+  <li><a href="#variance_loss" id="toc-variance_loss" class="nav-link" data-scroll-target="#variance_loss">variance_loss</a></li>
+  <li><a href="#predictor" id="toc-predictor" class="nav-link" data-scroll-target="#predictor">Predictor</a></li>
+  <li><a href="#jepasimplelightning" id="toc-jepasimplelightning" class="nav-link" data-scroll-target="#jepasimplelightning">JEPASimpleLightning</a></li>
+  </ul></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/benmfox/PhysioJEPA/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></nav>
     </div>
@@ -222,12 +225,12 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Loss functions</h1>
+<h1 class="title">JEPA For Time Series</h1>
 </div>
 
 <div>
   <div class="description">
-    Im lost too.
+    I guess so!
   </div>
 </div>
 
@@ -245,78 +248,399 @@ ul.task-list li input[type="checkbox"] {
 
 
 <!-- WARNING: THIS FILE WAS AUTOGENERATED! DO NOT EDIT! -->
+<section id="torch" class="level2">
+<h2 class="anchored" data-anchor-id="torch">Torch</h2>
 <hr>
+<section id="create_masks" class="level3">
+<h3 class="anchored" data-anchor-id="create_masks">create_masks</h3>
+<blockquote class="blockquote">
+<pre><code> create_masks (x, patch_size, patch_stride, context_mask_range,
+               target_mask_range, melt_channels_to_batch=False)</code></pre>
+</blockquote>
+<hr>
+</section>
+<section id="apply_masks" class="level3">
+<h3 class="anchored" data-anchor-id="apply_masks">apply_masks</h3>
+<blockquote class="blockquote">
+<pre><code> apply_masks (x, masks)</code></pre>
+</blockquote>
+<hr>
+</section>
+<section id="jepablock" class="level3">
+<h3 class="anchored" data-anchor-id="jepablock">JEPABlock</h3>
+<blockquote class="blockquote">
+<pre><code> JEPABlock (dim, num_heads, mlp_ratio=4.0, qkv_bias=False, qk_scale=None,
+            drop=0.0, attn_drop=0.0, act_layer=&lt;class
+            'torch.nn.modules.activation.GELU'&gt;, norm_layer=&lt;class
+            'torch.nn.modules.normalization.LayerNorm'&gt;, rotary_pes=False)</code></pre>
+</blockquote>
+<p>*Base class for all neural network modules.</p>
+<p>Your models should also subclass this class.</p>
+<p>Modules can also contain other Modules, allowing them to be nested in a tree structure. You can assign the submodules as regular attributes::</p>
+<pre><code>import torch.nn as nn
+import torch.nn.functional as F
+
+class Model(nn.Module):
+    def __init__(self) -&gt; None:
+        super().__init__()
+        self.conv1 = nn.Conv2d(1, 20, 5)
+        self.conv2 = nn.Conv2d(20, 20, 5)
+
+    def forward(self, x):
+        x = F.relu(self.conv1(x))
+        return F.relu(self.conv2(x))</code></pre>
+<p>Submodules assigned in this way will be registered, and will also have their parameters converted when you call :meth:<code>to</code>, etc.</p>
+<p>.. note:: As per the example above, an <code>__init__()</code> call to the parent class must be made before assignment on the child.</p>
+<p>:ivar training: Boolean represents whether this module is in training or evaluation mode. :vartype training: bool*</p>
+<hr>
+</section>
+<section id="encoder" class="level3">
+<h3 class="anchored" data-anchor-id="encoder">Encoder</h3>
+<blockquote class="blockquote">
+<pre><code> Encoder (c_in, num_patches, patch_size, patch_stride, d_model, nhead,
+          num_layers, use_tst_block=False, shared_embedding=True,
+          pe_type='tAPE', mlp_ratio=4.0, qkv_bias=True, qk_scale=None,
+          drop_rate=0.0, attn_drop_rate=0.0, norm_layer=&lt;class
+          'torch.nn.modules.normalization.LayerNorm'&gt;, jepa=True,
+          embed_activation=GELU(approximate='none'), init_std=0.02,
+          tokenizer_type='simple', tokenizer_kwargs={})</code></pre>
+</blockquote>
+<p>*Base class for all neural network modules.</p>
+<p>Your models should also subclass this class.</p>
+<p>Modules can also contain other Modules, allowing them to be nested in a tree structure. You can assign the submodules as regular attributes::</p>
+<pre><code>import torch.nn as nn
+import torch.nn.functional as F
+
+class Model(nn.Module):
+    def __init__(self) -&gt; None:
+        super().__init__()
+        self.conv1 = nn.Conv2d(1, 20, 5)
+        self.conv2 = nn.Conv2d(20, 20, 5)
+
+    def forward(self, x):
+        x = F.relu(self.conv1(x))
+        return F.relu(self.conv2(x))</code></pre>
+<p>Submodules assigned in this way will be registered, and will also have their parameters converted when you call :meth:<code>to</code>, etc.</p>
+<p>.. note:: As per the example above, an <code>__init__()</code> call to the parent class must be made before assignment on the child.</p>
+<p>:ivar training: Boolean represents whether this module is in training or evaluation mode. :vartype training: bool*</p>
+<hr>
+</section>
 <section id="mse_variance_loss" class="level3">
 <h3 class="anchored" data-anchor-id="mse_variance_loss">mse_variance_loss</h3>
 <blockquote class="blockquote">
-<pre><code> mse_variance_loss (preds, target, representations, alpha=0.2)</code></pre>
-</blockquote>
-<p><em>preds: [bs x num_patch x n_vars x patch_len] targets: [bs x num_patch x n_vars x patch_len] representations: [bs x nvars x d_model x num_patch]</em></p>
-<hr>
-</section>
-<section id="smoothl1_loss" class="level3">
-<h3 class="anchored" data-anchor-id="smoothl1_loss">smoothl1_loss</h3>
-<blockquote class="blockquote">
-<pre><code> smoothl1_loss (preds, target)</code></pre>
+<pre><code> mse_variance_loss (pred, target_ema, representations, alpha=0.2)</code></pre>
 </blockquote>
 <hr>
 </section>
-<section id="huber_loss" class="level3">
-<h3 class="anchored" data-anchor-id="huber_loss">huber_loss</h3>
+<section id="loss_pred" class="level3">
+<h3 class="anchored" data-anchor-id="loss_pred">loss_pred</h3>
 <blockquote class="blockquote">
-<pre><code> huber_loss (preds, target, delta=1)</code></pre>
-</blockquote>
-<p><em>preds: [bs x num_patch x n_vars x patch_len] targets: [bs x num_patch x n_vars x patch_len]</em></p>
-<hr>
-</section>
-<section id="cosine_similarity_loss" class="level3">
-<h3 class="anchored" data-anchor-id="cosine_similarity_loss">cosine_similarity_loss</h3>
-<blockquote class="blockquote">
-<pre><code> cosine_similarity_loss (preds, target)</code></pre>
-</blockquote>
-<p><em>preds: [bs x num_patch x n_vars x patch_len] targets: [bs x num_patch x n_vars x patch_len]</em></p>
-<hr>
-</section>
-<section id="mape" class="level3">
-<h3 class="anchored" data-anchor-id="mape">mape</h3>
-<blockquote class="blockquote">
-<pre><code> mape (preds, target)</code></pre>
+<pre><code> loss_pred (pred, target_ema, representations=None, alpha=0.2)</code></pre>
 </blockquote>
 <hr>
 </section>
-<section id="mae_loss" class="level3">
-<h3 class="anchored" data-anchor-id="mae_loss">mae_loss</h3>
+<section id="variance_loss" class="level3">
+<h3 class="anchored" data-anchor-id="variance_loss">variance_loss</h3>
 <blockquote class="blockquote">
-<pre><code> mae_loss (preds, target)</code></pre>
+<pre><code> variance_loss (x)</code></pre>
 </blockquote>
-<p><em>preds: [bs x num_patch x n_vars x patch_len] targets: [bs x num_patch x n_vars x patch_len]</em></p>
 <hr>
 </section>
-<section id="mse_loss" class="level3">
-<h3 class="anchored" data-anchor-id="mse_loss">mse_loss</h3>
+<section id="predictor" class="level3">
+<h3 class="anchored" data-anchor-id="predictor">Predictor</h3>
 <blockquote class="blockquote">
-<pre><code> mse_loss (preds, target)</code></pre>
+<pre><code> Predictor (num_patches, encoder_embed_dim=128, predictor_embed_dim=128,
+            nhead=2, num_layers=1, use_tst_block=False, pe_type='tAPE',
+            mlp_ratio=4.0, qkv_bias=True, qk_scale=None, drop_rate=0.0,
+            attn_drop_rate=0.0, norm_layer=&lt;class
+            'torch.nn.modules.normalization.LayerNorm'&gt;,
+            embed_activation=GELU(approximate='none'), init_std=0.02,
+            c_in_mask_tokens=1)</code></pre>
 </blockquote>
-<p><em>preds: [bs x num_patch x n_vars x patch_len] targets: [bs x num_patch x n_vars x patch_len]</em></p>
+<p>*Base class for all neural network modules.</p>
+<p>Your models should also subclass this class.</p>
+<p>Modules can also contain other Modules, allowing them to be nested in a tree structure. You can assign the submodules as regular attributes::</p>
+<pre><code>import torch.nn as nn
+import torch.nn.functional as F
+
+class Model(nn.Module):
+    def __init__(self) -&gt; None:
+        super().__init__()
+        self.conv1 = nn.Conv2d(1, 20, 5)
+        self.conv2 = nn.Conv2d(20, 20, 5)
+
+    def forward(self, x):
+        x = F.relu(self.conv1(x))
+        return F.relu(self.conv2(x))</code></pre>
+<p>Submodules assigned in this way will be registered, and will also have their parameters converted when you call :meth:<code>to</code>, etc.</p>
+<p>.. note:: As per the example above, an <code>__init__()</code> call to the parent class must be made before assignment on the child.</p>
+<table class="caption-top table">
+<caption>ivar training: Boolean represents whether this module is in training or evaluation mode. :vartype training: bool*</caption>
+<colgroup>
+<col style="width: 6%">
+<col style="width: 25%">
+<col style="width: 34%">
+<col style="width: 34%">
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th><strong>Type</strong></th>
+<th><strong>Default</strong></th>
+<th><strong>Details</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>num_patches</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td>encoder_embed_dim</td>
+<td>int</td>
+<td>128</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>predictor_embed_dim</td>
+<td>int</td>
+<td>128</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>nhead</td>
+<td>int</td>
+<td>2</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>num_layers</td>
+<td>int</td>
+<td>1</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>use_tst_block</td>
+<td>bool</td>
+<td>False</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>pe_type</td>
+<td>str</td>
+<td>tAPE</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>mlp_ratio</td>
+<td>float</td>
+<td>4.0</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>qkv_bias</td>
+<td>bool</td>
+<td>True</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>qk_scale</td>
+<td>NoneType</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>drop_rate</td>
+<td>float</td>
+<td>0.0</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>attn_drop_rate</td>
+<td>float</td>
+<td>0.0</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>norm_layer</td>
+<td>type</td>
+<td>LayerNorm</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>embed_activation</td>
+<td>GELU</td>
+<td>GELU(approximate=‘none’)</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>init_std</td>
+<td>float</td>
+<td>0.02</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>c_in_mask_tokens</td>
+<td>int</td>
+<td>1</td>
+<td>number of channels in the encoder (if treating channels sep)</td>
+</tr>
+</tbody>
+</table>
 <hr>
 </section>
-<section id="crossentropyloss" class="level3">
-<h3 class="anchored" data-anchor-id="crossentropyloss">CrossEntropyLoss</h3>
+<section id="jepasimplelightning" class="level3">
+<h3 class="anchored" data-anchor-id="jepasimplelightning">JEPASimpleLightning</h3>
 <blockquote class="blockquote">
-<pre><code> CrossEntropyLoss (ignore_index=-100, reduction='mean', weight=None,
-                   label_smoothing=0, soft_labels=False)</code></pre>
+<pre><code> JEPASimpleLightning (learning_rate, train_size, batch_size, n_gpus,
+                      patchtsjepa_encoder_kwargs,
+                      patchtsjepa_predictor_kwargs, weight_decay=0.04,
+                      use_weight_decay_scheduler=False,
+                      final_weight_decay=0.4, epochs=100,
+                      optimizer_type='adamw', scheduler_type='OneCycle',
+                      target_mask_range=(0.05, 0.3),
+                      context_mask_range=(0.5, 1.0), mask_block_range=(1,
+                      30), ema_decay=0.996, scheduler_kwargs={},
+                      transforms=None, loss_fn=&lt;function loss_pred&gt;)</code></pre>
 </blockquote>
-<p><em>Cross entropy loss with ignore_index.</em></p>
-<hr>
-</section>
-<section id="focalloss" class="level3">
-<h3 class="anchored" data-anchor-id="focalloss">FocalLoss</h3>
-<blockquote class="blockquote">
-<pre><code> FocalLoss (weight=None, gamma=2.0, reduction='mean', ignore_index=-100)</code></pre>
-</blockquote>
-<p><em>adapted from tsai, weighted multiclass focal loss https://github.com/timeseriesAI/tsai/blob/bdff96cc8c4c8ea55bc20d7cffd6a72e402f4cb2/tsai/losses.py#L116C1-L140C20</em></p>
+<p><em>Hooks to be used in LightningModule.</em></p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 6%">
+<col style="width: 25%">
+<col style="width: 34%">
+<col style="width: 34%">
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th><strong>Type</strong></th>
+<th><strong>Default</strong></th>
+<th><strong>Details</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>learning_rate</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td>train_size</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>batch_size</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td>n_gpus</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>patchtsjepa_encoder_kwargs</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td>patchtsjepa_predictor_kwargs</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>weight_decay</td>
+<td>float</td>
+<td>0.04</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>use_weight_decay_scheduler</td>
+<td>bool</td>
+<td>False</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>final_weight_decay</td>
+<td>float</td>
+<td>0.4</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>epochs</td>
+<td>int</td>
+<td>100</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>optimizer_type</td>
+<td>str</td>
+<td>adamw</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>scheduler_type</td>
+<td>str</td>
+<td>OneCycle</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>target_mask_range</td>
+<td>tuple</td>
+<td>(0.05, 0.3)</td>
+<td>the target can be up to 50% of the original x</td>
+</tr>
+<tr class="even">
+<td>context_mask_range</td>
+<td>tuple</td>
+<td>(0.5, 1.0)</td>
+<td>the context can be up to 80% of masked out target (1-target_mask_ratio)</td>
+</tr>
+<tr class="odd">
+<td>mask_block_range</td>
+<td>tuple</td>
+<td>(1, 30)</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>ema_decay</td>
+<td>float</td>
+<td>0.996</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>scheduler_kwargs</td>
+<td>dict</td>
+<td>{}</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>transforms</td>
+<td>NoneType</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>loss_fn</td>
+<td>function</td>
+<td>loss_pred</td>
+<td></td>
+</tr>
+</tbody>
+</table>
 
 
+</section>
 </section>
 
 </main> <!-- /main -->

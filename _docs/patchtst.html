@@ -6,8 +6,9 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="description" content="Revolutionary!">
 
-<title>Models – PhysioJEPA</title>
+<title>Patch Time Series Transformer – PhysioJEPA</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -19,40 +20,6 @@ ul.task-list li input[type="checkbox"] {
   width: 0.8em;
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
-}
-/* CSS for syntax highlighting */
-pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { line-height: 1.25; }
-pre > code.sourceCode > span:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
-code.sourceCode > span { color: inherit; text-decoration: inherit; }
-div.sourceCode { margin: 1em 0; }
-pre.sourceCode { margin: 0; }
-@media screen {
-div.sourceCode { overflow: auto; }
-}
-@media print {
-pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
-}
-pre.numberSource code
-  { counter-reset: source-line 0; }
-pre.numberSource code > span
-  { position: relative; left: -4em; counter-increment: source-line; }
-pre.numberSource code > span > a:first-child::before
-  { content: counter(source-line);
-    position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; display: inline-block;
-    -webkit-touch-callout: none; -webkit-user-select: none;
-    -khtml-user-select: none; -moz-user-select: none;
-    -ms-user-select: none; user-select: none;
-    padding: 0 4px; width: 4em;
-  }
-pre.numberSource { margin-left: 3em;  padding-left: 4px; }
-div.sourceCode
-  {   }
-@media screen {
-pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 </style>
 
@@ -103,9 +70,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 
 <link rel="stylesheet" href="styles.css">
-<meta property="og:title" content="Models – PhysioJEPA">
+<meta property="og:title" content="Patch Time Series Transformer – PhysioJEPA">
+<meta property="og:description" content="Revolutionary!">
 <meta property="og:site_name" content="PhysioJEPA">
-<meta name="twitter:title" content="Models – PhysioJEPA">
+<meta name="twitter:title" content="Patch Time Series Transformer – PhysioJEPA">
+<meta name="twitter:description" content="Revolutionary!">
 <meta name="twitter:card" content="summary">
 </head>
 
@@ -130,7 +99,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./models.html">Models</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./patchtst.html">Patch Time Series Transformer</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
     </div>
@@ -162,8 +131,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./models.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text">Models</span></a>
+  <a href="./utils.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Utility Functions</span></a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -186,6 +155,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="./augmentations.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Augmentations</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="./layers.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Layers</span></a>
   </div>
@@ -194,6 +169,30 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <div class="sidebar-item-container"> 
   <a href="./heads.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">SSL, Fine Tuning, and Linear Probing Heads</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./jepa.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">JEPA For Time Series</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./baselines.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Baselines</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./patchtst.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Patch Time Series Transformer</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./tokenizers.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Tokenizers</span></a>
   </div>
 </li>
     </ul>
@@ -206,20 +205,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#linear-patch-time-classifier" id="toc-linear-patch-time-classifier" class="nav-link active" data-scroll-target="#linear-patch-time-classifier">Linear Patch Time Classifier</a>
-  <ul class="collapse">
-  <li><a href="#linearpatchtimeclassifier" id="toc-linearpatchtimeclassifier" class="nav-link" data-scroll-target="#linearpatchtimeclassifier">LinearPatchTimeClassifier</a></li>
-  </ul></li>
-  <li><a href="#time-series-transformer-encoder" id="toc-time-series-transformer-encoder" class="nav-link" data-scroll-target="#time-series-transformer-encoder">Time Series Transformer Encoder</a>
-  <ul class="collapse">
-  <li><a href="#tstencoderlayer" id="toc-tstencoderlayer" class="nav-link" data-scroll-target="#tstencoderlayer">TSTEncoderLayer</a></li>
-  </ul></li>
-  <li><a href="#physiojepa" id="toc-physiojepa" class="nav-link" data-scroll-target="#physiojepa">PhysioJEPA</a>
-  <ul class="collapse">
-  <li><a href="#patchtsjepapredictor" id="toc-patchtsjepapredictor" class="nav-link" data-scroll-target="#patchtsjepapredictor">PatchTSJEPAPredictor</a></li>
-  <li><a href="#patchtsjepaencoder" id="toc-patchtsjepaencoder" class="nav-link" data-scroll-target="#patchtsjepaencoder">PatchTSJEPAEncoder</a></li>
-  <li><a href="#patchtsjepa" id="toc-patchtsjepa" class="nav-link" data-scroll-target="#patchtsjepa">PatchTSJEPA</a></li>
-  </ul></li>
+  <li><a href="#maskedautogressionfeedforward" id="toc-maskedautogressionfeedforward" class="nav-link active" data-scroll-target="#maskedautogressionfeedforward">MaskedAutogressionFeedForward</a></li>
+  <li><a href="#tstblock" id="toc-tstblock" class="nav-link" data-scroll-target="#tstblock">TSTBlock</a></li>
+  <li><a href="#patchtftsimple" id="toc-patchtftsimple" class="nav-link" data-scroll-target="#patchtftsimple">PatchTFTSimple</a></li>
+  <li><a href="#patchtftsimplelightning" id="toc-patchtftsimplelightning" class="nav-link" data-scroll-target="#patchtftsimplelightning">PatchTFTSimpleLightning</a></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/benmfox/PhysioJEPA/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></nav>
     </div>
@@ -228,9 +217,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Models</h1>
+<h1 class="title">Patch Time Series Transformer</h1>
 </div>
 
+<div>
+  <div class="description">
+    Revolutionary!
+  </div>
+</div>
 
 
 <div class="quarto-title-meta">
@@ -246,15 +240,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 
 <!-- WARNING: THIS FILE WAS AUTOGENERATED! DO NOT EDIT! -->
-<section id="linear-patch-time-classifier" class="level2">
-<h2 class="anchored" data-anchor-id="linear-patch-time-classifier">Linear Patch Time Classifier</h2>
 <hr>
-<section id="linearpatchtimeclassifier" class="level3">
-<h3 class="anchored" data-anchor-id="linearpatchtimeclassifier">LinearPatchTimeClassifier</h3>
+<section id="maskedautogressionfeedforward" class="level3">
+<h3 class="anchored" data-anchor-id="maskedautogressionfeedforward">MaskedAutogressionFeedForward</h3>
 <blockquote class="blockquote">
-<pre><code> LinearPatchTimeClassifier (c_in:int, win_length, hop_length, max_seq_len,
-                            use_revin=True, affine=True, d_model=512,
-                            shared_embedding=False, dropout:float=0.1)</code></pre>
+<pre><code> MaskedAutogressionFeedForward (c_in, patch_len, d_model,
+                                shared_recreation=True)</code></pre>
 </blockquote>
 <p>*Base class for all neural network modules.</p>
 <p>Your models should also subclass this class.</p>
@@ -292,70 +283,37 @@ class Model(nn.Module):
 <tbody>
 <tr class="odd">
 <td>c_in</td>
-<td>int</td>
+<td></td>
 <td></td>
 <td>the number of input channels</td>
 </tr>
 <tr class="even">
-<td>win_length</td>
+<td>patch_len</td>
 <td></td>
 <td></td>
-<td>the length of the patch of time/interval or short time ft windown length (when time_domain=False)</td>
-</tr>
-<tr class="odd">
-<td>hop_length</td>
-<td></td>
-<td></td>
-<td>the length of the distance between each patch/fft</td>
-</tr>
-<tr class="even">
-<td>max_seq_len</td>
-<td></td>
-<td></td>
-<td>maximum sequence len</td>
-</tr>
-<tr class="odd">
-<td>use_revin</td>
-<td>bool</td>
-<td>True</td>
-<td>if time_domain is true, whether or not to instance normalize time data</td>
-</tr>
-<tr class="even">
-<td>affine</td>
-<td>bool</td>
-<td>True</td>
-<td>if time_domain is true, whether or not to learn revin normalization parameters</td>
+<td>the length of the patches (either stft or interval length)</td>
 </tr>
 <tr class="odd">
 <td>d_model</td>
-<td>int</td>
-<td>512</td>
-<td>the dimension of the input to the transofmrer encoder</td>
+<td></td>
+<td></td>
+<td>the dimension of the initial linear layers for inputting patches into transformer</td>
 </tr>
 <tr class="even">
-<td>shared_embedding</td>
+<td>shared_recreation</td>
 <td>bool</td>
-<td>False</td>
-<td>indicator for whether or not each channel should be projected with its own set of linear weights to the encoder dimension</td>
-</tr>
-<tr class="odd">
-<td>dropout</td>
-<td>float</td>
-<td>0.1</td>
-<td>dropout for linear layers</td>
+<td>True</td>
+<td>indicator of whether to project each channel individually or together</td>
 </tr>
 </tbody>
 </table>
-</section>
-</section>
-<section id="time-series-transformer-encoder" class="level2">
-<h2 class="anchored" data-anchor-id="time-series-transformer-encoder">Time Series Transformer Encoder</h2>
 <hr>
-<section id="tstencoderlayer" class="level3">
-<h3 class="anchored" data-anchor-id="tstencoderlayer">TSTEncoderLayer</h3>
+</section>
+<section id="tstblock" class="level3">
+<h3 class="anchored" data-anchor-id="tstblock">TSTBlock</h3>
 <blockquote class="blockquote">
-<pre><code> TSTEncoderLayer (d_model, n_heads, d_ff=256, attn_dropout=0, dropout=0.0,
-                  bias=True, activation='gelu', pre_norm=False)</code></pre>
+<pre><code> TSTBlock (d_model, n_heads, d_ff=256, attn_dropout=0, dropout=0.0,
+           bias=True, activation='gelu', pre_norm=False, rotary_pes=False)</code></pre>
 </blockquote>
 <p>*Base class for all neural network modules.</p>
 <p>Your models should also subclass this class.</p>
@@ -439,106 +397,8 @@ class Model(nn.Module):
 <td>False</td>
 <td></td>
 </tr>
-</tbody>
-</table>
-</section>
-</section>
-<section id="physiojepa" class="level2">
-<h2 class="anchored" data-anchor-id="physiojepa">PhysioJEPA</h2>
-<hr>
-<section id="patchtsjepapredictor" class="level3">
-<h3 class="anchored" data-anchor-id="patchtsjepapredictor">PatchTSJEPAPredictor</h3>
-<blockquote class="blockquote">
-<pre><code> PatchTSJEPAPredictor (c_in, num_patches, d_model=512, predictor_dim=384,
-                       n_heads=4, n_layers=2, d_ff=1024,
-                       pos_encoding_type='learned', dropout=0.1,
-                       attn_dropout=0.0, act='gelu', pre_norm=False)</code></pre>
-</blockquote>
-<p><em>Predictor network for PatchTSJEPA encoder for time series adaptation</em></p>
-<table class="caption-top table">
-<colgroup>
-<col style="width: 6%">
-<col style="width: 25%">
-<col style="width: 34%">
-<col style="width: 34%">
-</colgroup>
-<thead>
-<tr class="header">
-<th></th>
-<th><strong>Type</strong></th>
-<th><strong>Default</strong></th>
-<th><strong>Details</strong></th>
-</tr>
-</thead>
-<tbody>
 <tr class="odd">
-<td>c_in</td>
-<td></td>
-<td></td>
-<td>number of input channels</td>
-</tr>
-<tr class="even">
-<td>num_patches</td>
-<td></td>
-<td></td>
-<td>number of patches from encoder</td>
-</tr>
-<tr class="odd">
-<td>d_model</td>
-<td>int</td>
-<td>512</td>
-<td>encoder embedding dimension</td>
-</tr>
-<tr class="even">
-<td>predictor_dim</td>
-<td>int</td>
-<td>384</td>
-<td>predictor embedding dimension (typically smaller)</td>
-</tr>
-<tr class="odd">
-<td>n_heads</td>
-<td>int</td>
-<td>4</td>
-<td></td>
-</tr>
-<tr class="even">
-<td>n_layers</td>
-<td>int</td>
-<td>2</td>
-<td></td>
-</tr>
-<tr class="odd">
-<td>d_ff</td>
-<td>int</td>
-<td>1024</td>
-<td></td>
-</tr>
-<tr class="even">
-<td>pos_encoding_type</td>
-<td>str</td>
-<td>learned</td>
-<td>‘learned’ or ‘tAPE’</td>
-</tr>
-<tr class="odd">
-<td>dropout</td>
-<td>float</td>
-<td>0.1</td>
-<td></td>
-</tr>
-<tr class="even">
-<td>attn_dropout</td>
-<td>float</td>
-<td>0.0</td>
-<td></td>
-</tr>
-<tr class="odd">
-<td>act</td>
-<td>str</td>
-<td>gelu</td>
-<td></td>
-</tr>
-<tr class="even">
-<td>pre_norm</td>
+<td>rotary_pes</td>
 <td>bool</td>
 <td>False</td>
 <td></td>
@@ -547,16 +407,16 @@ class Model(nn.Module):
 </table>
 <hr>
 </section>
-<section id="patchtsjepaencoder" class="level3">
-<h3 class="anchored" data-anchor-id="patchtsjepaencoder">PatchTSJEPAEncoder</h3>
+<section id="patchtftsimple" class="level3">
+<h3 class="anchored" data-anchor-id="patchtftsimple">PatchTFTSimple</h3>
 <blockquote class="blockquote">
-<pre><code> PatchTSJEPAEncoder (c_in:int, win_length, hop_length, max_seq_len,
-                     pos_encoding_type='learned',
-                     patch_encoder_type='linear', use_revin=True,
-                     affine=True, n_layers:int=4, d_model=512, n_heads=8,
-                     shared_embedding=False, d_ff:int=2048,
-                     attn_dropout:float=0.0, dropout:float=0.1,
-                     act:str='gelu', pre_norm:bool=False)</code></pre>
+<pre><code> PatchTFTSimple (c_in, patch_size, patch_stride, num_patches, d_model,
+                 n_heads, d_ff, num_layers, augmentations=['patch_mask',
+                 'jitter_zero_mask', 'channel_masking'], mask_ratio=0.1,
+                 shared_embedding=False, pretrain_head=True, dropout=0.0,
+                 attn_dropout=0.0, act='gelu', pre_norm=False,
+                 pe_type='tAPE', qkv_bias=True, init_std=0.02,
+                 tokenizer_type='simple', tokenizer_kwargs={})</code></pre>
 </blockquote>
 <p>*Base class for all neural network modules.</p>
 <p>Your models should also subclass this class.</p>
@@ -575,160 +435,22 @@ class Model(nn.Module):
         return F.relu(self.conv2(x))</code></pre>
 <p>Submodules assigned in this way will be registered, and will also have their parameters converted when you call :meth:<code>to</code>, etc.</p>
 <p>.. note:: As per the example above, an <code>__init__()</code> call to the parent class must be made before assignment on the child.</p>
-<table class="caption-top table">
-<caption>ivar training: Boolean represents whether this module is in training or evaluation mode. :vartype training: bool*</caption>
-<colgroup>
-<col style="width: 6%">
-<col style="width: 25%">
-<col style="width: 34%">
-<col style="width: 34%">
-</colgroup>
-<thead>
-<tr class="header">
-<th></th>
-<th><strong>Type</strong></th>
-<th><strong>Default</strong></th>
-<th><strong>Details</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>c_in</td>
-<td>int</td>
-<td></td>
-<td>the number of input channels</td>
-</tr>
-<tr class="even">
-<td>win_length</td>
-<td></td>
-<td></td>
-<td>the length of the patch of time/interval or short time ft windown length (when time_domain=False)</td>
-</tr>
-<tr class="odd">
-<td>hop_length</td>
-<td></td>
-<td></td>
-<td>the length of the distance between each patch/fft</td>
-</tr>
-<tr class="even">
-<td>max_seq_len</td>
-<td></td>
-<td></td>
-<td>maximum sequence len</td>
-</tr>
-<tr class="odd">
-<td>pos_encoding_type</td>
-<td>str</td>
-<td>learned</td>
-<td>‘learned’ or ‘tAPE’</td>
-</tr>
-<tr class="even">
-<td>patch_encoder_type</td>
-<td>str</td>
-<td>linear</td>
-<td>‘linear’ or ‘conv’</td>
-</tr>
-<tr class="odd">
-<td>use_revin</td>
-<td>bool</td>
-<td>True</td>
-<td>if time_domain is true, whether or not to instance normalize time data</td>
-</tr>
-<tr class="even">
-<td>affine</td>
-<td>bool</td>
-<td>True</td>
-<td>if time_domain is true, whether or not to learn revin normalization parameters</td>
-</tr>
-<tr class="odd">
-<td>n_layers</td>
-<td>int</td>
-<td>4</td>
-<td>the number of transformer encoder layers to use</td>
-</tr>
-<tr class="even">
-<td>d_model</td>
-<td>int</td>
-<td>512</td>
-<td>the dimension of the input to the transofmrer encoder</td>
-</tr>
-<tr class="odd">
-<td>n_heads</td>
-<td>int</td>
-<td>8</td>
-<td>the number of heads in each layer</td>
-</tr>
-<tr class="even">
-<td>shared_embedding</td>
-<td>bool</td>
-<td>False</td>
-<td>indicator for whether or not each channel should be projected with its own set of linear weights to the encoder dimension</td>
-</tr>
-<tr class="odd">
-<td>d_ff</td>
-<td>int</td>
-<td>2048</td>
-<td>the feedforward layer size in the transformer</td>
-</tr>
-<tr class="even">
-<td>attn_dropout</td>
-<td>float</td>
-<td>0.0</td>
-<td>dropout in attention</td>
-</tr>
-<tr class="odd">
-<td>dropout</td>
-<td>float</td>
-<td>0.1</td>
-<td>dropout for linear layers</td>
-</tr>
-<tr class="even">
-<td>act</td>
-<td>str</td>
-<td>gelu</td>
-<td>activation function</td>
-</tr>
-<tr class="odd">
-<td>pre_norm</td>
-<td>bool</td>
-<td>False</td>
-<td>indicator to pre batch or layer norm</td>
-</tr>
-</tbody>
-</table>
+<p>:ivar training: Boolean represents whether this module is in training or evaluation mode. :vartype training: bool*</p>
 <hr>
 </section>
-<section id="patchtsjepa" class="level3">
-<h3 class="anchored" data-anchor-id="patchtsjepa">PatchTSJEPA</h3>
+<section id="patchtftsimplelightning" class="level3">
+<h3 class="anchored" data-anchor-id="patchtftsimplelightning">PatchTFTSimpleLightning</h3>
 <blockquote class="blockquote">
-<pre><code> PatchTSJEPA (encoder_kwargs:dict, predictor_kwargs:dict, pretrain=True,
-              target_mask_range=(0.1, 0.5), context_mask_range=(0.2, 0.8))</code></pre>
+<pre><code> PatchTFTSimpleLightning (learning_rate, train_size, batch_size, n_gpus,
+                          metrics={}, loss_func='mse', weight_decay=0.0,
+                          epochs=100, use_weight_decay_scheduler=False,
+                          final_weight_decay=0.4, optimizer_type='AdamW',
+                          scheduler_type='OneCycle', huber_delta=None,
+                          scheduler_kwargs={}, transforms=None,
+                          **patchmeup_kwargs)</code></pre>
 </blockquote>
-<p>*Base class for all neural network modules.</p>
-<p>Your models should also subclass this class.</p>
-<p>Modules can also contain other Modules, allowing them to be nested in a tree structure. You can assign the submodules as regular attributes::</p>
-<pre><code>import torch.nn as nn
-import torch.nn.functional as F
-
-class Model(nn.Module):
-    def __init__(self) -&gt; None:
-        super().__init__()
-        self.conv1 = nn.Conv2d(1, 20, 5)
-        self.conv2 = nn.Conv2d(20, 20, 5)
-
-    def forward(self, x):
-        x = F.relu(self.conv1(x))
-        return F.relu(self.conv2(x))</code></pre>
-<p>Submodules assigned in this way will be registered, and will also have their parameters converted when you call :meth:<code>to</code>, etc.</p>
-<p>.. note:: As per the example above, an <code>__init__()</code> call to the parent class must be made before assignment on the child.</p>
+<p><em>Hooks to be used in LightningModule.</em></p>
 <table class="caption-top table">
-<caption>ivar training: Boolean represents whether this module is in training or evaluation mode. :vartype training: bool*</caption>
-<colgroup>
-<col style="width: 6%">
-<col style="width: 25%">
-<col style="width: 34%">
-<col style="width: 34%">
-</colgroup>
 <thead>
 <tr class="header">
 <th></th>
@@ -739,52 +461,105 @@ class Model(nn.Module):
 </thead>
 <tbody>
 <tr class="odd">
-<td>encoder_kwargs</td>
-<td>dict</td>
+<td>learning_rate</td>
+<td></td>
 <td></td>
 <td></td>
 </tr>
 <tr class="even">
-<td>predictor_kwargs</td>
-<td>dict</td>
+<td>train_size</td>
+<td></td>
 <td></td>
 <td></td>
 </tr>
 <tr class="odd">
-<td>pretrain</td>
+<td>batch_size</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td>n_gpus</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>metrics</td>
+<td>dict</td>
+<td>{}</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>loss_func</td>
+<td>str</td>
+<td>mse</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>weight_decay</td>
+<td>float</td>
+<td>0.0</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>epochs</td>
+<td>int</td>
+<td>100</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>use_weight_decay_scheduler</td>
 <td>bool</td>
-<td>True</td>
+<td>False</td>
 <td></td>
 </tr>
 <tr class="even">
-<td>target_mask_range</td>
-<td>tuple</td>
-<td>(0.1, 0.5)</td>
-<td>the target can be up to 50% of the original x</td>
+<td>final_weight_decay</td>
+<td>float</td>
+<td>0.4</td>
+<td></td>
 </tr>
 <tr class="odd">
-<td>context_mask_range</td>
-<td>tuple</td>
-<td>(0.2, 0.8)</td>
-<td>the context can be up to 80% of masked out target (1-target_mask_ratio)</td>
+<td>optimizer_type</td>
+<td>str</td>
+<td>AdamW</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>scheduler_type</td>
+<td>str</td>
+<td>OneCycle</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>huber_delta</td>
+<td>NoneType</td>
+<td>None</td>
+<td>huber loss delta, not used otherwise</td>
+</tr>
+<tr class="even">
+<td>scheduler_kwargs</td>
+<td>dict</td>
+<td>{}</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>transforms</td>
+<td>NoneType</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>patchmeup_kwargs</td>
+<td>VAR_KEYWORD</td>
+<td></td>
+<td></td>
 </tr>
 </tbody>
 </table>
-<div id="cell-10" class="cell">
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>d_model <span class="op">=</span> <span class="dv">1024</span></span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>encoder_kwargs <span class="op">=</span> {<span class="st">'c_in'</span>: <span class="dv">7</span>, <span class="st">'win_length'</span>: <span class="dv">500</span>, <span class="st">'hop_length'</span>: <span class="dv">500</span>, <span class="st">'max_seq_len'</span>: <span class="dv">1</span><span class="op">*</span><span class="dv">3600</span><span class="op">*</span><span class="dv">100</span>, <span class="st">'use_revin'</span>: <span class="va">True</span>, <span class="st">'affine'</span>: <span class="va">True</span>, <span class="st">'n_layers'</span>: <span class="dv">4</span>, <span class="st">'d_model'</span>: d_model, <span class="st">'n_heads'</span>: <span class="dv">8</span>, <span class="st">'shared_embedding'</span>: <span class="va">False</span>, <span class="st">'d_ff'</span>: <span class="dv">2048</span>, <span class="st">'attn_dropout'</span>: <span class="fl">0.</span>, <span class="st">'dropout'</span>: <span class="fl">0.1</span>, <span class="st">'act'</span>: <span class="st">"gelu"</span>, <span class="st">'pre_norm'</span>: <span class="va">False</span>}</span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>predictor_kwargs <span class="op">=</span> {<span class="st">'c_in'</span>: <span class="dv">7</span>, <span class="st">'num_patches'</span>: <span class="dv">720</span>, <span class="st">'d_model'</span>: d_model, <span class="st">'predictor_dim'</span>: <span class="dv">256</span>, <span class="st">'n_heads'</span>: <span class="dv">4</span>, <span class="st">'n_layers'</span>: <span class="dv">2</span>, <span class="st">'d_ff'</span>: <span class="dv">1024</span>, <span class="st">'dropout'</span>: <span class="fl">0.1</span>, <span class="st">'attn_dropout'</span>: <span class="fl">0.</span>, <span class="st">'act'</span>: <span class="st">"gelu"</span>, <span class="st">'pre_norm'</span>: <span class="va">False</span>}</span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> PatchTSJEPA(encoder_kwargs<span class="op">=</span>encoder_kwargs, predictor_kwargs<span class="op">=</span>predictor_kwargs, pretrain<span class="op">=</span><span class="va">True</span>, target_mask_range<span class="op">=</span>(<span class="fl">0.1</span>,<span class="fl">0.5</span>), context_mask_range<span class="op">=</span>(<span class="fl">0.2</span>,<span class="fl">0.8</span>))</span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a><span class="co"># x = torch.randn(2, 7, 1*3600*100)</span></span>
-<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a><span class="co"># pred, z_target, z_context, context_mask, target_mask = model(x)</span></span>
-<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a><span class="co"># pred.shape, z_target.shape, z_context.shape, context_mask.shape, target_mask.shape</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
 
 
-</section>
 </section>
 
 </main> <!-- /main -->

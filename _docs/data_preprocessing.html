@@ -6,6 +6,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="description" content="Process your data, they say">
 
 <title>Data Preprocessing – PhysioJEPA</title>
 <style>
@@ -70,10 +71,10 @@ ul.task-list li input[type="checkbox"] {
 
 <link rel="stylesheet" href="styles.css">
 <meta property="og:title" content="Data Preprocessing – PhysioJEPA">
-<meta property="og:description" content="PhysioJEPA">
+<meta property="og:description" content="Process your data, they say">
 <meta property="og:site_name" content="PhysioJEPA">
 <meta name="twitter:title" content="Data Preprocessing – PhysioJEPA">
-<meta name="twitter:description" content="PhysioJEPA">
+<meta name="twitter:description" content="Process your data, they say">
 <meta name="twitter:card" content="summary">
 </head>
 
@@ -130,8 +131,8 @@ ul.task-list li input[type="checkbox"] {
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./models.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Models</span></a>
+  <a href="./utils.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Utility Functions</span></a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -154,6 +155,12 @@ ul.task-list li input[type="checkbox"] {
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="./augmentations.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Augmentations</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="./layers.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Layers</span></a>
   </div>
@@ -162,6 +169,30 @@ ul.task-list li input[type="checkbox"] {
   <div class="sidebar-item-container"> 
   <a href="./heads.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">SSL, Fine Tuning, and Linear Probing Heads</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./jepa.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">JEPA For Time Series</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./baselines.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Baselines</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./patchtst.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Patch Time Series Transformer</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./tokenizers.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Tokenizers</span></a>
   </div>
 </li>
     </ul>
@@ -177,6 +208,9 @@ ul.task-list li input[type="checkbox"] {
   <li><a href="#interpolate_nan_clip" id="toc-interpolate_nan_clip" class="nav-link active" data-scroll-target="#interpolate_nan_clip">interpolate_nan_clip</a></li>
   <li><a href="#calculate_samples_mp" id="toc-calculate_samples_mp" class="nav-link" data-scroll-target="#calculate_samples_mp">calculate_samples_mp</a></li>
   <li><a href="#calculate_samples" id="toc-calculate_samples" class="nav-link" data-scroll-target="#calculate_samples">calculate_samples</a></li>
+  <li><a href="#check_signal_not_constant" id="toc-check_signal_not_constant" class="nav-link" data-scroll-target="#check_signal_not_constant">check_signal_not_constant</a></li>
+  <li><a href="#calculate_samples_forecast_mp" id="toc-calculate_samples_forecast_mp" class="nav-link" data-scroll-target="#calculate_samples_forecast_mp">calculate_samples_forecast_mp</a></li>
+  <li><a href="#calculate_samples_forecast" id="toc-calculate_samples_forecast" class="nav-link" data-scroll-target="#calculate_samples_forecast">calculate_samples_forecast</a></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/benmfox/PhysioJEPA/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></nav>
     </div>
@@ -188,6 +222,11 @@ ul.task-list li input[type="checkbox"] {
 <h1 class="title">Data Preprocessing</h1>
 </div>
 
+<div>
+  <div class="description">
+    Process your data, they say
+  </div>
+</div>
 
 
 <div class="quarto-title-meta">
@@ -219,8 +258,10 @@ ul.task-list li input[type="checkbox"] {
 <pre><code> calculate_samples_mp (zarr_files, channels, frequency,
                        sample_seq_len_sec, stride_sec,
                        start_offset_sec=None, max_seq_len_sec=None,
-                       include_partial_samples=True, nan_tolerance=0.0,
-                       require_all_channels=True)</code></pre>
+                       include_partial_samples=True,
+                       constant_nan_tolerance=1.0,
+                       require_all_channels=True, min_seq_len_sec=None,
+                       constant_channels=None)</code></pre>
 </blockquote>
 <p><em>Multiprocessing function to generate samples</em></p>
 <hr>
@@ -228,10 +269,49 @@ ul.task-list li input[type="checkbox"] {
 <section id="calculate_samples" class="level3">
 <h3 class="anchored" data-anchor-id="calculate_samples">calculate_samples</h3>
 <blockquote class="blockquote">
-<pre><code> calculate_samples (idx, zarr_file, channels, frequency,
-                    sample_seq_len_sec, stride_sec, start_offset_sec=None,
+<pre><code> calculate_samples (zarr_file, channels, frequency, sample_seq_len_sec,
+                    stride_sec, start_offset_sec=None,
                     max_seq_len_sec=None, include_partial_samples=True,
-                    require_all_channels=True, nan_tolerance=0.0)</code></pre>
+                    require_all_channels=True, constant_nan_tolerance=1.0,
+                    min_seq_len_sec=None, constant_channels=None)</code></pre>
+</blockquote>
+<p><em>Function to create a dataframe of samples and their sequence indices</em></p>
+<hr>
+</section>
+<section id="check_signal_not_constant" class="level3">
+<h3 class="anchored" data-anchor-id="check_signal_not_constant">check_signal_not_constant</h3>
+<blockquote class="blockquote">
+<pre><code> check_signal_not_constant (channel_data, constant_tolerance=1.0)</code></pre>
+</blockquote>
+<p><em>Function to check if a signal is NOT constant. This works for NaNs and constant values.</em></p>
+<hr>
+</section>
+<section id="calculate_samples_forecast_mp" class="level3">
+<h3 class="anchored" data-anchor-id="calculate_samples_forecast_mp">calculate_samples_forecast_mp</h3>
+<blockquote class="blockquote">
+<pre><code> calculate_samples_forecast_mp (outcome_df, file_col, outcome_val_col,
+                                outcome_time_col, outcome_duration_col,
+                                forecast_window_sec, channels, frequency,
+                                sample_seq_len_sec,
+                                constant_nan_tolerance=1.0,
+                                require_all_channels=True,
+                                infer_forecast_windows=True,
+                                sample_frequency_key='sampling_frequency')</code></pre>
+</blockquote>
+<p><em>Multiprocessing function to generate samples</em></p>
+<hr>
+</section>
+<section id="calculate_samples_forecast" class="level3">
+<h3 class="anchored" data-anchor-id="calculate_samples_forecast">calculate_samples_forecast</h3>
+<blockquote class="blockquote">
+<pre><code> calculate_samples_forecast (zarr_file, outcome_start_times,
+                             outcome_durations, outcome_vals, channels,
+                             forecast_window_sec, frequency,
+                             sample_seq_len_sec,
+                             require_all_channels=True,
+                             constant_nan_tolerance=1.0,
+                             infer_forecast_windows=True,
+                             sample_frequency_key='sampling_frequency')</code></pre>
 </blockquote>
 <p><em>Function to create a dataframe of samples and their sequence indices</em></p>
 

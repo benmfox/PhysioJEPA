@@ -6,9 +6,9 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="description" content="Im lost too.">
+<meta name="description" content="Functions of various forms">
 
-<title>Loss functions – PhysioJEPA</title>
+<title>Utility Functions – PhysioJEPA</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -70,11 +70,11 @@ ul.task-list li input[type="checkbox"] {
 
 
 <link rel="stylesheet" href="styles.css">
-<meta property="og:title" content="Loss functions – PhysioJEPA">
-<meta property="og:description" content="Im lost too.">
+<meta property="og:title" content="Utility Functions – PhysioJEPA">
+<meta property="og:description" content="Functions of various forms">
 <meta property="og:site_name" content="PhysioJEPA">
-<meta name="twitter:title" content="Loss functions – PhysioJEPA">
-<meta name="twitter:description" content="Im lost too.">
+<meta name="twitter:title" content="Utility Functions – PhysioJEPA">
+<meta name="twitter:description" content="Functions of various forms">
 <meta name="twitter:card" content="summary">
 </head>
 
@@ -99,7 +99,7 @@ ul.task-list li input[type="checkbox"] {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./loss.html">Loss functions</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./utils.html">Utility Functions</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
     </div>
@@ -131,7 +131,7 @@ ul.task-list li input[type="checkbox"] {
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./utils.html" class="sidebar-item-text sidebar-link">
+  <a href="./utils.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text">Utility Functions</span></a>
   </div>
 </li>
@@ -143,7 +143,7 @@ ul.task-list li input[type="checkbox"] {
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./loss.html" class="sidebar-item-text sidebar-link active">
+  <a href="./loss.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Loss functions</span></a>
   </div>
 </li>
@@ -205,15 +205,7 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#mse_variance_loss" id="toc-mse_variance_loss" class="nav-link active" data-scroll-target="#mse_variance_loss">mse_variance_loss</a></li>
-  <li><a href="#smoothl1_loss" id="toc-smoothl1_loss" class="nav-link" data-scroll-target="#smoothl1_loss">smoothl1_loss</a></li>
-  <li><a href="#huber_loss" id="toc-huber_loss" class="nav-link" data-scroll-target="#huber_loss">huber_loss</a></li>
-  <li><a href="#cosine_similarity_loss" id="toc-cosine_similarity_loss" class="nav-link" data-scroll-target="#cosine_similarity_loss">cosine_similarity_loss</a></li>
-  <li><a href="#mape" id="toc-mape" class="nav-link" data-scroll-target="#mape">mape</a></li>
-  <li><a href="#mae_loss" id="toc-mae_loss" class="nav-link" data-scroll-target="#mae_loss">mae_loss</a></li>
-  <li><a href="#mse_loss" id="toc-mse_loss" class="nav-link" data-scroll-target="#mse_loss">mse_loss</a></li>
-  <li><a href="#crossentropyloss" id="toc-crossentropyloss" class="nav-link" data-scroll-target="#crossentropyloss">CrossEntropyLoss</a></li>
-  <li><a href="#focalloss" id="toc-focalloss" class="nav-link" data-scroll-target="#focalloss">FocalLoss</a></li>
+  <li><a href="#trunc_normal_" id="toc-trunc_normal_" class="nav-link active" data-scroll-target="#trunc_normal_">trunc_normal_</a></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/benmfox/PhysioJEPA/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></nav>
     </div>
@@ -222,12 +214,12 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Loss functions</h1>
+<h1 class="title">Utility Functions</h1>
 </div>
 
 <div>
   <div class="description">
-    Im lost too.
+    Functions of various forms
   </div>
 </div>
 
@@ -246,75 +238,11 @@ ul.task-list li input[type="checkbox"] {
 
 <!-- WARNING: THIS FILE WAS AUTOGENERATED! DO NOT EDIT! -->
 <hr>
-<section id="mse_variance_loss" class="level3">
-<h3 class="anchored" data-anchor-id="mse_variance_loss">mse_variance_loss</h3>
+<section id="trunc_normal_" class="level3">
+<h3 class="anchored" data-anchor-id="trunc_normal_">trunc_normal_</h3>
 <blockquote class="blockquote">
-<pre><code> mse_variance_loss (preds, target, representations, alpha=0.2)</code></pre>
+<pre><code> trunc_normal_ (tensor, mean=0.0, std=1.0, a=-2.0, b=2.0)</code></pre>
 </blockquote>
-<p><em>preds: [bs x num_patch x n_vars x patch_len] targets: [bs x num_patch x n_vars x patch_len] representations: [bs x nvars x d_model x num_patch]</em></p>
-<hr>
-</section>
-<section id="smoothl1_loss" class="level3">
-<h3 class="anchored" data-anchor-id="smoothl1_loss">smoothl1_loss</h3>
-<blockquote class="blockquote">
-<pre><code> smoothl1_loss (preds, target)</code></pre>
-</blockquote>
-<hr>
-</section>
-<section id="huber_loss" class="level3">
-<h3 class="anchored" data-anchor-id="huber_loss">huber_loss</h3>
-<blockquote class="blockquote">
-<pre><code> huber_loss (preds, target, delta=1)</code></pre>
-</blockquote>
-<p><em>preds: [bs x num_patch x n_vars x patch_len] targets: [bs x num_patch x n_vars x patch_len]</em></p>
-<hr>
-</section>
-<section id="cosine_similarity_loss" class="level3">
-<h3 class="anchored" data-anchor-id="cosine_similarity_loss">cosine_similarity_loss</h3>
-<blockquote class="blockquote">
-<pre><code> cosine_similarity_loss (preds, target)</code></pre>
-</blockquote>
-<p><em>preds: [bs x num_patch x n_vars x patch_len] targets: [bs x num_patch x n_vars x patch_len]</em></p>
-<hr>
-</section>
-<section id="mape" class="level3">
-<h3 class="anchored" data-anchor-id="mape">mape</h3>
-<blockquote class="blockquote">
-<pre><code> mape (preds, target)</code></pre>
-</blockquote>
-<hr>
-</section>
-<section id="mae_loss" class="level3">
-<h3 class="anchored" data-anchor-id="mae_loss">mae_loss</h3>
-<blockquote class="blockquote">
-<pre><code> mae_loss (preds, target)</code></pre>
-</blockquote>
-<p><em>preds: [bs x num_patch x n_vars x patch_len] targets: [bs x num_patch x n_vars x patch_len]</em></p>
-<hr>
-</section>
-<section id="mse_loss" class="level3">
-<h3 class="anchored" data-anchor-id="mse_loss">mse_loss</h3>
-<blockquote class="blockquote">
-<pre><code> mse_loss (preds, target)</code></pre>
-</blockquote>
-<p><em>preds: [bs x num_patch x n_vars x patch_len] targets: [bs x num_patch x n_vars x patch_len]</em></p>
-<hr>
-</section>
-<section id="crossentropyloss" class="level3">
-<h3 class="anchored" data-anchor-id="crossentropyloss">CrossEntropyLoss</h3>
-<blockquote class="blockquote">
-<pre><code> CrossEntropyLoss (ignore_index=-100, reduction='mean', weight=None,
-                   label_smoothing=0, soft_labels=False)</code></pre>
-</blockquote>
-<p><em>Cross entropy loss with ignore_index.</em></p>
-<hr>
-</section>
-<section id="focalloss" class="level3">
-<h3 class="anchored" data-anchor-id="focalloss">FocalLoss</h3>
-<blockquote class="blockquote">
-<pre><code> FocalLoss (weight=None, gamma=2.0, reduction='mean', ignore_index=-100)</code></pre>
-</blockquote>
-<p><em>adapted from tsai, weighted multiclass focal loss https://github.com/timeseriesAI/tsai/blob/bdff96cc8c4c8ea55bc20d7cffd6a72e402f4cb2/tsai/losses.py#L116C1-L140C20</em></p>
 
 
 </section>

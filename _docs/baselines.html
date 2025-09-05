@@ -6,9 +6,9 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="description" content="Im lost too.">
+<meta name="description" content="Probably better than the other models">
 
-<title>Loss functions – PhysioJEPA</title>
+<title>Baselines – PhysioJEPA</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -70,11 +70,11 @@ ul.task-list li input[type="checkbox"] {
 
 
 <link rel="stylesheet" href="styles.css">
-<meta property="og:title" content="Loss functions – PhysioJEPA">
-<meta property="og:description" content="Im lost too.">
+<meta property="og:title" content="Baselines – PhysioJEPA">
+<meta property="og:description" content="Probably better than the other models">
 <meta property="og:site_name" content="PhysioJEPA">
-<meta name="twitter:title" content="Loss functions – PhysioJEPA">
-<meta name="twitter:description" content="Im lost too.">
+<meta name="twitter:title" content="Baselines – PhysioJEPA">
+<meta name="twitter:description" content="Probably better than the other models">
 <meta name="twitter:card" content="summary">
 </head>
 
@@ -99,7 +99,7 @@ ul.task-list li input[type="checkbox"] {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./loss.html">Loss functions</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./baselines.html">Baselines</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
     </div>
@@ -143,7 +143,7 @@ ul.task-list li input[type="checkbox"] {
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./loss.html" class="sidebar-item-text sidebar-link active">
+  <a href="./loss.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Loss functions</span></a>
   </div>
 </li>
@@ -179,7 +179,7 @@ ul.task-list li input[type="checkbox"] {
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./baselines.html" class="sidebar-item-text sidebar-link">
+  <a href="./baselines.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text">Baselines</span></a>
   </div>
 </li>
@@ -205,15 +205,15 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#mse_variance_loss" id="toc-mse_variance_loss" class="nav-link active" data-scroll-target="#mse_variance_loss">mse_variance_loss</a></li>
-  <li><a href="#smoothl1_loss" id="toc-smoothl1_loss" class="nav-link" data-scroll-target="#smoothl1_loss">smoothl1_loss</a></li>
-  <li><a href="#huber_loss" id="toc-huber_loss" class="nav-link" data-scroll-target="#huber_loss">huber_loss</a></li>
-  <li><a href="#cosine_similarity_loss" id="toc-cosine_similarity_loss" class="nav-link" data-scroll-target="#cosine_similarity_loss">cosine_similarity_loss</a></li>
-  <li><a href="#mape" id="toc-mape" class="nav-link" data-scroll-target="#mape">mape</a></li>
-  <li><a href="#mae_loss" id="toc-mae_loss" class="nav-link" data-scroll-target="#mae_loss">mae_loss</a></li>
-  <li><a href="#mse_loss" id="toc-mse_loss" class="nav-link" data-scroll-target="#mse_loss">mse_loss</a></li>
-  <li><a href="#crossentropyloss" id="toc-crossentropyloss" class="nav-link" data-scroll-target="#crossentropyloss">CrossEntropyLoss</a></li>
-  <li><a href="#focalloss" id="toc-focalloss" class="nav-link" data-scroll-target="#focalloss">FocalLoss</a></li>
+  <li><a href="#fcn" id="toc-fcn" class="nav-link active" data-scroll-target="#fcn">FCN</a>
+  <ul class="collapse">
+  <li><a href="#fcn-1" id="toc-fcn-1" class="nav-link" data-scroll-target="#fcn-1">FCN</a></li>
+  </ul></li>
+  <li><a href="#general-baseline" id="toc-general-baseline" class="nav-link" data-scroll-target="#general-baseline">General Baseline</a>
+  <ul class="collapse">
+  <li><a href="#lightning" id="toc-lightning" class="nav-link" data-scroll-target="#lightning">Lightning</a></li>
+  <li><a href="#generaltimesupervised" id="toc-generaltimesupervised" class="nav-link" data-scroll-target="#generaltimesupervised">GeneralTimeSupervised</a></li>
+  </ul></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/benmfox/PhysioJEPA/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></nav>
     </div>
@@ -222,12 +222,12 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Loss functions</h1>
+<h1 class="title">Baselines</h1>
 </div>
 
 <div>
   <div class="description">
-    Im lost too.
+    Probably better than the other models
   </div>
 </div>
 
@@ -245,78 +245,243 @@ ul.task-list li input[type="checkbox"] {
 
 
 <!-- WARNING: THIS FILE WAS AUTOGENERATED! DO NOT EDIT! -->
+<section id="fcn" class="level2">
+<h2 class="anchored" data-anchor-id="fcn">FCN</h2>
 <hr>
-<section id="mse_variance_loss" class="level3">
-<h3 class="anchored" data-anchor-id="mse_variance_loss">mse_variance_loss</h3>
+<section id="fcn-1" class="level3">
+<h3 class="anchored" data-anchor-id="fcn-1">FCN</h3>
 <blockquote class="blockquote">
-<pre><code> mse_variance_loss (preds, target, representations, alpha=0.2)</code></pre>
+<pre><code> FCN (c_in, layers=[128, 256, 128], kernel_sizes=[7, 5, 3], n_classes=1)</code></pre>
 </blockquote>
-<p><em>preds: [bs x num_patch x n_vars x patch_len] targets: [bs x num_patch x n_vars x patch_len] representations: [bs x nvars x d_model x num_patch]</em></p>
+<p>*Base class for all neural network modules.</p>
+<p>Your models should also subclass this class.</p>
+<p>Modules can also contain other Modules, allowing them to be nested in a tree structure. You can assign the submodules as regular attributes::</p>
+<pre><code>import torch.nn as nn
+import torch.nn.functional as F
+
+class Model(nn.Module):
+    def __init__(self) -&gt; None:
+        super().__init__()
+        self.conv1 = nn.Conv2d(1, 20, 5)
+        self.conv2 = nn.Conv2d(20, 20, 5)
+
+    def forward(self, x):
+        x = F.relu(self.conv1(x))
+        return F.relu(self.conv2(x))</code></pre>
+<p>Submodules assigned in this way will be registered, and will also have their parameters converted when you call :meth:<code>to</code>, etc.</p>
+<p>.. note:: As per the example above, an <code>__init__()</code> call to the parent class must be made before assignment on the child.</p>
+<table class="caption-top table">
+<caption>ivar training: Boolean represents whether this module is in training or evaluation mode. :vartype training: bool*</caption>
+<thead>
+<tr class="header">
+<th></th>
+<th><strong>Type</strong></th>
+<th><strong>Default</strong></th>
+<th><strong>Details</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>c_in</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td>layers</td>
+<td>list</td>
+<td>[128, 256, 128]</td>
+<td>kwargs for the encoder layer</td>
+</tr>
+<tr class="odd">
+<td>kernel_sizes</td>
+<td>list</td>
+<td>[7, 5, 3]</td>
+<td>kwargs for the encoder layer</td>
+</tr>
+<tr class="even">
+<td>n_classes</td>
+<td>int</td>
+<td>1</td>
+<td>kwargs for the encoder layer</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="general-baseline" class="level2">
+<h2 class="anchored" data-anchor-id="general-baseline">General Baseline</h2>
+<section id="lightning" class="level3">
+<h3 class="anchored" data-anchor-id="lightning">Lightning</h3>
 <hr>
 </section>
-<section id="smoothl1_loss" class="level3">
-<h3 class="anchored" data-anchor-id="smoothl1_loss">smoothl1_loss</h3>
+<section id="generaltimesupervised" class="level3">
+<h3 class="anchored" data-anchor-id="generaltimesupervised">GeneralTimeSupervised</h3>
 <blockquote class="blockquote">
-<pre><code> smoothl1_loss (preds, target)</code></pre>
+<pre><code> GeneralTimeSupervised (supervised_model, learning_rate, train_size,
+                        batch_size, n_gpus, n_classes=1, n_labels=1,
+                        metrics={}, loss_fxn='CrossEntropy', gamma=2.0,
+                        class_weights=None, label_smoothing=0,
+                        y_padding_mask=-100, epochs=100,
+                        optimizer_type='AdamW', scheduler_type='OneCycle',
+                        weight_decay=0.0, final_weight_decay=0.4,
+                        use_weight_decay_scheduler=False, transforms=None,
+                        mixup_callback=None, scheduler_kwargs={})</code></pre>
 </blockquote>
-<hr>
-</section>
-<section id="huber_loss" class="level3">
-<h3 class="anchored" data-anchor-id="huber_loss">huber_loss</h3>
-<blockquote class="blockquote">
-<pre><code> huber_loss (preds, target, delta=1)</code></pre>
-</blockquote>
-<p><em>preds: [bs x num_patch x n_vars x patch_len] targets: [bs x num_patch x n_vars x patch_len]</em></p>
-<hr>
-</section>
-<section id="cosine_similarity_loss" class="level3">
-<h3 class="anchored" data-anchor-id="cosine_similarity_loss">cosine_similarity_loss</h3>
-<blockquote class="blockquote">
-<pre><code> cosine_similarity_loss (preds, target)</code></pre>
-</blockquote>
-<p><em>preds: [bs x num_patch x n_vars x patch_len] targets: [bs x num_patch x n_vars x patch_len]</em></p>
-<hr>
-</section>
-<section id="mape" class="level3">
-<h3 class="anchored" data-anchor-id="mape">mape</h3>
-<blockquote class="blockquote">
-<pre><code> mape (preds, target)</code></pre>
-</blockquote>
-<hr>
-</section>
-<section id="mae_loss" class="level3">
-<h3 class="anchored" data-anchor-id="mae_loss">mae_loss</h3>
-<blockquote class="blockquote">
-<pre><code> mae_loss (preds, target)</code></pre>
-</blockquote>
-<p><em>preds: [bs x num_patch x n_vars x patch_len] targets: [bs x num_patch x n_vars x patch_len]</em></p>
-<hr>
-</section>
-<section id="mse_loss" class="level3">
-<h3 class="anchored" data-anchor-id="mse_loss">mse_loss</h3>
-<blockquote class="blockquote">
-<pre><code> mse_loss (preds, target)</code></pre>
-</blockquote>
-<p><em>preds: [bs x num_patch x n_vars x patch_len] targets: [bs x num_patch x n_vars x patch_len]</em></p>
-<hr>
-</section>
-<section id="crossentropyloss" class="level3">
-<h3 class="anchored" data-anchor-id="crossentropyloss">CrossEntropyLoss</h3>
-<blockquote class="blockquote">
-<pre><code> CrossEntropyLoss (ignore_index=-100, reduction='mean', weight=None,
-                   label_smoothing=0, soft_labels=False)</code></pre>
-</blockquote>
-<p><em>Cross entropy loss with ignore_index.</em></p>
-<hr>
-</section>
-<section id="focalloss" class="level3">
-<h3 class="anchored" data-anchor-id="focalloss">FocalLoss</h3>
-<blockquote class="blockquote">
-<pre><code> FocalLoss (weight=None, gamma=2.0, reduction='mean', ignore_index=-100)</code></pre>
-</blockquote>
-<p><em>adapted from tsai, weighted multiclass focal loss https://github.com/timeseriesAI/tsai/blob/bdff96cc8c4c8ea55bc20d7cffd6a72e402f4cb2/tsai/losses.py#L116C1-L140C20</em></p>
+<p><em>Hooks to be used in LightningModule.</em></p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 6%">
+<col style="width: 25%">
+<col style="width: 34%">
+<col style="width: 34%">
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th><strong>Type</strong></th>
+<th><strong>Default</strong></th>
+<th><strong>Details</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>supervised_model</td>
+<td></td>
+<td></td>
+<td>kwargs for the encoder layer</td>
+</tr>
+<tr class="even">
+<td>learning_rate</td>
+<td></td>
+<td></td>
+<td>desired learning rate, initial learning rate in if one_cycle_scheduler</td>
+</tr>
+<tr class="odd">
+<td>train_size</td>
+<td></td>
+<td></td>
+<td>the training data size (for one_cycle_scheduler=True)</td>
+</tr>
+<tr class="even">
+<td>batch_size</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>n_gpus</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td>n_classes</td>
+<td>int</td>
+<td>1</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>n_labels</td>
+<td>int</td>
+<td>1</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>metrics</td>
+<td>dict</td>
+<td>{}</td>
+<td>name:function for metrics to log</td>
+</tr>
+<tr class="odd">
+<td>loss_fxn</td>
+<td>str</td>
+<td>CrossEntropy</td>
+<td>loss function to use, can be CrossEntropy</td>
+</tr>
+<tr class="even">
+<td>gamma</td>
+<td>float</td>
+<td>2.0</td>
+<td>for focal loss</td>
+</tr>
+<tr class="odd">
+<td>class_weights</td>
+<td>NoneType</td>
+<td>None</td>
+<td>weights of classes to use in CE loss fxn</td>
+</tr>
+<tr class="even">
+<td>label_smoothing</td>
+<td>int</td>
+<td>0</td>
+<td>label smoothing for cross entropy loss</td>
+</tr>
+<tr class="odd">
+<td>y_padding_mask</td>
+<td>int</td>
+<td>-100</td>
+<td>padded value that was added to target and indice to ignore when computing loss</td>
+</tr>
+<tr class="even">
+<td>epochs</td>
+<td>int</td>
+<td>100</td>
+<td>number of epochs for one_cycle_scheduler</td>
+</tr>
+<tr class="odd">
+<td>optimizer_type</td>
+<td>str</td>
+<td>AdamW</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>scheduler_type</td>
+<td>str</td>
+<td>OneCycle</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>weight_decay</td>
+<td>float</td>
+<td>0.0</td>
+<td>weight decay for Adam optimizer</td>
+</tr>
+<tr class="even">
+<td>final_weight_decay</td>
+<td>float</td>
+<td>0.4</td>
+<td>final weight decay for weight decay scheduler</td>
+</tr>
+<tr class="odd">
+<td>use_weight_decay_scheduler</td>
+<td>bool</td>
+<td>False</td>
+<td>whether to use a weight decay scheduler</td>
+</tr>
+<tr class="even">
+<td>transforms</td>
+<td>NoneType</td>
+<td>None</td>
+<td>transforms to apply to the data</td>
+</tr>
+<tr class="odd">
+<td>mixup_callback</td>
+<td>NoneType</td>
+<td>None</td>
+<td>mixup callback to apply to the data</td>
+</tr>
+<tr class="even">
+<td>scheduler_kwargs</td>
+<td>dict</td>
+<td>{}</td>
+<td></td>
+</tr>
+</tbody>
+</table>
 
 
+</section>
 </section>
 
 </main> <!-- /main -->

@@ -131,8 +131,8 @@ ul.task-list li input[type="checkbox"] {
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./models.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Models</span></a>
+  <a href="./utils.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Utility Functions</span></a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -155,6 +155,12 @@ ul.task-list li input[type="checkbox"] {
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="./augmentations.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Augmentations</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="./layers.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Layers</span></a>
   </div>
@@ -163,6 +169,30 @@ ul.task-list li input[type="checkbox"] {
   <div class="sidebar-item-container"> 
   <a href="./heads.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">SSL, Fine Tuning, and Linear Probing Heads</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./jepa.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">JEPA For Time Series</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./baselines.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Baselines</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./patchtst.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Patch Time Series Transformer</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./tokenizers.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Tokenizers</span></a>
   </div>
 </li>
     </ul>
@@ -217,21 +247,21 @@ ul.task-list li input[type="checkbox"] {
 <section id="forecastingdataset" class="level3">
 <h3 class="anchored" data-anchor-id="forecastingdataset">ForecastingDataset</h3>
 <blockquote class="blockquote">
-<pre><code> ForecastingDataset (zarr_files, channels, forecast_window_sec,
-                     outcome_df, include_labels_in_x=False,
-                     forecast_within=False, y_mapping_column='subject_id',
-                     y_date_column='date', y_seconds_since_column='Time
-                     Stamp (seconds)', y_outcome='hypotension',
-                     max_seq_len_sec=None, sample_df=None,
-                     sample_seq_len_sec=None, sample_stride_sec=None,
+<pre><code> ForecastingDataset (channels, forecast_window_sec, outcome_df,
+                     outcome_df_outcome_col, file_col='file_path',
+                     y_date_column='date',
+                     outcome_df_seconds_since_column='Time Stamp
+                     (seconds)',
+                     outcome_df_duration_column='event_length',
+                     sample_df=None, sample_seq_len_sec=None,
                      frequency=125, butterworth_filters=None,
                      median_filter_kernel_size=None,
-                     clip_interpolations=None, nan_tolerance=0.2,
-                     require_all_channels=True)</code></pre>
+                     clip_interpolations=None, constant_nan_tolerance=0.5,
+                     require_all_channels=False,
+                     infer_forecast_windows=True, normalize_signals=True,
+                     sample_frequency_key='sampling_frequency')</code></pre>
 </blockquote>
-<p>*An abstract class representing a :class:<code>Dataset</code>.</p>
-<p>All datasets that represent a map from keys to data samples should subclass it. All subclasses should overwrite :meth:<code>__getitem__</code>, supporting fetching a data sample for a given key. Subclasses could also optionally overwrite :meth:<code>__len__</code>, which is expected to return the size of the dataset by many :class:<code>~torch.utils.data.Sampler</code> implementations and the default options of :class:<code>~torch.utils.data.DataLoader</code>. Subclasses could also optionally implement :meth:<code>__getitems__</code>, for speedup batched samples loading. This method accepts list of indices of samples of batch and returns list of samples.</p>
-<p>.. note:: :class:<code>~torch.utils.data.DataLoader</code> by default constructs an index sampler that yields integral indices. To make it work with a map-style dataset with non-integral indices/keys, a custom sampler must be provided.*</p>
+<p><em>PyTorch Dataset for forecasting tasks using physiological waveform data stored in zarr format. This dataset class handles loading, preprocessing, and preparing samples for forecasting tasks.</em></p>
 <table class="caption-top table">
 <colgroup>
 <col style="width: 6%">
@@ -249,46 +279,34 @@ ul.task-list li input[type="checkbox"] {
 </thead>
 <tbody>
 <tr class="odd">
-<td>zarr_files</td>
-<td></td>
-<td></td>
-<td>zarr files that include samples</td>
-</tr>
-<tr class="even">
 <td>channels</td>
 <td></td>
 <td></td>
 <td>channels to use</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>forecast_window_sec</td>
 <td></td>
 <td></td>
 <td>forecast window (within), suggest 5, 10, 15 minutes</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>outcome_df</td>
 <td></td>
 <td></td>
 <td>pandas dataframe containing outcomes for zarr files</td>
 </tr>
-<tr class="odd">
-<td>include_labels_in_x</td>
-<td>bool</td>
-<td>False</td>
-<td>indicator to include y labels in sample data time frame (resampled to the frequency)</td>
-</tr>
 <tr class="even">
-<td>forecast_within</td>
-<td>bool</td>
-<td>False</td>
-<td>indicator to create labels when the event occurs within the forecast window. Set to false to only return the last value in the forecast window.</td>
+<td>outcome_df_outcome_col</td>
+<td></td>
+<td></td>
+<td>outcome column in the y file path</td>
 </tr>
 <tr class="odd">
-<td>y_mapping_column</td>
+<td>file_col</td>
 <td>str</td>
-<td>subject_id</td>
-<td>column mapping corresponding outcome value to zarr file</td>
+<td>file_path</td>
+<td>column indicating zarr file path</td>
 </tr>
 <tr class="even">
 <td>y_date_column</td>
@@ -297,40 +315,28 @@ ul.task-list li input[type="checkbox"] {
 <td>column indicating date of sample collection</td>
 </tr>
 <tr class="odd">
-<td>y_seconds_since_column</td>
+<td>outcome_df_seconds_since_column</td>
 <td>str</td>
 <td>Time Stamp (seconds)</td>
 <td>column indicating how many seconds since beginning of waveform</td>
 </tr>
 <tr class="even">
-<td>y_outcome</td>
+<td>outcome_df_duration_column</td>
 <td>str</td>
-<td>hypotension</td>
-<td>outcome column in the y file path</td>
+<td>event_length</td>
+<td>column indicating duration of outcome in seconds</td>
 </tr>
 <tr class="odd">
-<td>max_seq_len_sec</td>
-<td>NoneType</td>
-<td>None</td>
-<td>maximum sequence length (in seconds) to use (this is especially relevant when you are returning both stft and raw ts data to keep them in sync)</td>
-</tr>
-<tr class="even">
 <td>sample_df</td>
 <td>NoneType</td>
 <td>None</td>
 <td>dataframe indicating which indices within each zarr file includes a sample</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>sample_seq_len_sec</td>
 <td>NoneType</td>
 <td>None</td>
 <td>if no sample_df, generate sequences of this length in seconds as one sample</td>
-</tr>
-<tr class="even">
-<td>sample_stride_sec</td>
-<td>NoneType</td>
-<td>None</td>
-<td>if no sample_df, seconds of overlap for samples from the same array, if seq_len_seconds == overlap_seconds, there is no overlap</td>
 </tr>
 <tr class="odd">
 <td>frequency</td>
@@ -357,16 +363,34 @@ ul.task-list li input[type="checkbox"] {
 <td>dictionary of channels:{‘phys_range’:…, ‘percentiles’:…} for filtering and interpolation of filtered values</td>
 </tr>
 <tr class="odd">
-<td>nan_tolerance</td>
+<td>constant_nan_tolerance</td>
 <td>float</td>
-<td>0.2</td>
+<td>0.5</td>
 <td>tolerance for nan values in the data - 0 means no nan allowed, 1 means 100% of nans allowed</td>
 </tr>
 <tr class="even">
 <td>require_all_channels</td>
 <td>bool</td>
-<td>True</td>
+<td>False</td>
 <td>indicator to require all channels to be present in the sample, if False, will return samples with any of the channels and 0s for the missing channels</td>
+</tr>
+<tr class="odd">
+<td>infer_forecast_windows</td>
+<td>bool</td>
+<td>True</td>
+<td>indicator to require all forecast windows to be present in the sample, if False, will return samples with any of the forecast windows and NAs for the missing forecast windows</td>
+</tr>
+<tr class="even">
+<td>normalize_signals</td>
+<td>bool</td>
+<td>True</td>
+<td>indicator to normalize signals to 0 mean and unit variance</td>
+</tr>
+<tr class="odd">
+<td>sample_frequency_key</td>
+<td>str</td>
+<td>sampling_frequency</td>
+<td></td>
 </tr>
 </tbody>
 </table>
@@ -380,11 +404,11 @@ ul.task-list li input[type="checkbox"] {
                         sample_stride_sec=None, frequency=125,
                         butterworth_filters=None,
                         median_filter_kernel_size=None,
-                        clip_interpolations=None, nan_tolerance=0.2)</code></pre>
+                        clip_interpolations=None,
+                        constant_nan_tolerance=0.2,
+                        require_all_channels=True, normalize_signals=True)</code></pre>
 </blockquote>
-<p>*An abstract class representing a :class:<code>Dataset</code>.</p>
-<p>All datasets that represent a map from keys to data samples should subclass it. All subclasses should overwrite :meth:<code>__getitem__</code>, supporting fetching a data sample for a given key. Subclasses could also optionally overwrite :meth:<code>__len__</code>, which is expected to return the size of the dataset by many :class:<code>~torch.utils.data.Sampler</code> implementations and the default options of :class:<code>~torch.utils.data.DataLoader</code>. Subclasses could also optionally implement :meth:<code>__getitems__</code>, for speedup batched samples loading. This method accepts list of indices of samples of batch and returns list of samples.</p>
-<p>.. note:: :class:<code>~torch.utils.data.DataLoader</code> by default constructs an index sampler that yields integral indices. To make it work with a map-style dataset with non-integral indices/keys, a custom sampler must be provided.*</p>
+<p><em>PyTorch Dataset for self-supervised learning tasks using physiological waveform data stored in zarr format. This dataset class handles loading, preprocessing, and preparing samples for self-supervised learning tasks.</em></p>
 <table class="caption-top table">
 <colgroup>
 <col style="width: 6%">
@@ -462,10 +486,22 @@ ul.task-list li input[type="checkbox"] {
 <td>dictionary of channels:{‘phys_range’:…, ‘percentiles’:…} for filtering and interpolation of filtered values</td>
 </tr>
 <tr class="odd">
-<td>nan_tolerance</td>
+<td>constant_nan_tolerance</td>
 <td>float</td>
 <td>0.2</td>
 <td>tolerance for nan values in the data - 0 means no nan allowed, 1 means 100% of nans allowed</td>
+</tr>
+<tr class="even">
+<td>require_all_channels</td>
+<td>bool</td>
+<td>True</td>
+<td>indicator to require all channels to be present in the data</td>
+</tr>
+<tr class="odd">
+<td>normalize_signals</td>
+<td>bool</td>
+<td>True</td>
+<td>indicator to normalize signals to 0 mean and unit variance</td>
 </tr>
 </tbody>
 </table>

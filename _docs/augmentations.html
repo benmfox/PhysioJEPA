@@ -6,9 +6,9 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="description" content="Im lost too.">
+<meta name="description" content="Because this will help">
 
-<title>Loss functions – PhysioJEPA</title>
+<title>Augmentations – PhysioJEPA</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -70,11 +70,11 @@ ul.task-list li input[type="checkbox"] {
 
 
 <link rel="stylesheet" href="styles.css">
-<meta property="og:title" content="Loss functions – PhysioJEPA">
-<meta property="og:description" content="Im lost too.">
+<meta property="og:title" content="Augmentations – PhysioJEPA">
+<meta property="og:description" content="Because this will help">
 <meta property="og:site_name" content="PhysioJEPA">
-<meta name="twitter:title" content="Loss functions – PhysioJEPA">
-<meta name="twitter:description" content="Im lost too.">
+<meta name="twitter:title" content="Augmentations – PhysioJEPA">
+<meta name="twitter:description" content="Because this will help">
 <meta name="twitter:card" content="summary">
 </head>
 
@@ -99,7 +99,7 @@ ul.task-list li input[type="checkbox"] {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./loss.html">Loss functions</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./augmentations.html">Augmentations</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
     </div>
@@ -143,7 +143,7 @@ ul.task-list li input[type="checkbox"] {
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./loss.html" class="sidebar-item-text sidebar-link active">
+  <a href="./loss.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Loss functions</span></a>
   </div>
 </li>
@@ -155,7 +155,7 @@ ul.task-list li input[type="checkbox"] {
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./augmentations.html" class="sidebar-item-text sidebar-link">
+  <a href="./augmentations.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text">Augmentations</span></a>
   </div>
 </li>
@@ -205,15 +205,28 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#mse_variance_loss" id="toc-mse_variance_loss" class="nav-link active" data-scroll-target="#mse_variance_loss">mse_variance_loss</a></li>
-  <li><a href="#smoothl1_loss" id="toc-smoothl1_loss" class="nav-link" data-scroll-target="#smoothl1_loss">smoothl1_loss</a></li>
-  <li><a href="#huber_loss" id="toc-huber_loss" class="nav-link" data-scroll-target="#huber_loss">huber_loss</a></li>
-  <li><a href="#cosine_similarity_loss" id="toc-cosine_similarity_loss" class="nav-link" data-scroll-target="#cosine_similarity_loss">cosine_similarity_loss</a></li>
-  <li><a href="#mape" id="toc-mape" class="nav-link" data-scroll-target="#mape">mape</a></li>
-  <li><a href="#mae_loss" id="toc-mae_loss" class="nav-link" data-scroll-target="#mae_loss">mae_loss</a></li>
-  <li><a href="#mse_loss" id="toc-mse_loss" class="nav-link" data-scroll-target="#mse_loss">mse_loss</a></li>
-  <li><a href="#crossentropyloss" id="toc-crossentropyloss" class="nav-link" data-scroll-target="#crossentropyloss">CrossEntropyLoss</a></li>
-  <li><a href="#focalloss" id="toc-focalloss" class="nav-link" data-scroll-target="#focalloss">FocalLoss</a></li>
+  <li><a href="#patching" id="toc-patching" class="nav-link active" data-scroll-target="#patching">Patching</a>
+  <ul class="collapse">
+  <li><a href="#create_patch" id="toc-create_patch" class="nav-link" data-scroll-target="#create_patch">create_patch</a></li>
+  <li><a href="#unpatch" id="toc-unpatch" class="nav-link" data-scroll-target="#unpatch">unpatch</a></li>
+  <li><a href="#mask_patches_simple" id="toc-mask_patches_simple" class="nav-link" data-scroll-target="#mask_patches_simple">mask_patches_simple</a></li>
+  </ul></li>
+  <li><a href="#value-augmentations" id="toc-value-augmentations" class="nav-link" data-scroll-target="#value-augmentations">Value Augmentations</a>
+  <ul class="collapse">
+  <li><a href="#jitter_augmentation" id="toc-jitter_augmentation" class="nav-link" data-scroll-target="#jitter_augmentation">jitter_augmentation</a></li>
+  <li><a href="#remove_values" id="toc-remove_values" class="nav-link" data-scroll-target="#remove_values">remove_values</a></li>
+  </ul></li>
+  <li><a href="#shuffle-augmentations" id="toc-shuffle-augmentations" class="nav-link" data-scroll-target="#shuffle-augmentations">Shuffle Augmentations</a>
+  <ul class="collapse">
+  <li><a href="#shuffle_dim" id="toc-shuffle_dim" class="nav-link" data-scroll-target="#shuffle_dim">shuffle_dim</a></li>
+  <li><a href="#reverse_sequence" id="toc-reverse_sequence" class="nav-link" data-scroll-target="#reverse_sequence">reverse_sequence</a></li>
+  <li><a href="#channel_masking" id="toc-channel_masking" class="nav-link" data-scroll-target="#channel_masking">channel_masking</a></li>
+  </ul></li>
+  <li><a href="#transforms" id="toc-transforms" class="nav-link" data-scroll-target="#transforms">Transforms</a>
+  <ul class="collapse">
+  <li><a href="#mixupcallbackclassification" id="toc-mixupcallbackclassification" class="nav-link" data-scroll-target="#mixupcallbackclassification">MixupCallbackClassification</a></li>
+  <li><a href="#transformscallback" id="toc-transformscallback" class="nav-link" data-scroll-target="#transformscallback">TransformsCallback</a></li>
+  </ul></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/benmfox/PhysioJEPA/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></nav>
     </div>
@@ -222,12 +235,12 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Loss functions</h1>
+<h1 class="title">Augmentations</h1>
 </div>
 
 <div>
   <div class="description">
-    Im lost too.
+    Because this will help
   </div>
 </div>
 
@@ -245,78 +258,138 @@ ul.task-list li input[type="checkbox"] {
 
 
 <!-- WARNING: THIS FILE WAS AUTOGENERATED! DO NOT EDIT! -->
+<section id="patching" class="level2">
+<h2 class="anchored" data-anchor-id="patching">Patching</h2>
 <hr>
-<section id="mse_variance_loss" class="level3">
-<h3 class="anchored" data-anchor-id="mse_variance_loss">mse_variance_loss</h3>
+<section id="create_patch" class="level3">
+<h3 class="anchored" data-anchor-id="create_patch">create_patch</h3>
 <blockquote class="blockquote">
-<pre><code> mse_variance_loss (preds, target, representations, alpha=0.2)</code></pre>
+<pre><code> create_patch (xb, patch_len, stride, constant_pad=False,
+               constant_pad_value=0)</code></pre>
 </blockquote>
-<p><em>preds: [bs x num_patch x n_vars x patch_len] targets: [bs x num_patch x n_vars x patch_len] representations: [bs x nvars x d_model x num_patch]</em></p>
-<hr>
-</section>
-<section id="smoothl1_loss" class="level3">
-<h3 class="anchored" data-anchor-id="smoothl1_loss">smoothl1_loss</h3>
-<blockquote class="blockquote">
-<pre><code> smoothl1_loss (preds, target)</code></pre>
-</blockquote>
+<p><em>xb: [bs x n_vars x seq_len] out: [bs x num_patch x n_vars x patch_len]</em></p>
 <hr>
 </section>
-<section id="huber_loss" class="level3">
-<h3 class="anchored" data-anchor-id="huber_loss">huber_loss</h3>
+<section id="unpatch" class="level3">
+<h3 class="anchored" data-anchor-id="unpatch">unpatch</h3>
 <blockquote class="blockquote">
-<pre><code> huber_loss (preds, target, delta=1)</code></pre>
+<pre><code> unpatch (x, seq_len, remove_padding=True)</code></pre>
 </blockquote>
-<p><em>preds: [bs x num_patch x n_vars x patch_len] targets: [bs x num_patch x n_vars x patch_len]</em></p>
+<p><em>x: [bs/None x patch_num x n_vars x patch_len] returns x: [bs x n_vars x seq_len]</em></p>
 <hr>
 </section>
-<section id="cosine_similarity_loss" class="level3">
-<h3 class="anchored" data-anchor-id="cosine_similarity_loss">cosine_similarity_loss</h3>
+<section id="mask_patches_simple" class="level3">
+<h3 class="anchored" data-anchor-id="mask_patches_simple">mask_patches_simple</h3>
 <blockquote class="blockquote">
-<pre><code> cosine_similarity_loss (preds, target)</code></pre>
+<pre><code> mask_patches_simple (xb, mask_ratio)</code></pre>
 </blockquote>
-<p><em>preds: [bs x num_patch x n_vars x patch_len] targets: [bs x num_patch x n_vars x patch_len]</em></p>
+<p>*Function that masks patches using fixed ratio approach similar to random_masking</p>
+<p>xb: [bs x patch_num x n_vars x patch_len] or nested tensor Returns: x_masked: masked tensor with same shape as input mask: binary mask where 1 indicates masked positions (bs x patch_num x n_vars)*</p>
+</section>
+</section>
+<section id="value-augmentations" class="level2">
+<h2 class="anchored" data-anchor-id="value-augmentations">Value Augmentations</h2>
+<hr>
+<section id="jitter_augmentation" class="level3">
+<h3 class="anchored" data-anchor-id="jitter_augmentation">jitter_augmentation</h3>
+<blockquote class="blockquote">
+<pre><code> jitter_augmentation (x, mask_ratio=0.05, jitter_ratio=0.05, p=1)</code></pre>
+</blockquote>
 <hr>
 </section>
-<section id="mape" class="level3">
-<h3 class="anchored" data-anchor-id="mape">mape</h3>
+<section id="remove_values" class="level3">
+<h3 class="anchored" data-anchor-id="remove_values">remove_values</h3>
 <blockquote class="blockquote">
-<pre><code> mape (preds, target)</code></pre>
+<pre><code> remove_values (x, mask_ratio)</code></pre>
+</blockquote>
+</section>
+</section>
+<section id="shuffle-augmentations" class="level2">
+<h2 class="anchored" data-anchor-id="shuffle-augmentations">Shuffle Augmentations</h2>
+<hr>
+<section id="shuffle_dim" class="level3">
+<h3 class="anchored" data-anchor-id="shuffle_dim">shuffle_dim</h3>
+<blockquote class="blockquote">
+<pre><code> shuffle_dim (x, dim=1, p=0.5)</code></pre>
+</blockquote>
+<p><em>shuffles a dimension randomly along dim x: [bs x n channels x n patches x patch len]</em></p>
+<hr>
+</section>
+<section id="reverse_sequence" class="level3">
+<h3 class="anchored" data-anchor-id="reverse_sequence">reverse_sequence</h3>
+<blockquote class="blockquote">
+<pre><code> reverse_sequence (x, seq_dim=(-1,), p=0.5)</code></pre>
 </blockquote>
 <hr>
 </section>
-<section id="mae_loss" class="level3">
-<h3 class="anchored" data-anchor-id="mae_loss">mae_loss</h3>
+<section id="channel_masking" class="level3">
+<h3 class="anchored" data-anchor-id="channel_masking">channel_masking</h3>
 <blockquote class="blockquote">
-<pre><code> mae_loss (preds, target)</code></pre>
+<pre><code> channel_masking (x, dim=1, p=0.5, specific_channels=None)</code></pre>
 </blockquote>
-<p><em>preds: [bs x num_patch x n_vars x patch_len] targets: [bs x num_patch x n_vars x patch_len]</em></p>
+<p><em>Masks up to n channels - 1 randomly of x or specific channels if provided</em></p>
+</section>
+</section>
+<section id="transforms" class="level2">
+<h2 class="anchored" data-anchor-id="transforms">Transforms</h2>
+<hr>
+<section id="mixupcallbackclassification" class="level3">
+<h3 class="anchored" data-anchor-id="mixupcallbackclassification">MixupCallbackClassification</h3>
+<blockquote class="blockquote">
+<pre><code> MixupCallbackClassification (num_classes, mixup_alpha=0.4,
+                              ignore_index=-100)</code></pre>
+</blockquote>
+<p>*Mixup for 1D data (e.g., time-series).</p>
+<p>This callback applies Mixup to the training data, blending both the input data and the labels.</p>
+<p>See tsai implementation here: https://github.com/timeseriesAI/tsai/blob/bdff96cc8c4c8ea55bc20d7cffd6a72e402f4cb2/tsai/data/mixed_augmentation.py#L43</p>
+<p>Note that this creates non-integer labels/soft labels. Loss functions should be able to handle this.*</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 6%">
+<col style="width: 25%">
+<col style="width: 34%">
+<col style="width: 34%">
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th><strong>Type</strong></th>
+<th><strong>Default</strong></th>
+<th><strong>Details</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>num_classes</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td>mixup_alpha</td>
+<td>float</td>
+<td>0.4</td>
+<td>alpha parameter for the beta distribution</td>
+</tr>
+<tr class="odd">
+<td>ignore_index</td>
+<td>int</td>
+<td>-100</td>
+<td>ignore index</td>
+</tr>
+</tbody>
+</table>
 <hr>
 </section>
-<section id="mse_loss" class="level3">
-<h3 class="anchored" data-anchor-id="mse_loss">mse_loss</h3>
+<section id="transformscallback" class="level3">
+<h3 class="anchored" data-anchor-id="transformscallback">TransformsCallback</h3>
 <blockquote class="blockquote">
-<pre><code> mse_loss (preds, target)</code></pre>
+<pre><code> TransformsCallback (transforms)</code></pre>
 </blockquote>
-<p><em>preds: [bs x num_patch x n_vars x patch_len] targets: [bs x num_patch x n_vars x patch_len]</em></p>
-<hr>
-</section>
-<section id="crossentropyloss" class="level3">
-<h3 class="anchored" data-anchor-id="crossentropyloss">CrossEntropyLoss</h3>
-<blockquote class="blockquote">
-<pre><code> CrossEntropyLoss (ignore_index=-100, reduction='mean', weight=None,
-                   label_smoothing=0, soft_labels=False)</code></pre>
-</blockquote>
-<p><em>Cross entropy loss with ignore_index.</em></p>
-<hr>
-</section>
-<section id="focalloss" class="level3">
-<h3 class="anchored" data-anchor-id="focalloss">FocalLoss</h3>
-<blockquote class="blockquote">
-<pre><code> FocalLoss (weight=None, gamma=2.0, reduction='mean', ignore_index=-100)</code></pre>
-</blockquote>
-<p><em>adapted from tsai, weighted multiclass focal loss https://github.com/timeseriesAI/tsai/blob/bdff96cc8c4c8ea55bc20d7cffd6a72e402f4cb2/tsai/losses.py#L116C1-L140C20</em></p>
+<p><em>Applies a series of transforms to the input data, on train_batch_start.</em></p>
 
 
+</section>
 </section>
 
 </main> <!-- /main -->

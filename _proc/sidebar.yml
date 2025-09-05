@@ -4,9 +4,14 @@ website:
       - index.ipynb
       - 00_bedside.ipynb
       - 03_signal.ipynb
-      - 04_models.ipynb
+      - 05_utils.ipynb
       - 06_train.ipynb
       - 07_loss.ipynb
       - 08_data_preprocessing.ipynb
+      - 09_augmentations.ipynb
       - 10_layers.ipynb
       - 11_heads.ipynb
+      - 12_jepa.ipynb
+      - 13_baselines.ipynb
+      - 17_patchtst.ipynb
+      - 18_tokenizers.ipynb

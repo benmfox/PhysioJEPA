@@ -21,40 +21,6 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-/* CSS for syntax highlighting */
-pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { line-height: 1.25; }
-pre > code.sourceCode > span:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
-code.sourceCode > span { color: inherit; text-decoration: inherit; }
-div.sourceCode { margin: 1em 0; }
-pre.sourceCode { margin: 0; }
-@media screen {
-div.sourceCode { overflow: auto; }
-}
-@media print {
-pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
-}
-pre.numberSource code
-  { counter-reset: source-line 0; }
-pre.numberSource code > span
-  { position: relative; left: -4em; counter-increment: source-line; }
-pre.numberSource code > span > a:first-child::before
-  { content: counter(source-line);
-    position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; display: inline-block;
-    -webkit-touch-callout: none; -webkit-user-select: none;
-    -khtml-user-select: none; -moz-user-select: none;
-    -ms-user-select: none; user-select: none;
-    padding: 0 4px; width: 4em;
-  }
-pre.numberSource { margin-left: 3em;  padding-left: 4px; }
-div.sourceCode
-  {   }
-@media screen {
-pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
-}
 </style>
 
 
@@ -165,8 +131,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./models.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Models</span></a>
+  <a href="./utils.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Utility Functions</span></a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -189,6 +155,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="./augmentations.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Augmentations</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="./layers.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text">Layers</span></a>
   </div>
@@ -197,6 +169,30 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <div class="sidebar-item-container"> 
   <a href="./heads.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">SSL, Fine Tuning, and Linear Probing Heads</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./jepa.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">JEPA For Time Series</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./baselines.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Baselines</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./patchtst.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Patch Time Series Transformer</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./tokenizers.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Tokenizers</span></a>
   </div>
 </li>
     </ul>
@@ -209,31 +205,38 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#linear-layers-for-patches" id="toc-linear-layers-for-patches" class="nav-link active" data-scroll-target="#linear-layers-for-patches">Linear Layers for Patches</a>
+  <li><a href="#miscellaneous" id="toc-miscellaneous" class="nav-link active" data-scroll-target="#miscellaneous">Miscellaneous</a>
   <ul class="collapse">
-  <li><a href="#patch" id="toc-patch" class="nav-link" data-scroll-target="#patch">Patch</a></li>
-  <li><a href="#create_patch" id="toc-create_patch" class="nav-link" data-scroll-target="#create_patch">create_patch</a></li>
-  <li><a href="#patchencoder" id="toc-patchencoder" class="nav-link" data-scroll-target="#patchencoder">PatchEncoder</a></li>
+  <li><a href="#get_activation_fn" id="toc-get_activation_fn" class="nav-link" data-scroll-target="#get_activation_fn">get_activation_fn</a></li>
+  <li><a href="#transpose" id="toc-transpose" class="nav-link" data-scroll-target="#transpose">Transpose</a></li>
+  <li><a href="#identity" id="toc-identity" class="nav-link" data-scroll-target="#identity">Identity</a></li>
   </ul></li>
   <li><a href="#positional-encoding-layers" id="toc-positional-encoding-layers" class="nav-link" data-scroll-target="#positional-encoding-layers">Positional Encoding Layers</a>
   <ul class="collapse">
   <li><a href="#positionalencoding" id="toc-positionalencoding" class="nav-link" data-scroll-target="#positionalencoding">PositionalEncoding</a></li>
   <li><a href="#tape" id="toc-tape" class="nav-link" data-scroll-target="#tape">tAPE</a></li>
   </ul></li>
+  <li><a href="#mask-and-augmentation-layers" id="toc-mask-and-augmentation-layers" class="nav-link" data-scroll-target="#mask-and-augmentation-layers">Mask and Augmentation Layers</a>
+  <ul class="collapse">
+  <li><a href="#patchaugmentations" id="toc-patchaugmentations" class="nav-link" data-scroll-target="#patchaugmentations">PatchAugmentations</a></li>
+  </ul></li>
+  <li><a href="#patch-and-fourier-layers" id="toc-patch-and-fourier-layers" class="nav-link" data-scroll-target="#patch-and-fourier-layers">Patch and Fourier Layers</a>
+  <ul class="collapse">
+  <li><a href="#patch" id="toc-patch" class="nav-link" data-scroll-target="#patch">Patch</a></li>
+  </ul></li>
   <li><a href="#reversible-instance-normalization" id="toc-reversible-instance-normalization" class="nav-link" data-scroll-target="#reversible-instance-normalization">Reversible Instance Normalization</a>
   <ul class="collapse">
   <li><a href="#revin" id="toc-revin" class="nav-link" data-scroll-target="#revin">RevIN</a></li>
   </ul></li>
+  <li><a href="#inception" id="toc-inception" class="nav-link" data-scroll-target="#inception">Inception</a>
+  <ul class="collapse">
+  <li><a href="#inceptionblock" id="toc-inceptionblock" class="nav-link" data-scroll-target="#inceptionblock">InceptionBlock</a></li>
+  <li><a href="#inceptionmodule" id="toc-inceptionmodule" class="nav-link" data-scroll-target="#inceptionmodule">InceptionModule</a></li>
+  </ul></li>
   <li><a href="#attention" id="toc-attention" class="nav-link" data-scroll-target="#attention">Attention</a>
   <ul class="collapse">
-  <li><a href="#multiheadflashattention" id="toc-multiheadflashattention" class="nav-link" data-scroll-target="#multiheadflashattention">MultiheadFlashAttention</a></li>
-  </ul></li>
-  <li><a href="#miscellaneous" id="toc-miscellaneous" class="nav-link" data-scroll-target="#miscellaneous">Miscellaneous</a>
-  <ul class="collapse">
-  <li><a href="#learnablemaskedchanneltokens" id="toc-learnablemaskedchanneltokens" class="nav-link" data-scroll-target="#learnablemaskedchanneltokens">LearnableMaskedChannelTokens</a></li>
-  <li><a href="#identity" id="toc-identity" class="nav-link" data-scroll-target="#identity">Identity</a></li>
-  <li><a href="#get_activation_fn" id="toc-get_activation_fn" class="nav-link" data-scroll-target="#get_activation_fn">get_activation_fn</a></li>
-  <li><a href="#transpose" id="toc-transpose" class="nav-link" data-scroll-target="#transpose">Transpose</a></li>
+  <li><a href="#multiheadattention" id="toc-multiheadattention" class="nav-link" data-scroll-target="#multiheadattention">MultiHeadAttention</a></li>
+  <li><a href="#mlp" id="toc-mlp" class="nav-link" data-scroll-target="#mlp">MLP</a></li>
   </ul></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/benmfox/PhysioJEPA/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></nav>
@@ -266,13 +269,20 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 
 <!-- WARNING: THIS FILE WAS AUTOGENERATED! DO NOT EDIT! -->
-<section id="linear-layers-for-patches" class="level2">
-<h2 class="anchored" data-anchor-id="linear-layers-for-patches">Linear Layers for Patches</h2>
+<section id="miscellaneous" class="level2">
+<h2 class="anchored" data-anchor-id="miscellaneous">Miscellaneous</h2>
 <hr>
-<section id="patch" class="level3">
-<h3 class="anchored" data-anchor-id="patch">Patch</h3>
+<section id="get_activation_fn" class="level3">
+<h3 class="anchored" data-anchor-id="get_activation_fn">get_activation_fn</h3>
 <blockquote class="blockquote">
-<pre><code> Patch (patch_len, stride)</code></pre>
+<pre><code> get_activation_fn (activation)</code></pre>
+</blockquote>
+<hr>
+</section>
+<section id="transpose" class="level3">
+<h3 class="anchored" data-anchor-id="transpose">Transpose</h3>
+<blockquote class="blockquote">
+<pre><code> Transpose (*dims, contiguous=False)</code></pre>
 </blockquote>
 <p>*Base class for all neural network modules.</p>
 <p>Your models should also subclass this class.</p>
@@ -294,19 +304,10 @@ class Model(nn.Module):
 <p>:ivar training: Boolean represents whether this module is in training or evaluation mode. :vartype training: bool*</p>
 <hr>
 </section>
-<section id="create_patch" class="level3">
-<h3 class="anchored" data-anchor-id="create_patch">create_patch</h3>
+<section id="identity" class="level3">
+<h3 class="anchored" data-anchor-id="identity">Identity</h3>
 <blockquote class="blockquote">
-<pre><code> create_patch (xb, patch_len, stride, constant_pad=False,
-               constant_pad_value=0)</code></pre>
-</blockquote>
-<p><em>xb: [bs x n_vars x seq_len]</em></p>
-<hr>
-</section>
-<section id="patchencoder" class="level3">
-<h3 class="anchored" data-anchor-id="patchencoder">PatchEncoder</h3>
-<blockquote class="blockquote">
-<pre><code> PatchEncoder (c_in, patch_len, d_model, shared_embedding)</code></pre>
+<pre><code> Identity ()</code></pre>
 </blockquote>
 <p>*Base class for all neural network modules.</p>
 <p>Your models should also subclass this class.</p>
@@ -325,37 +326,7 @@ class Model(nn.Module):
         return F.relu(self.conv2(x))</code></pre>
 <p>Submodules assigned in this way will be registered, and will also have their parameters converted when you call :meth:<code>to</code>, etc.</p>
 <p>.. note:: As per the example above, an <code>__init__()</code> call to the parent class must be made before assignment on the child.</p>
-<table class="caption-top table">
-<caption>ivar training: Boolean represents whether this module is in training or evaluation mode. :vartype training: bool*</caption>
-<colgroup>
-<col style="width: 15%">
-<col style="width: 84%">
-</colgroup>
-<thead>
-<tr class="header">
-<th></th>
-<th><strong>Details</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>c_in</td>
-<td>the number of input channels</td>
-</tr>
-<tr class="even">
-<td>patch_len</td>
-<td>the length of the patches (either stft or interval length)</td>
-</tr>
-<tr class="odd">
-<td>d_model</td>
-<td>the dimension of the initial linear layers for inputting patches into transformer</td>
-</tr>
-<tr class="even">
-<td>shared_embedding</td>
-<td>indicator of whether to project each channel individually or together</td>
-</tr>
-</tbody>
-</table>
+<p>:ivar training: Boolean represents whether this module is in training or evaluation mode. :vartype training: bool*</p>
 </section>
 </section>
 <section id="positional-encoding-layers" class="level2">
@@ -438,6 +409,65 @@ class Model(nn.Module):
 </table>
 </section>
 </section>
+<section id="mask-and-augmentation-layers" class="level2">
+<h2 class="anchored" data-anchor-id="mask-and-augmentation-layers">Mask and Augmentation Layers</h2>
+<hr>
+<section id="patchaugmentations" class="level3">
+<h3 class="anchored" data-anchor-id="patchaugmentations">PatchAugmentations</h3>
+<blockquote class="blockquote">
+<pre><code> PatchAugmentations (augmentations=['patch_mask', 'jitter_zero_mask',
+                     'reverse_sequence', 'shuffle_channels',
+                     'channel_masking'], patch_mask_ratio=0.0,
+                     jitter_zero_mask_ratio=0.0)</code></pre>
+</blockquote>
+<p>*Base class for all neural network modules.</p>
+<p>Your models should also subclass this class.</p>
+<p>Modules can also contain other Modules, allowing them to be nested in a tree structure. You can assign the submodules as regular attributes::</p>
+<pre><code>import torch.nn as nn
+import torch.nn.functional as F
+
+class Model(nn.Module):
+    def __init__(self) -&gt; None:
+        super().__init__()
+        self.conv1 = nn.Conv2d(1, 20, 5)
+        self.conv2 = nn.Conv2d(20, 20, 5)
+
+    def forward(self, x):
+        x = F.relu(self.conv1(x))
+        return F.relu(self.conv2(x))</code></pre>
+<p>Submodules assigned in this way will be registered, and will also have their parameters converted when you call :meth:<code>to</code>, etc.</p>
+<p>.. note:: As per the example above, an <code>__init__()</code> call to the parent class must be made before assignment on the child.</p>
+<p>:ivar training: Boolean represents whether this module is in training or evaluation mode. :vartype training: bool*</p>
+</section>
+</section>
+<section id="patch-and-fourier-layers" class="level2">
+<h2 class="anchored" data-anchor-id="patch-and-fourier-layers">Patch and Fourier Layers</h2>
+<hr>
+<section id="patch" class="level3">
+<h3 class="anchored" data-anchor-id="patch">Patch</h3>
+<blockquote class="blockquote">
+<pre><code> Patch (patch_len, stride)</code></pre>
+</blockquote>
+<p>*Base class for all neural network modules.</p>
+<p>Your models should also subclass this class.</p>
+<p>Modules can also contain other Modules, allowing them to be nested in a tree structure. You can assign the submodules as regular attributes::</p>
+<pre><code>import torch.nn as nn
+import torch.nn.functional as F
+
+class Model(nn.Module):
+    def __init__(self) -&gt; None:
+        super().__init__()
+        self.conv1 = nn.Conv2d(1, 20, 5)
+        self.conv2 = nn.Conv2d(20, 20, 5)
+
+    def forward(self, x):
+        x = F.relu(self.conv1(x))
+        return F.relu(self.conv2(x))</code></pre>
+<p>Submodules assigned in this way will be registered, and will also have their parameters converted when you call :meth:<code>to</code>, etc.</p>
+<p>.. note:: As per the example above, an <code>__init__()</code> call to the parent class must be made before assignment on the child.</p>
+<p>:ivar training: Boolean represents whether this module is in training or evaluation mode. :vartype training: bool*</p>
+</section>
+</section>
 <section id="reversible-instance-normalization" class="level2">
 <h2 class="anchored" data-anchor-id="reversible-instance-normalization">Reversible Instance Normalization</h2>
 <hr>
@@ -508,39 +538,52 @@ class Model(nn.Module):
 </table>
 </section>
 </section>
+<section id="inception" class="level2">
+<h2 class="anchored" data-anchor-id="inception">Inception</h2>
+<hr>
+<section id="inceptionblock" class="level3">
+<h3 class="anchored" data-anchor-id="inceptionblock">InceptionBlock</h3>
+<blockquote class="blockquote">
+<pre><code> InceptionBlock (in_channels, bottleneck_channels=32, residual=True,
+                 depth=6, groups=1, **kwargs)</code></pre>
+</blockquote>
+<p>*Base class for all neural network modules.</p>
+<p>Your models should also subclass this class.</p>
+<p>Modules can also contain other Modules, allowing them to be nested in a tree structure. You can assign the submodules as regular attributes::</p>
+<pre><code>import torch.nn as nn
+import torch.nn.functional as F
+
+class Model(nn.Module):
+    def __init__(self) -&gt; None:
+        super().__init__()
+        self.conv1 = nn.Conv2d(1, 20, 5)
+        self.conv2 = nn.Conv2d(20, 20, 5)
+
+    def forward(self, x):
+        x = F.relu(self.conv1(x))
+        return F.relu(self.conv2(x))</code></pre>
+<p>Submodules assigned in this way will be registered, and will also have their parameters converted when you call :meth:<code>to</code>, etc.</p>
+<p>.. note:: As per the example above, an <code>__init__()</code> call to the parent class must be made before assignment on the child.</p>
+<p>:ivar training: Boolean represents whether this module is in training or evaluation mode. :vartype training: bool*</p>
+<hr>
+</section>
+<section id="inceptionmodule" class="level3">
+<h3 class="anchored" data-anchor-id="inceptionmodule">InceptionModule</h3>
+<blockquote class="blockquote">
+<pre><code> InceptionModule (in_channels:int, bottleneck_channels:int=32,
+                  bottleneck=True, kernel_size:int=40, groups:int=1)</code></pre>
+</blockquote>
+<p><em>Inception module adapted from https://github.com/timeseriesAI/tsai/blob/main/tsai/models/InceptionTime.py</em></p>
+</section>
+</section>
 <section id="attention" class="level2">
 <h2 class="anchored" data-anchor-id="attention">Attention</h2>
 <hr>
-<section id="multiheadflashattention" class="level3">
-<h3 class="anchored" data-anchor-id="multiheadflashattention">MultiheadFlashAttention</h3>
+<section id="multiheadattention" class="level3">
+<h3 class="anchored" data-anchor-id="multiheadattention">MultiHeadAttention</h3>
 <blockquote class="blockquote">
-<pre><code> MultiheadFlashAttention (d_model:int, n_heads:int, qkv_bias:bool=True,
-                          is_causal:bool=False, attn_dropout:float=0.0,
-                          proj_dropout:float=0.0)</code></pre>
-</blockquote>
-<p>*Multihead attention layer with optional causal masking. Uses flash attention when available in PyTorch 2.0+.</p>
-<p>Args: n_heads (int): Number of attention heads d_model (int): Embedding dimension qkv_bias (bool, optional): Use bias in linear layers. Defaults to False. is_causal (bool, optional): Use causal masking. Defaults to False. attn_dropout (float, optional): Attention dropout probability. Defaults to 0.0. proj_dropout (float, optional): Dropout probability. Defaults to 0.0.</p>
-<p>Note that instead of a key padding mask, we can use a nested tensor to mask out the padding tokens.*</p>
-<div id="cell-13" class="cell">
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>mha <span class="op">=</span> MultiheadFlashAttention(d_model<span class="op">=</span><span class="dv">512</span>, n_heads<span class="op">=</span><span class="dv">8</span>, attn_dropout<span class="op">=</span><span class="fl">0.</span>, proj_dropout<span class="op">=</span><span class="fl">0.</span>)</span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> torch.randn(<span class="dv">2</span><span class="op">*</span><span class="dv">7</span>,<span class="dv">100</span>,<span class="dv">512</span>) <span class="co"># [bs * n_vars x n_patches x d_model]</span></span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>key_padding_mask <span class="op">=</span> torch.zeros(<span class="dv">2</span><span class="op">*</span><span class="dv">7</span>, <span class="dv">100</span>, dtype<span class="op">=</span>torch.<span class="bu">bool</span>)</span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>key_padding_mask[:, <span class="op">-</span><span class="dv">2</span>:] <span class="op">=</span> <span class="va">True</span>  <span class="co"># mask last 2 positions</span></span>
-<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>output <span class="op">=</span> mha(x, key_padding_mask<span class="op">=</span>key_padding_mask)</span>
-<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>output.shape</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
-<pre><code>torch.Size([14, 100, 512])</code></pre>
-</div>
-</div>
-</section>
-</section>
-<section id="miscellaneous" class="level2">
-<h2 class="anchored" data-anchor-id="miscellaneous">Miscellaneous</h2>
-<hr>
-<section id="learnablemaskedchanneltokens" class="level3">
-<h3 class="anchored" data-anchor-id="learnablemaskedchanneltokens">LearnableMaskedChannelTokens</h3>
-<blockquote class="blockquote">
-<pre><code> LearnableMaskedChannelTokens (missing_channel_indices, d_model)</code></pre>
+<pre><code> MultiHeadAttention (dim, num_heads=8, qkv_bias=False, qk_scale=None,
+                     attn_drop=0.0, proj_drop=0.0, rotary_pes=False)</code></pre>
 </blockquote>
 <p>*Base class for all neural network modules.</p>
 <p>Your models should also subclass this class.</p>
@@ -562,42 +605,11 @@ class Model(nn.Module):
 <p>:ivar training: Boolean represents whether this module is in training or evaluation mode. :vartype training: bool*</p>
 <hr>
 </section>
-<section id="identity" class="level3">
-<h3 class="anchored" data-anchor-id="identity">Identity</h3>
+<section id="mlp" class="level3">
+<h3 class="anchored" data-anchor-id="mlp">MLP</h3>
 <blockquote class="blockquote">
-<pre><code> Identity ()</code></pre>
-</blockquote>
-<p>*Base class for all neural network modules.</p>
-<p>Your models should also subclass this class.</p>
-<p>Modules can also contain other Modules, allowing them to be nested in a tree structure. You can assign the submodules as regular attributes::</p>
-<pre><code>import torch.nn as nn
-import torch.nn.functional as F
-
-class Model(nn.Module):
-    def __init__(self) -&gt; None:
-        super().__init__()
-        self.conv1 = nn.Conv2d(1, 20, 5)
-        self.conv2 = nn.Conv2d(20, 20, 5)
-
-    def forward(self, x):
-        x = F.relu(self.conv1(x))
-        return F.relu(self.conv2(x))</code></pre>
-<p>Submodules assigned in this way will be registered, and will also have their parameters converted when you call :meth:<code>to</code>, etc.</p>
-<p>.. note:: As per the example above, an <code>__init__()</code> call to the parent class must be made before assignment on the child.</p>
-<p>:ivar training: Boolean represents whether this module is in training or evaluation mode. :vartype training: bool*</p>
-<hr>
-</section>
-<section id="get_activation_fn" class="level3">
-<h3 class="anchored" data-anchor-id="get_activation_fn">get_activation_fn</h3>
-<blockquote class="blockquote">
-<pre><code> get_activation_fn (activation)</code></pre>
-</blockquote>
-<hr>
-</section>
-<section id="transpose" class="level3">
-<h3 class="anchored" data-anchor-id="transpose">Transpose</h3>
-<blockquote class="blockquote">
-<pre><code> Transpose (*dims, contiguous=False)</code></pre>
+<pre><code> MLP (in_features, hidden_features=None, out_features=None,
+      act_layer=&lt;class 'torch.nn.modules.activation.GELU'&gt;, drop=0.0)</code></pre>
 </blockquote>
 <p>*Base class for all neural network modules.</p>
 <p>Your models should also subclass this class.</p>
