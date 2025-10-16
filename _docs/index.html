@@ -313,6 +313,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li><code>train_hypotension.py</code>: Trains the Attentive classifier to predict hypotension using the trained PatchTST encoder with the <code>train_hypotension.yaml</code> config</li>
 <li><code>train_shock_index.py</code>: Trains the Attentive classifier to predict shock index using the trained PatchTST encoder with the <code>train_shock_index.yaml</code> config</li>
 </ul></li>
+<li><code>ecgjepa/</code> (based on https://arxiv.org/abs/2410.08559):
+<ul>
+<li><code>train_ecgjepa.py</code>: Trains the initial ECG-JEPA foundational transformer model (3 channel, 30 min segments) using the <code>train_ecgjepa.yaml</code> config</li>
+<li><code>train_hypotension_ecgjepa.py</code>: Trains the Attentive classifier (without batch/channel melting) to predict hypotension using the trained ECG-JEPA encoder with the <code>train_hypotension_ecgjepa.yaml</code> config</li>
+<li><code>train_shock_index_ecgjepa.py</code>: Trains the Attentive classifier (without batch/channel melting) to predict shock index using the trained ECG-JEPA encoder with the <code>train_shock_index_ecgjepa.yaml</code> config</li>
+</ul></li>
 <li><code>baselines/</code>:
 <ul>
 <li><code>fcn_baseline_hypotension.py</code>: Trains a supervised FCN model to predict hypotension using the <code>fcn_baseline_hypotension.yaml</code> config</li>

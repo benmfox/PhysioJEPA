@@ -63,6 +63,18 @@ new functionality. Then, run `nbdev_prepare` to generate the
     - `train_shock_index.py`: Trains the Attentive classifier to predict
       shock index using the trained PatchTST encoder with the
       `train_shock_index.yaml` config
+  - `ecgjepa/` (based on https://arxiv.org/abs/2410.08559):
+    - `train_ecgjepa.py`: Trains the initial ECG-JEPA foundational
+      transformer model (3 channel, 30 min segments) using the
+      `train_ecgjepa.yaml` config
+    - `train_hypotension_ecgjepa.py`: Trains the Attentive classifier
+      (without batch/channel melting) to predict hypotension using the
+      trained ECG-JEPA encoder with the `train_hypotension_ecgjepa.yaml`
+      config
+    - `train_shock_index_ecgjepa.py`: Trains the Attentive classifier
+      (without batch/channel melting) to predict shock index using the
+      trained ECG-JEPA encoder with the `train_shock_index_ecgjepa.yaml`
+      config
   - `baselines/`:
     - `fcn_baseline_hypotension.py`: Trains a supervised FCN model to
       predict hypotension using the `fcn_baseline_hypotension.yaml`
