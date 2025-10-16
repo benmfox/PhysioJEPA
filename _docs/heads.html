@@ -209,6 +209,7 @@ ul.task-list li input[type="checkbox"] {
   <li><a href="#attentivepooler" id="toc-attentivepooler" class="nav-link" data-scroll-target="#attentivepooler">AttentivePooler</a></li>
   <li><a href="#crossattentionblock" id="toc-crossattentionblock" class="nav-link" data-scroll-target="#crossattentionblock">CrossAttentionBlock</a></li>
   <li><a href="#crossattention" id="toc-crossattention" class="nav-link" data-scroll-target="#crossattention">CrossAttention</a></li>
+  <li><a href="#attentiveclassifiernomelt" id="toc-attentiveclassifiernomelt" class="nav-link" data-scroll-target="#attentiveclassifiernomelt">AttentiveClassifierNoMelt</a></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/benmfox/PhysioJEPA/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></nav>
     </div>
@@ -317,6 +318,19 @@ class Model(nn.Module):
 <p>Submodules assigned in this way will be registered, and will also have their parameters converted when you call :meth:<code>to</code>, etc.</p>
 <p>.. note:: As per the example above, an <code>__init__()</code> call to the parent class must be made before assignment on the child.</p>
 <p>:ivar training: Boolean represents whether this module is in training or evaluation mode. :vartype training: bool*</p>
+<hr>
+</section>
+<section id="attentiveclassifiernomelt" class="level3">
+<h3 class="anchored" data-anchor-id="attentiveclassifiernomelt">AttentiveClassifierNoMelt</h3>
+<blockquote class="blockquote">
+<pre><code> AttentiveClassifierNoMelt (embed_dim=768, num_heads=12, mlp_ratio=4.0,
+                            depth=1, norm_layer=&lt;class
+                            'torch.nn.modules.normalization.LayerNorm'&gt;,
+                            init_std=0.02, qkv_bias=True,
+                            num_classes=1000, complete_block=True,
+                            num_queries=1, affine=False, c_in=7)</code></pre>
+</blockquote>
+<p><em>Attentive Classifier</em></p>
 
 
 </section>

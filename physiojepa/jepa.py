@@ -4,7 +4,9 @@
 
 # %% auto 0
 __all__ = ['JEPABlock', 'apply_masks', 'create_masks', 'Encoder', 'Predictor', 'variance_loss', 'loss_pred', 'mse_variance_loss',
-           'JEPASimpleLightning']
+           'JEPASimpleLightning', 'get_1d_sincos_pos_embed_from_grid', 'get_2d_sincos_pos_embed_from_grid',
+           'get_2d_sincos_pos_embed', 'Encoder_Block', 'Predictor_Block', 'MaskTransformer', 'MaskTransformerPredictor',
+           'ECGJEPALightning']
 
 # %% ../nbs/12_jepa.ipynb 3
 import torch, math, torch.nn.functional as F, torch.nn as nn, copy, numpy as np, lightning.pytorch as pl, warnings
@@ -797,6 +799,531 @@ class JEPASimpleLightning(pl.LightningModule):
 
         self.log("val_loss", loss, prog_bar=True, on_step=True, on_epoch=True, sync_dist=True)
 
+    def configure_optimizers(self):
+        param_groups = [ # exclude bias and layer norm parameters from weight decay
+            {
+                'params': (p for n, p in self.encoder.named_parameters()
+                        if ('bias' not in n) and (len(p.shape) != 1))
+            }, {
+                'params': (p for n, p in self.predictor.named_parameters()
+                        if ('bias' not in n) and (len(p.shape) != 1))
+            }, {
+                'params': (p for n, p in self.encoder.named_parameters()
+                        if ('bias' in n) or (len(p.shape) == 1)),
+                'WD_exclude': True,
+                'weight_decay': 0,
+            }, {
+                'params': (p for n, p in self.predictor.named_parameters()
+                        if ('bias' in n) or (len(p.shape) == 1)),
+                'WD_exclude': True,
+                'weight_decay': 0,
+            },
+        ]
+        self.optimizer = torch.optim.AdamW(param_groups, lr=self.learning_rate, weight_decay=self.weight_decay if not self.use_weight_decay_scheduler else 0.0, fused=False) if self.optimizer_type == 'adamw' else\
+                     torch.optim.Adam(param_groups, lr=self.learning_rate, weight_decay=self.weight_decay if not self.use_weight_decay_scheduler else 0.0, fused=False)
+        if self.scheduler_type == 'onecycle':
+            scheduler = OneCycleLR(self.optimizer, epochs=self.epochs, steps_per_epoch=self.ipe, **self.scheduler_kwargs)
+            lr_scheduler = {'scheduler': scheduler, 'interval': 'step'}
+            return {'optimizer': self.optimizer, 'lr_scheduler': lr_scheduler}
+        elif self.scheduler_type == 'cosineannealingwarmrestarts':
+            scheduler = CosineAnnealingWarmRestarts(self.optimizer, **self.scheduler_kwargs) # T_0=self.epochs//10, T_mult=2, eta_min=1e-8) # lr max is initial LR
+            lr_scheduler = {'scheduler': scheduler, 'interval': 'epoch'}
+            return {'optimizer': self.optimizer, 'lr_scheduler': lr_scheduler}
+        else:
+            return self.optimizer
+
+# %% ../nbs/12_jepa.ipynb 10
+def get_1d_sincos_pos_embed_from_grid(embed_dim, pos):
+    """
+    embed_dim: output dimension for each position
+    pos: a list of positions to be encoded: size (M,)
+    out: (M, D)
+    """
+    assert embed_dim % 2 == 0
+    omega = np.arange(embed_dim // 2, dtype=float)
+    omega /= embed_dim / 2.
+    omega = 1. / 10000**omega   # (D/2,)
+
+    pos = pos.reshape(-1)   # (M,)
+    out = np.einsum('m,d->md', pos, omega)   # (M, D/2), outer product
+
+    emb_sin = np.sin(out)  # (M, D/2)
+    emb_cos = np.cos(out)  # (M, D/2)
+
+    emb = np.concatenate([emb_sin, emb_cos], axis=1)  # (M, D)
+    return emb
+
+def get_2d_sincos_pos_embed_from_grid(embed_dim, grid):
+    assert embed_dim % 2 == 0
+
+    # use half of dimensions to encode grid_h
+    emb_h = get_1d_sincos_pos_embed_from_grid(embed_dim // 2, grid[0])  # (H*W, D/2)
+    emb_w = get_1d_sincos_pos_embed_from_grid(embed_dim // 2, grid[1])  # (H*W, D/2)
+
+    emb = np.concatenate([emb_h, emb_w], axis=1)  # (H*W, D)
+    return emb
+
+def get_2d_sincos_pos_embed(embed_dim, grid_size_h, grid_size_w, cls_token=False):
+    """
+    grid_size_h: int of the grid height
+    grid_size_w: int of the grid width
+    return:
+    pos_embed: [grid_size_h*grid_size_w, embed_dim] or [1+grid_size_h*grid_size_w, embed_dim] (w/ or w/o cls_token)
+    """
+    grid_h = np.arange(grid_size_h, dtype=float)
+    grid_w = np.arange(grid_size_w, dtype=float)
+    grid = np.meshgrid(grid_w, grid_h)  # here w goes first
+    grid = np.stack(grid, axis=0)
+
+    grid = grid.reshape([2, 1, grid_size_h, grid_size_w])
+    pos_embed = get_2d_sincos_pos_embed_from_grid(embed_dim, grid)
+    if cls_token:
+        pos_embed = np.concatenate([np.zeros([1, embed_dim]), pos_embed], axis=0)
+    return pos_embed
+
+    
+class Encoder_Block(nn.Module):
+    def __init__(self, embed_dim=384, depth=12, num_heads=6, mlp_ratio=4., qkv_bias=False, qk_scale=None,
+                 drop_rate=0., attn_drop_rate=0., drop_path_rate=0., norm_layer=nn.LayerNorm):
+        super().__init__() 
+
+        self.blocks = nn.ModuleList([
+            JEPABlock(
+                dim=embed_dim, num_heads=num_heads, mlp_ratio=mlp_ratio, qkv_bias=qkv_bias, qk_scale=qk_scale,
+                drop=drop_rate, attn_drop=attn_drop_rate, 
+                norm_layer=norm_layer)
+            for i in range(depth)])
+
+    def forward(self, x, pos, attention_mask=None):
+        for _, block in enumerate(self.blocks):
+            x = block(x + pos, attention_mask)
+        return x
+    
+class Predictor_Block(nn.Module):
+    def __init__(self, predictor_embed_dim=192, depth=4, num_heads=6, mlp_ratio=4., qkv_bias=False, qk_scale=None,
+                 drop_rate=0., attn_drop_rate=0., drop_path_rate=0.):
+        super().__init__()    
+        self.blocks = nn.ModuleList([
+            JEPABlock(
+                dim=predictor_embed_dim, num_heads=num_heads, mlp_ratio=mlp_ratio, qkv_bias=qkv_bias, qk_scale=qk_scale,
+                drop=drop_rate, attn_drop=attn_drop_rate
+                )
+            for i in range(depth)])
+    
+    def forward(self, x, pos, attention_mask=None):
+        for _, block in enumerate(self.blocks):
+            x = block(x + pos, attention_mask)
+        return x
+    
+
+# used for target/context encoding
+class MaskTransformer(nn.Module):
+    def __init__(
+                self, 
+                d_model=384,
+                num_layers=12,
+                nhead=6,
+                mlp_ratio=4.0,
+                qkv_bias=False,
+                qk_scale=None,
+                drop_rate=0.0,
+                attn_drop_rate=0.0,
+                drop_path_rate=0.0,
+                norm_layer=nn.LayerNorm,
+                init_std=0.02,
+                mask_scale=(0.3, .5),
+                mask_type='block',
+                pe_type='sincos',
+                c_in=3,
+                num_patches=50,
+                patch_size=50,
+                ):
+        super().__init__()
+
+        self.mask_scale = mask_scale
+        self.init_std = init_std
+        # self.mask_token = nn.Parameter(torch.zeros(1, 1, embed_dim))
+
+        dpr = [x.item() for x in torch.linspace(0, drop_path_rate, num_layers)]
+        self.patch_layer = Patch(patch_len=patch_size, stride=patch_size)
+        self.encoder_blocks = Encoder_Block(embed_dim=d_model, depth=num_layers, num_heads=nhead, mlp_ratio=mlp_ratio, qkv_bias=qkv_bias, qk_scale=qk_scale, drop_rate=drop_rate, attn_drop_rate=attn_drop_rate, drop_path_rate=dpr, norm_layer=norm_layer)
+        self.norm = nn.LayerNorm(d_model)
+        self.c=c_in
+        self.p = num_patches
+        self.t=patch_size
+        self.embed_dim = d_model
+        self.W_P = nn.Linear(self.t,d_model)
+        
+        if pe_type == 'learnable':
+            pos_embed = torch.empty((self.c*self.p, d_model))
+            nn.init.uniform_(pos_embed, -0.02, 0.02)
+            self.pos_embed = nn.Parameter(pos_embed, requires_grad=True)
+        elif pe_type == 'sincos':
+            self.pos_embed = nn.Parameter(torch.zeros(self.c*self.p, d_model), requires_grad=False)
+            pos_embed = get_2d_sincos_pos_embed(d_model,self.c,self.p)
+            self.pos_embed.data.copy_(torch.from_numpy(pos_embed).float())
+
+        self.mask_type = mask_type
+        # initialize the learnable token
+        # trunc_normal_(self.mask_token, std=init_std)
+        self.apply(self._init_weights)
+        self.fix_init_weight()
+
+    def fix_init_weight(self):
+        def rescale(param, layer_id):
+            param.div_(math.sqrt(2.0 * layer_id))
+
+        for layer_id, layer in enumerate(self.encoder_blocks.blocks):
+            rescale(layer.attn.proj.weight.data, layer_id + 1)
+            rescale(layer.mlp.fc2.weight.data, layer_id + 1)
+
+    def _init_weights(self, m):
+        if isinstance(m, nn.Linear):
+            trunc_normal_(m.weight, std=self.init_std)
+            if isinstance(m, nn.Linear) and m.bias is not None:
+                nn.init.constant_(m.bias, 0)
+        elif isinstance(m, nn.LayerNorm):
+            nn.init.constant_(m.bias, 0)
+            nn.init.constant_(m.weight, 1.0)
+        elif isinstance(m, nn.Conv1d):
+            trunc_normal_(m.weight, std=self.init_std)
+            if m.bias is not None:
+                nn.init.constant_(m.bias, 0)
+
+    def _make_rand_mask(self, mask_scale):
+        mask = torch.zeros(self.p, dtype=torch.bool)
+        mask_ratio = mask_scale[0] + (mask_scale[1] - mask_scale[0]) * torch.rand(1).item()
+        mask_num = int(self.p * mask_ratio)
+        random_indices = torch.randperm(self.p)[:mask_num]
+        mask[random_indices] = True
+        return mask
+    
+    def _make_block_mask(self, mask_scale):
+        mask = torch.zeros(self.p, dtype=torch.bool)
+        for i in range(4):
+            mask_ratio = mask_scale[0] + (mask_scale[1] - mask_scale[0]) * torch.rand(1).item()
+            mask_num = int(self.p * mask_ratio)
+            block_index = torch.randperm(self.p - mask_num)[0]
+            mask[block_index:block_index+mask_num] = True
+        return mask
+    
+    def _cross_attention_mask(self):
+        size = self.c * self.p
+
+        # Create row-wise mask
+        row_mask = torch.zeros((size, size))
+        for i in range(self.c):
+            row_mask[i*self.p:(i+1)*self.p, i*self.p:(i+1)*self.p] = 1
+
+        # Create column-wise mask
+        col_mask = torch.zeros((size, size))
+        for i in range(self.p):
+            col_mask[i::self.p, i::self.p] = 1
+
+        # Combine row-wise and column-wise masks
+        combined_mask = row_mask + col_mask
+        # Ensure values are binary
+        combined_mask = combined_mask.clamp(max=1)
+
+        return combined_mask
+
+    def forward(self, x, mask=None):
+        '''
+        x : (bs, c, p, t)
+        '''
+        x = self.patch_layer(x)  # (bs, c, L) -> (bs, c, p, t)
+        x = x.transpose(1,2)  # (bs, c, p, t)
+        bs, c, p, t = x.shape
+        assert c == self.c, 'Input tensor has wrong shape'
+        assert p == self.p, 'Input tensor has wrong shape'
+        assert t == self.t, 'Input tensor has wrong shape'
+
+        x = x.reshape(bs, c*p, t)
+
+        pos_embed = self.pos_embed.unsqueeze(0).expand(x.size(0), -1, -1)
+
+        # Generate or use provided mask   
+        if mask is None:
+            if self.mask_type == 'random':
+                mask_idx = self._make_rand_mask(self.mask_scale)
+            elif self.mask_type == 'block':
+                mask_idx = self._make_block_mask(self.mask_scale)
+        else:
+            mask_idx = mask
+
+        vis_idx = ~mask_idx
+        vis_idx = vis_idx.repeat(c)   
+
+        # Apply projection to input tensor
+        x = self.W_P(x)  # (bs, c*p, t) -> (bs, c*p, embed_dim)
+
+        # Apply encoder block
+        attention_mask = self._cross_attention_mask().to(x.device) # (c*p, c*p)
+
+        # Slice x and positional embeddings if mask is provided
+        if mask is not None:
+            x = x[:,vis_idx] # (bs, c, p, embed_dim) -> (bs, c, p', embed_dim)
+            pos_embed = pos_embed[:,vis_idx]  # (bs, c, p, embed_dim) -> (bs, c, p', embed_dim)
+            attention_mask = attention_mask[vis_idx][:,vis_idx]
+        
+        x = self.encoder_blocks(x, pos_embed, attention_mask)
+
+        # Apply normalization if specified
+        if self.norm is not None:
+            x = self.norm(x)
+
+        return x, mask_idx
+    
+
+class MaskTransformerPredictor(nn.Module):
+    def __init__(
+                self, 
+                d_model=384,
+                predictor_embed_dim=192,
+                num_layers=4,
+                nhead=6,
+                mlp_ratio=4.0,
+                qkv_bias=False,
+                qk_scale=None,
+                drop_rate=0.0,
+                attn_drop_rate=0.0,
+                drop_path_rate=0.0,
+                norm_layer=nn.LayerNorm,
+                init_std=0.02,  
+                pe_type='sincos',
+                c_in=9,
+                num_patches=50,
+                patch_size=50,  
+                ):
+        
+        super().__init__()
+        self.predictor_embed = nn.Linear(d_model, predictor_embed_dim, bias=True)
+        self.embed_dim = d_model
+        self.c = c_in
+        self.p = num_patches
+        self.t = patch_size
+        self.mask_token = nn.Parameter(torch.zeros(1, 1, predictor_embed_dim))
+
+        if pe_type == 'learnable':
+            pos_embed = torch.empty((self.p, predictor_embed_dim))
+            nn.init.uniform_(pos_embed, -0.02, 0.02)
+            self.pos_embed = nn.Parameter(pos_embed, requires_grad=False)
+        elif pe_type == 'sincos':
+            self.pos_embed = nn.Parameter(torch.zeros(self.p, predictor_embed_dim), requires_grad=False)
+            pos_embed = get_2d_sincos_pos_embed(predictor_embed_dim,1,self.p)
+            self.pos_embed.data.copy_(torch.from_numpy(pos_embed).float())
+
+        dpr = [x.item() for x in torch.linspace(0, drop_path_rate, num_layers)]
+        self.predictor_blocks = Predictor_Block(predictor_embed_dim=predictor_embed_dim, depth=num_layers, 
+                                                num_heads=nhead, mlp_ratio=mlp_ratio, qkv_bias=qkv_bias, 
+                                                qk_scale=qk_scale, drop_rate=drop_rate, 
+                                                attn_drop_rate=attn_drop_rate, drop_path_rate=dpr)
+        
+        self.predictor_norm = norm_layer(predictor_embed_dim)
+        self.predictor_proj = nn.Linear(predictor_embed_dim, d_model, bias=True)
+
+        self.init_std = init_std
+        trunc_normal_(self.mask_token, std=init_std)
+        self.apply(self._init_weights)
+        self.fix_init_weight()
+
+
+    def fix_init_weight(self):
+        def rescale(param, layer_id):
+            param.div_(math.sqrt(2.0 * layer_id))
+
+        for layer_id, layer in enumerate(self.predictor_blocks.blocks):
+            rescale(layer.attn.proj.weight.data, layer_id + 1)
+            rescale(layer.mlp.fc2.weight.data, layer_id + 1)
+
+    def _init_weights(self, m):
+        if isinstance(m, nn.Linear):
+            trunc_normal_(m.weight, std=self.init_std)
+            if isinstance(m, nn.Linear) and m.bias is not None:
+                nn.init.constant_(m.bias, 0)
+        elif isinstance(m, nn.LayerNorm):
+            nn.init.constant_(m.bias, 0)
+            nn.init.constant_(m.weight, 1.0)
+        elif isinstance(m, nn.Conv1d):
+            trunc_normal_(m.weight, std=self.init_std)
+            if m.bias is not None:
+                nn.init.constant_(m.bias, 0)
+
+
+    def forward(self, x, mask):
+        num_mask = mask.sum()
+        x = self.predictor_embed(x)
+        bs,_,pred_dim = x.shape
+        x = x.reshape(bs*self.c, -1, pred_dim) # (bs, c*p, embed_dim) -> (bs*c, p, embed_dim)
+        mask_token = self.mask_token.expand(x.size(0), num_mask, pred_dim)
+        x = torch.cat([x, mask_token], dim=1)
+
+        # reorder pos
+        pos = self.pos_embed
+
+        mask = mask
+        vis_idx = (~mask).nonzero(as_tuple=True)[0]
+        mask_idx = mask.nonzero(as_tuple=True)[0]
+        idx = torch.cat((vis_idx, mask_idx))        
+        
+        pos = pos[idx]
+        pos = pos.unsqueeze(0).expand(x.size(0), -1, -1)
+
+        x = self.predictor_blocks(x, pos)
+        x = self.predictor_norm(x) 
+        x = self.predictor_proj(x)
+
+        x = x.reshape(bs, -1, self.embed_dim)
+        return x
+
+
+class ECGJEPALightning(pl.LightningModule):
+    def __init__(
+                self, 
+                encoder_kwargs,
+                predictor_kwargs,
+                learning_rate,
+                train_size,
+                batch_size,
+                n_gpus,
+                weight_decay=0.04,
+                use_weight_decay_scheduler=False,
+                final_weight_decay=0.4,
+                epochs=100,
+                optimizer_type='adamw',
+                scheduler_type='OneCycle',
+                ema_decay=0.996,
+                scheduler_kwargs={},
+                transforms=None,
+                ):
+        
+        super().__init__()
+        self.learning_rate = learning_rate
+        self.train_size = train_size
+        self.batch_size = batch_size
+        self.n_gpus = n_gpus
+        self.weight_decay = weight_decay
+        self.use_weight_decay_scheduler = use_weight_decay_scheduler
+        self.final_weight_decay = final_weight_decay
+        self.epochs = epochs
+        self.optimizer_type = optimizer_type.lower()
+        self.scheduler_type = scheduler_type.lower()
+        self.scheduler_kwargs = scheduler_kwargs
+        self.ema_decay = ema_decay
+        self.transforms = transforms
+        self.encoder = MaskTransformer(**encoder_kwargs)
+        self.c = encoder_kwargs['c_in']
+        self.p = encoder_kwargs['num_patches']
+        self.d_model = encoder_kwargs['d_model']
+        self.ipe = self.train_size//self.batch_size
+        self.total_steps = int(self.ipe*self.epochs)
+
+        self.target_encoder = copy.deepcopy(self.encoder).requires_grad_(False) # no grad, ema weight updates
+
+        self.predictor = MaskTransformerPredictor(**predictor_kwargs)
+        self.loss_fn = nn.SmoothL1Loss()
+        self.save_hyperparameters()
+    
+    def get_momentum_value(self):
+        """Calculate momentum value based on current training step"""
+        current_step = self.global_step  # PyTorch Lightning tracks this automatically
+        # Ensure we don't exceed maximum momentum
+        progress = min(current_step / self.total_steps, 1.0)
+        # Linear warmup from ema_decay to 1.0
+        momentum = self.ema_decay + progress * (1.0 - self.ema_decay)
+        return momentum
+    
+
+    def ema_update(self, context_encoder, target_encoder):
+        with torch.no_grad():
+            m = self.get_momentum_value()
+            for param_q, param_k in zip(context_encoder.parameters(), target_encoder.parameters()):
+                param_k.data.mul_(m).add_((1.-m) * param_q.detach().data)
+                param_k.requires_grad_(False)
+        return target_encoder
+
+    def forward(self, x):
+
+        x, _ = self.encoder(x) # bs x c*p x d_model
+        return x
+    
+    def training_step(self, batch, batch_idx):
+        if self.transforms is not None:
+            batch = self.transforms(batch)
+        x, _ = batch
+        bs = x.size(0)
+        # target process
+        with torch.no_grad():
+            h, mask = self.target_encoder(x) # x: (bs,c, p,t), h: (bs,c*p,embed_dim)
+            h = torch.nn.functional.layer_norm(h, (h.size(-1),))  # normalize over feature-dimension   
+            h = h.reshape(bs, self.c, self.p, -1) # (bs,c,p,embed_dim)
+            masked_h = h[:,:,mask,:]
+            masked_h = masked_h.reshape(bs, -1, h.size(-1))
+
+        # context process
+        x, _ = self.encoder(x, mask) # (bs,c,p,t) -> (bs,c*p,embed_dim)
+        z = self.predictor(x, mask) # (bs,c*p,embed_dim)->(bs,c*p,proj_dim)
+           
+        # slicing
+        num_mask = mask.sum()
+        z_pred = z.reshape(bs, self.c, self.p, -1)[:,:,-num_mask:,:]
+        z_pred = z_pred.reshape(bs, -1, z.size(-1))
+
+        loss = self.loss_fn(z_pred, masked_h)
+        loss = loss.to(self.device)
+        self.log('train_loss', loss, prog_bar=True, on_step=True, on_epoch=True, sync_dist=True)
+        return loss
+    
+    def validation_step(self, batch, batch_idx):
+        x, _ = batch
+        bs = x.size(0)
+
+        with torch.no_grad():
+            h, mask = self.target_encoder(x) # x: (bs,c, p,t), h: (bs,c*p,embed_dim)
+            h = torch.nn.functional.layer_norm(h, (h.size(-1),))  # normalize over feature-dimension   
+            h = h.reshape(bs, self.c, self.p, -1) # (bs,c,p,embed_dim)
+            masked_h = h[:,:,mask,:]
+            masked_h = masked_h.reshape(bs, -1, h.size(-1))
+
+        # context process
+        x, _ = self.encoder(x, mask) # (bs,c,p,t) -> (bs,c*p,embed_dim)
+        z = self.predictor(x, mask) # (bs,c*p,embed_dim)->(bs,c*p,proj_dim)
+           
+        # slicing
+        num_mask = mask.sum()
+        z_pred = z.reshape(bs, self.c, self.p, -1)[:,:,-num_mask:,:]
+        z_pred = z_pred.reshape(bs, -1, z.size(-1))
+
+        loss = self.loss_fn(z_pred, masked_h)
+        loss = loss.to(self.device)
+
+        self.log("val_loss", loss, prog_bar=True, on_step=True, on_epoch=True, sync_dist=True)
+
+    def on_train_batch_end(self, outputs, batch, batch_idx):
+        """Called after each training batch ends"""
+        # Update target encoder weights using EMA
+        self.target_encoder = self.ema_update(
+            self.encoder, 
+            self.target_encoder
+        )
+
+    def on_train_batch_start(self, batch, batch_idx):
+        # update weight decay
+        if self.use_weight_decay_scheduler:
+            step = self.global_step
+            T_max = int(self.ipe * self.epochs)
+            progress = step / T_max
+            new_wd = self.final_weight_decay + (self.weight_decay - self.final_weight_decay) * 0.5 * (1. + math.cos(math.pi * progress))
+
+            if self.final_weight_decay <= self.weight_decay:
+                new_wd = max(self.final_weight_decay, new_wd)
+            else:
+                new_wd = min(self.final_weight_decay, new_wd)
+
+            for group in self.optimizer.param_groups:
+                if ('WD_exclude' not in group) or not group['WD_exclude']:
+                    group['weight_decay'] = new_wd
+    
     def configure_optimizers(self):
         param_groups = [ # exclude bias and layer norm parameters from weight decay
             {

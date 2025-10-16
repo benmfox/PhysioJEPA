@@ -13,7 +13,7 @@ paths:
   data_dir: "zarr_store/allzarr/"
   models_dir: "models_hypotension_baseline/"
   outcome_df_path: 'hypotension_labels_mimic_all_events_rolling5min.csv.gz'
-  dataset_filename: '125Hz_II_V_1800sec_hypotension_label_0.2_nan_tolerance_rolling5min_all_events_5min_forecast_n'
+  dataset_filename: 'ABP_II_PLETH_125Hz_1800sec_hypotension_label_0.2_nan_tolerance_rolling5min_all_events_5min_forecast_n'
 
 # Dataset Configuration
 dataset:

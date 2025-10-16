@@ -13,7 +13,6 @@ run_config:
 paths:
   data_dir: "zarr_store/allzarr/"
   models_dir: "models_bedside_self_supervised/"
-  outcome_df_path: 'hypotension_labels_mimic_all_events_rolling5min.csv.gz'
   dataset_filename: "125Hz_ABPIIPLETHchannels_1800sec_segment_1800sec_stride_all"
 
 # Dataset Configuration
@@ -30,7 +29,6 @@ dataset:
   use_transforms: false
   normalize_signals: true
   require_all_channels: true
-  y_outcome: 'hypotension_label'
 
 # Model Architecture
 encoder:

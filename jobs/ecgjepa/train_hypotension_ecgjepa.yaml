@@ -1,33 +1,35 @@
 # Bedside Hypotension Prediction - Patch Model with SS Head
 
 run_config:
-  model_type: "patch_jepa_ss_head"
-  wandb_project: "Shock Index JEPA Prediction"
+  model_type: "patch_ecgjepa_ss_head"
+  wandb_project: "ECG JEPA Prediction"
   model_run: "1"
-  name: "jepa_attentive_classifier_si"
+  name: "ecgjepa_hypotension"
   random_state: 16
   precision: "bf16-mixed"
+
 
 # Data Paths
 paths:
   data_dir: "zarr_store/allzarr/"
   encoder_dir: "models_bedside_self_supervised/"
   pretrained_encoder_path: 'last.ckpt'
-  models_dir: "models_shock_jepa_supervised/"
-  outcome_df_path: 'shock_index_labels_mimic_all_events_rolling5min.csv.gz'
-  dataset_filename: 'ABP_II_PLETH_125Hz_1800sec_shock_label_0.2_nan_tolerance_rolling5min_all_events_5min_forecast_n'
+  models_dir: "models_hypotension_jepa_supervised/"
+  outcome_df_path: 'hypotension_labels_mimic_all_events_rolling5min.csv.gz'
+  dataset_filename: 'ABP_II_PLETH_125Hz_1800sec_hypotension_label_0.2_nan_tolerance_rolling5min_all_events_5min_forecast_n'
 
 # Dataset Configuration
 dataset:
   channels: ["ABP", "II", "PLETH"]
+  ext_channels: ['ART1', 'II', 'SPO2']
   frequency: 125
-  forecast_window_sec: [300]  # 5 minutes
-  sample_seq_len_seconds: 1800  # 30 minutes
-  win_length: 125  # 1 second at 125Hz
+  forecast_window_sec: [300] 
+  sample_seq_len_seconds: 1800 
+  win_length: 125 
   overlap: 0.0
   constant_nan_tolerance: 0.2
   y_padding_mask: -100
-  y_outcome: "shock_index_label"
+  y_outcome: "hypotension_label"
   require_all_channels: true
   normalize_signals: true
   use_transforms: true
@@ -41,14 +43,14 @@ lp_head:
   qkv_bias: true
   num_classes: 1
   complete_block: true
-  affine: false
-
+  affine: false # not implemented for ecgjepa
+  
 # Training Configuration
 training:
   batch_size: 128
   epochs: 20
   n_gpus: 1
-  num_workers: 16
+  num_workers: 32
   accumulate_grad_batches: 1
   val_check_interval: 1.0
   gradient_clip_val: 1.0
@@ -63,7 +65,7 @@ training:
 # Optimizer Configuration
 optimizer:
   learning_rate: 0.000001
-  weight_decay: 0.01
+  weight_decay: 0.0001
   use_weight_decay_scheduler: false
   final_weight_decay: 0.4
   optimizer_type: "AdamW"
@@ -71,7 +73,7 @@ optimizer:
 # OneCycle Scheduler Parameters
 scheduler:
   scheduler_type: "OneCycle"
-  max_lr:  0.001
+  max_lr: 0.01
   div_factor: 25
   final_div_factor: 10000
   pct_start: 0.3

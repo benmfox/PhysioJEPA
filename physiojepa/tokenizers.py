@@ -9,7 +9,7 @@ __all__ = ['TS_Tokenizer', 'TS_Tokenizer_Complex', 'LinearTokenizer', 'Inception
 import torch, torch.nn.functional as F, torch.nn as nn
 from .layers import Patch, InceptionBlock
 
-# %% ../nbs/18_tokenizers.ipynb 4
+# %% ../nbs/18_tokenizers.ipynb 8
 class TS_Tokenizer(nn.Module):
     """
     Tokenizer class based on a Conv1D
@@ -182,7 +182,7 @@ class InceptionTokenizer(nn.Module):
         return x
 
 
-# %% ../nbs/18_tokenizers.ipynb 5
+# %% ../nbs/18_tokenizers.ipynb 9
 class PatchEncoder(nn.Module):
     def __init__(self, 
                  c_in, # the number of input channels

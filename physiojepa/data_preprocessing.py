@@ -194,7 +194,7 @@ def calculate_samples_forecast(zarr_file, outcome_start_times, outcome_durations
         raise ValueError("outcome_start_times and outcome_vals must have same length")
     sample_seq_len = int(sample_seq_len_sec * frequency)
     outcome_start_idxs = [int(t * frequency) for t in outcome_start_times]
-    outcome_end_idxs = [s + int(e * frequency) for s,e in zip(outcome_start_idxs,outcome_durations)]
+    outcome_end_idxs = [s + int(e * frequency) for s,e in zip(outcome_start_idxs, outcome_durations)]
     forecast_offsets = [int(f * frequency) for f in forecast_window_sec]
     
     root_grp = zarr.open(zarr_file)

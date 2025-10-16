@@ -217,6 +217,17 @@ ul.task-list li input[type="checkbox"] {
   <li><a href="#predictor" id="toc-predictor" class="nav-link" data-scroll-target="#predictor">Predictor</a></li>
   <li><a href="#jepasimplelightning" id="toc-jepasimplelightning" class="nav-link" data-scroll-target="#jepasimplelightning">JEPASimpleLightning</a></li>
   </ul></li>
+  <li><a href="#ecg-jepa" id="toc-ecg-jepa" class="nav-link" data-scroll-target="#ecg-jepa">ECG-JEPA</a>
+  <ul class="collapse">
+  <li><a href="#ecgjepalightning" id="toc-ecgjepalightning" class="nav-link" data-scroll-target="#ecgjepalightning">ECGJEPALightning</a></li>
+  <li><a href="#masktransformerpredictor" id="toc-masktransformerpredictor" class="nav-link" data-scroll-target="#masktransformerpredictor">MaskTransformerPredictor</a></li>
+  <li><a href="#masktransformer" id="toc-masktransformer" class="nav-link" data-scroll-target="#masktransformer">MaskTransformer</a></li>
+  <li><a href="#predictor_block" id="toc-predictor_block" class="nav-link" data-scroll-target="#predictor_block">Predictor_Block</a></li>
+  <li><a href="#encoder_block" id="toc-encoder_block" class="nav-link" data-scroll-target="#encoder_block">Encoder_Block</a></li>
+  <li><a href="#get_2d_sincos_pos_embed" id="toc-get_2d_sincos_pos_embed" class="nav-link" data-scroll-target="#get_2d_sincos_pos_embed">get_2d_sincos_pos_embed</a></li>
+  <li><a href="#get_2d_sincos_pos_embed_from_grid" id="toc-get_2d_sincos_pos_embed_from_grid" class="nav-link" data-scroll-target="#get_2d_sincos_pos_embed_from_grid">get_2d_sincos_pos_embed_from_grid</a></li>
+  <li><a href="#get_1d_sincos_pos_embed_from_grid" id="toc-get_1d_sincos_pos_embed_from_grid" class="nav-link" data-scroll-target="#get_1d_sincos_pos_embed_from_grid">get_1d_sincos_pos_embed_from_grid</a></li>
+  </ul></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/benmfox/PhysioJEPA/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></nav>
     </div>
@@ -638,6 +649,167 @@ class Model(nn.Module):
 </tr>
 </tbody>
 </table>
+</section>
+</section>
+<section id="ecg-jepa" class="level2">
+<h2 class="anchored" data-anchor-id="ecg-jepa">ECG-JEPA</h2>
+<blockquote class="blockquote">
+<p>Adapted from https://github.com/sehunfromdaegu/ECG_JEPA/tree/master</p>
+</blockquote>
+<hr>
+<section id="ecgjepalightning" class="level3">
+<h3 class="anchored" data-anchor-id="ecgjepalightning">ECGJEPALightning</h3>
+<blockquote class="blockquote">
+<pre><code> ECGJEPALightning (encoder_kwargs, predictor_kwargs, learning_rate,
+                   train_size, batch_size, n_gpus, weight_decay=0.04,
+                   use_weight_decay_scheduler=False,
+                   final_weight_decay=0.4, epochs=100,
+                   optimizer_type='adamw', scheduler_type='OneCycle',
+                   ema_decay=0.996, scheduler_kwargs={}, transforms=None)</code></pre>
+</blockquote>
+<p><em>Hooks to be used in LightningModule.</em></p>
+<hr>
+</section>
+<section id="masktransformerpredictor" class="level3">
+<h3 class="anchored" data-anchor-id="masktransformerpredictor">MaskTransformerPredictor</h3>
+<blockquote class="blockquote">
+<pre><code> MaskTransformerPredictor (d_model=384, predictor_embed_dim=192,
+                           num_layers=4, nhead=6, mlp_ratio=4.0,
+                           qkv_bias=False, qk_scale=None, drop_rate=0.0,
+                           attn_drop_rate=0.0, drop_path_rate=0.0,
+                           norm_layer=&lt;class
+                           'torch.nn.modules.normalization.LayerNorm'&gt;,
+                           init_std=0.02, pe_type='sincos', c_in=9,
+                           num_patches=50, patch_size=50)</code></pre>
+</blockquote>
+<p>*Base class for all neural network modules.</p>
+<p>Your models should also subclass this class.</p>
+<p>Modules can also contain other Modules, allowing them to be nested in a tree structure. You can assign the submodules as regular attributes::</p>
+<pre><code>import torch.nn as nn
+import torch.nn.functional as F
+
+class Model(nn.Module):
+    def __init__(self) -&gt; None:
+        super().__init__()
+        self.conv1 = nn.Conv2d(1, 20, 5)
+        self.conv2 = nn.Conv2d(20, 20, 5)
+
+    def forward(self, x):
+        x = F.relu(self.conv1(x))
+        return F.relu(self.conv2(x))</code></pre>
+<p>Submodules assigned in this way will be registered, and will also have their parameters converted when you call :meth:<code>to</code>, etc.</p>
+<p>.. note:: As per the example above, an <code>__init__()</code> call to the parent class must be made before assignment on the child.</p>
+<p>:ivar training: Boolean represents whether this module is in training or evaluation mode. :vartype training: bool*</p>
+<hr>
+</section>
+<section id="masktransformer" class="level3">
+<h3 class="anchored" data-anchor-id="masktransformer">MaskTransformer</h3>
+<blockquote class="blockquote">
+<pre><code> MaskTransformer (d_model=384, num_layers=12, nhead=6, mlp_ratio=4.0,
+                  qkv_bias=False, qk_scale=None, drop_rate=0.0,
+                  attn_drop_rate=0.0, drop_path_rate=0.0,
+                  norm_layer=&lt;class
+                  'torch.nn.modules.normalization.LayerNorm'&gt;,
+                  init_std=0.02, mask_scale=(0.3, 0.5), mask_type='block',
+                  pe_type='sincos', c_in=3, num_patches=50, patch_size=50)</code></pre>
+</blockquote>
+<p>*Base class for all neural network modules.</p>
+<p>Your models should also subclass this class.</p>
+<p>Modules can also contain other Modules, allowing them to be nested in a tree structure. You can assign the submodules as regular attributes::</p>
+<pre><code>import torch.nn as nn
+import torch.nn.functional as F
+
+class Model(nn.Module):
+    def __init__(self) -&gt; None:
+        super().__init__()
+        self.conv1 = nn.Conv2d(1, 20, 5)
+        self.conv2 = nn.Conv2d(20, 20, 5)
+
+    def forward(self, x):
+        x = F.relu(self.conv1(x))
+        return F.relu(self.conv2(x))</code></pre>
+<p>Submodules assigned in this way will be registered, and will also have their parameters converted when you call :meth:<code>to</code>, etc.</p>
+<p>.. note:: As per the example above, an <code>__init__()</code> call to the parent class must be made before assignment on the child.</p>
+<p>:ivar training: Boolean represents whether this module is in training or evaluation mode. :vartype training: bool*</p>
+<hr>
+</section>
+<section id="predictor_block" class="level3">
+<h3 class="anchored" data-anchor-id="predictor_block">Predictor_Block</h3>
+<blockquote class="blockquote">
+<pre><code> Predictor_Block (predictor_embed_dim=192, depth=4, num_heads=6,
+                  mlp_ratio=4.0, qkv_bias=False, qk_scale=None,
+                  drop_rate=0.0, attn_drop_rate=0.0, drop_path_rate=0.0)</code></pre>
+</blockquote>
+<p>*Base class for all neural network modules.</p>
+<p>Your models should also subclass this class.</p>
+<p>Modules can also contain other Modules, allowing them to be nested in a tree structure. You can assign the submodules as regular attributes::</p>
+<pre><code>import torch.nn as nn
+import torch.nn.functional as F
+
+class Model(nn.Module):
+    def __init__(self) -&gt; None:
+        super().__init__()
+        self.conv1 = nn.Conv2d(1, 20, 5)
+        self.conv2 = nn.Conv2d(20, 20, 5)
+
+    def forward(self, x):
+        x = F.relu(self.conv1(x))
+        return F.relu(self.conv2(x))</code></pre>
+<p>Submodules assigned in this way will be registered, and will also have their parameters converted when you call :meth:<code>to</code>, etc.</p>
+<p>.. note:: As per the example above, an <code>__init__()</code> call to the parent class must be made before assignment on the child.</p>
+<p>:ivar training: Boolean represents whether this module is in training or evaluation mode. :vartype training: bool*</p>
+<hr>
+</section>
+<section id="encoder_block" class="level3">
+<h3 class="anchored" data-anchor-id="encoder_block">Encoder_Block</h3>
+<blockquote class="blockquote">
+<pre><code> Encoder_Block (embed_dim=384, depth=12, num_heads=6, mlp_ratio=4.0,
+                qkv_bias=False, qk_scale=None, drop_rate=0.0,
+                attn_drop_rate=0.0, drop_path_rate=0.0, norm_layer=&lt;class
+                'torch.nn.modules.normalization.LayerNorm'&gt;)</code></pre>
+</blockquote>
+<p>*Base class for all neural network modules.</p>
+<p>Your models should also subclass this class.</p>
+<p>Modules can also contain other Modules, allowing them to be nested in a tree structure. You can assign the submodules as regular attributes::</p>
+<pre><code>import torch.nn as nn
+import torch.nn.functional as F
+
+class Model(nn.Module):
+    def __init__(self) -&gt; None:
+        super().__init__()
+        self.conv1 = nn.Conv2d(1, 20, 5)
+        self.conv2 = nn.Conv2d(20, 20, 5)
+
+    def forward(self, x):
+        x = F.relu(self.conv1(x))
+        return F.relu(self.conv2(x))</code></pre>
+<p>Submodules assigned in this way will be registered, and will also have their parameters converted when you call :meth:<code>to</code>, etc.</p>
+<p>.. note:: As per the example above, an <code>__init__()</code> call to the parent class must be made before assignment on the child.</p>
+<p>:ivar training: Boolean represents whether this module is in training or evaluation mode. :vartype training: bool*</p>
+<hr>
+</section>
+<section id="get_2d_sincos_pos_embed" class="level3">
+<h3 class="anchored" data-anchor-id="get_2d_sincos_pos_embed">get_2d_sincos_pos_embed</h3>
+<blockquote class="blockquote">
+<pre><code> get_2d_sincos_pos_embed (embed_dim, grid_size_h, grid_size_w,
+                          cls_token=False)</code></pre>
+</blockquote>
+<p><em>grid_size_h: int of the grid height grid_size_w: int of the grid width return: pos_embed: [grid_size_h*grid_size_w, embed_dim] or [1+grid_size_h*grid_size_w, embed_dim] (w/ or w/o cls_token)</em></p>
+<hr>
+</section>
+<section id="get_2d_sincos_pos_embed_from_grid" class="level3">
+<h3 class="anchored" data-anchor-id="get_2d_sincos_pos_embed_from_grid">get_2d_sincos_pos_embed_from_grid</h3>
+<blockquote class="blockquote">
+<pre><code> get_2d_sincos_pos_embed_from_grid (embed_dim, grid)</code></pre>
+</blockquote>
+<hr>
+</section>
+<section id="get_1d_sincos_pos_embed_from_grid" class="level3">
+<h3 class="anchored" data-anchor-id="get_1d_sincos_pos_embed_from_grid">get_1d_sincos_pos_embed_from_grid</h3>
+<blockquote class="blockquote">
+<pre><code> get_1d_sincos_pos_embed_from_grid (embed_dim, pos)</code></pre>
+</blockquote>
+<p><em>embed_dim: output dimension for each position pos: a list of positions to be encoded: size (M,) out: (M, D)</em></p>
 
 
 </section>

@@ -1,10 +1,10 @@
 # JEPA Patch Training Configuration - Hypotension Project
 
 run_config:
-  model_type: 'JEPA'
-  wandb_project: "Bedside Hypotension JEPA"
+  model_type: 'ECGJEPA'
+  wandb_project: "Bedside Hypotension ECGJEPA"
   model_run: "1"
-  name: "JEPA_II_PLETH_ABP_all"
+  name: "ECGJEPA"
   random_state: 12
   precision: "32"
   test_n_samples: 0
@@ -12,15 +12,14 @@ run_config:
 # Data Paths
 paths:
   data_dir: "zarr_store/allzarr/"
-  models_dir: "models/"
+  models_dir: "models_bedside_self_supervised/"
   dataset_filename: "125Hz_ABPIIPLETHchannels_1800sec_segment_1800sec_stride_all"
-
 
 # Dataset Configuration
 dataset:
   channels: ['ABP', 'II', 'PLETH']
   frequency: 125
-  patch_seconds: 1 
+  patch_seconds: 1  
   overlap: 0.0
   seq_len_sec: 1800  # 30 minutes
   sample_stride_sec: 1800  # 30 minutes
@@ -36,47 +35,33 @@ encoder:
   d_model: 512
   nhead: 8
   num_layers: 3
-  pe_type: "rotary"
+  pe_type: "sincos"
   mlp_ratio: 4.0
-  use_tst_block: true
-  shared_embedding: false
   qkv_bias: true
   qk_scale: null
   drop_rate: 0.1
   attn_drop_rate: 0.
-  jepa: true
-  tokenizer_type: "simple"
-  tokenizer_kwargs:
-    depth: 1 
-    bottleneck_channels: 112 # 16 * 7
-    residual: true # residual doesnt run when c in is 1
-    kernel_size: 40
-    bottleneck: true # there is no bottleneck if in channels is 1
-
+  mask_scale: [0.3, 0.5]
+  mask_type: "block"
+  
 predictor:
   predictor_embed_dim: 128
   nhead: 4
   num_layers: 2
-  use_tst_block: true
-  pe_type: "rotary"
+  pe_type: "sincos"
   mlp_ratio: 4.0
   qkv_bias: true
   qk_scale: null
   drop_rate: 0.1
   attn_drop_rate: 0.
-  c_in_mask_tokens: 3 # number of channels in the encoder (if treating channels sep)
 
 # Training Configuration
 training:
-  n_gpus: 2 
+  n_gpus: 2 # this needs to match lsf job
   batch_size: 128
   epochs: 100
   num_workers: 14 # leave 2 for other processes
   accumulate_grad_batches: 1
-  huber_delta: 1
-  target_mask_range: [0.1, 0.3]
-  context_mask_range: [0.1, 0.4]
-  mask_block_range: [1, 1] # not implemented
   ema_decay: 0.996
   val_check_interval: 1.0
   use_gradient_clipping: true
