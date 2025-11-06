@@ -41,8 +41,8 @@ encoder:
   qk_scale: null
   drop_rate: 0.1
   attn_drop_rate: 0.
-  mask_scale: [0.3, 0.5]
-  mask_type: "block"
+  mask_scale: [0.1, 0.3]
+  mask_type: "random"
   
 predictor:
   predictor_embed_dim: 128
