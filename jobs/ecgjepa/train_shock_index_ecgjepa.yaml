@@ -73,7 +73,7 @@ optimizer:
 # OneCycle Scheduler Parameters
 scheduler:
   scheduler_type: "OneCycle"
-  max_lr:  0.01
+  max_lr: 0.01
   div_factor: 25
   final_div_factor: 10000
   pct_start: 0.3
