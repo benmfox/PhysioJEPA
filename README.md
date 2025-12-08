@@ -9,6 +9,8 @@ PhysioJEPA is a Python package for physiological signal modeling with
 joint embedding predicting architectures. The repository is built using
 nbdev, which means the package is developed in Jupyter notebooks.
 
+See the published paper in the 2025 ML4H proceedings [here](https://openreview.net/forum?id=bdXsfrNaGY). 
+
 ## Install
 
 ``` sh
