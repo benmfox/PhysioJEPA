@@ -21,6 +21,40 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
@@ -263,28 +297,33 @@ ul.task-list li input[type="checkbox"] {
 <hr>
 <section id="create_patch" class="level3">
 <h3 class="anchored" data-anchor-id="create_patch">create_patch</h3>
-<blockquote class="blockquote">
-<pre><code> create_patch (xb, patch_len, stride, constant_pad=False,
-               constant_pad_value=0)</code></pre>
-</blockquote>
-<p><em>xb: [bs x n_vars x seq_len] out: [bs x num_patch x n_vars x patch_len]</em></p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> create_patch(</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    xb, patch_len, stride, constant_pad:<span class="bu">bool</span><span class="op">=</span><span class="va">False</span>, constant_pad_value:<span class="bu">int</span><span class="op">=</span><span class="dv">0</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>):</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><em>xb: [bs x n_vars x seq_len]</em> out: [bs x num_patch x n_vars x patch_len]</p>
 <hr>
 </section>
 <section id="unpatch" class="level3">
 <h3 class="anchored" data-anchor-id="unpatch">unpatch</h3>
-<blockquote class="blockquote">
-<pre><code> unpatch (x, seq_len, remove_padding=True)</code></pre>
-</blockquote>
-<p><em>x: [bs/None x patch_num x n_vars x patch_len] returns x: [bs x n_vars x seq_len]</em></p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> unpatch(</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    x, seq_len, remove_padding:<span class="bu">bool</span><span class="op">=</span><span class="va">True</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>):</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><em>x: [bs/None x patch_num x n_vars x patch_len]</em> returns x: [bs x n_vars x seq_len]</p>
 <hr>
 </section>
 <section id="mask_patches_simple" class="level3">
 <h3 class="anchored" data-anchor-id="mask_patches_simple">mask_patches_simple</h3>
-<blockquote class="blockquote">
-<pre><code> mask_patches_simple (xb, mask_ratio)</code></pre>
-</blockquote>
-<p>*Function that masks patches using fixed ratio approach similar to random_masking</p>
-<p>xb: [bs x patch_num x n_vars x patch_len] or nested tensor Returns: x_masked: masked tensor with same shape as input mask: binary mask where 1 indicates masked positions (bs x patch_num x n_vars)*</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> mask_patches_simple(</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    xb, mask_ratio</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>):</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><em>Function that masks patches using fixed ratio approach similar to random_masking</em></p>
+<p>xb: [bs x patch_num x n_vars x patch_len] or nested tensor Returns: x_masked: masked tensor with same shape as input mask: binary mask where 1 indicates masked positions (bs x patch_num x n_vars)</p>
 </section>
 </section>
 <section id="value-augmentations" class="level2">
@@ -292,16 +331,20 @@ ul.task-list li input[type="checkbox"] {
 <hr>
 <section id="jitter_augmentation" class="level3">
 <h3 class="anchored" data-anchor-id="jitter_augmentation">jitter_augmentation</h3>
-<blockquote class="blockquote">
-<pre><code> jitter_augmentation (x, mask_ratio=0.05, jitter_ratio=0.05, p=1)</code></pre>
-</blockquote>
+<div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> jitter_augmentation(</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    x, mask_ratio:<span class="bu">float</span><span class="op">=</span><span class="fl">0.05</span>, jitter_ratio:<span class="bu">float</span><span class="op">=</span><span class="fl">0.05</span>, p:<span class="bu">int</span><span class="op">=</span><span class="dv">1</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>):</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <hr>
 </section>
 <section id="remove_values" class="level3">
 <h3 class="anchored" data-anchor-id="remove_values">remove_values</h3>
-<blockquote class="blockquote">
-<pre><code> remove_values (x, mask_ratio)</code></pre>
-</blockquote>
+<div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> remove_values(</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    x, mask_ratio</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>):</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
 </section>
 <section id="shuffle-augmentations" class="level2">
@@ -309,24 +352,30 @@ ul.task-list li input[type="checkbox"] {
 <hr>
 <section id="shuffle_dim" class="level3">
 <h3 class="anchored" data-anchor-id="shuffle_dim">shuffle_dim</h3>
-<blockquote class="blockquote">
-<pre><code> shuffle_dim (x, dim=1, p=0.5)</code></pre>
-</blockquote>
-<p><em>shuffles a dimension randomly along dim x: [bs x n channels x n patches x patch len]</em></p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> shuffle_dim(</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    x, dim:<span class="bu">int</span><span class="op">=</span><span class="dv">1</span>, p:<span class="bu">float</span><span class="op">=</span><span class="fl">0.5</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>):</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><em>shuffles a dimension randomly along dim</em> x: [bs x n channels x n patches x patch len]</p>
 <hr>
 </section>
 <section id="reverse_sequence" class="level3">
 <h3 class="anchored" data-anchor-id="reverse_sequence">reverse_sequence</h3>
-<blockquote class="blockquote">
-<pre><code> reverse_sequence (x, seq_dim=(-1,), p=0.5)</code></pre>
-</blockquote>
+<div class="sourceCode" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> reverse_sequence(</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    x, seq_dim:<span class="bu">tuple</span><span class="op">=</span>(<span class="op">-</span><span class="dv">1</span>,), p:<span class="bu">float</span><span class="op">=</span><span class="fl">0.5</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>):</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <hr>
 </section>
 <section id="channel_masking" class="level3">
 <h3 class="anchored" data-anchor-id="channel_masking">channel_masking</h3>
-<blockquote class="blockquote">
-<pre><code> channel_masking (x, dim=1, p=0.5, specific_channels=None)</code></pre>
-</blockquote>
+<div class="sourceCode" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> channel_masking(</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    x, dim:<span class="bu">int</span><span class="op">=</span><span class="dv">1</span>, p:<span class="bu">float</span><span class="op">=</span><span class="fl">0.5</span>, specific_channels:NoneType<span class="op">=</span><span class="va">None</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>):</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p><em>Masks up to n channels - 1 randomly of x or specific channels if provided</em></p>
 </section>
 </section>
@@ -335,57 +384,25 @@ ul.task-list li input[type="checkbox"] {
 <hr>
 <section id="mixupcallbackclassification" class="level3">
 <h3 class="anchored" data-anchor-id="mixupcallbackclassification">MixupCallbackClassification</h3>
-<blockquote class="blockquote">
-<pre><code> MixupCallbackClassification (num_classes, mixup_alpha=0.4,
-                              ignore_index=-100)</code></pre>
-</blockquote>
-<p>*Mixup for 1D data (e.g., time-series).</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> MixupCallbackClassification(</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    num_classes, mixup_alpha:<span class="bu">float</span><span class="op">=</span><span class="fl">0.4</span>, <span class="co"># alpha parameter for the beta distribution</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>    ignore_index:<span class="bu">int</span><span class="op">=-</span><span class="dv">100</span>, <span class="co"># ignore index</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>):</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><em>Mixup for 1D data (e.g., time-series).</em></p>
 <p>This callback applies Mixup to the training data, blending both the input data and the labels.</p>
 <p>See tsai implementation here: https://github.com/timeseriesAI/tsai/blob/bdff96cc8c4c8ea55bc20d7cffd6a72e402f4cb2/tsai/data/mixed_augmentation.py#L43</p>
-<p>Note that this creates non-integer labels/soft labels. Loss functions should be able to handle this.*</p>
-<table class="caption-top table">
-<colgroup>
-<col style="width: 6%">
-<col style="width: 25%">
-<col style="width: 34%">
-<col style="width: 34%">
-</colgroup>
-<thead>
-<tr class="header">
-<th></th>
-<th><strong>Type</strong></th>
-<th><strong>Default</strong></th>
-<th><strong>Details</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>num_classes</td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="even">
-<td>mixup_alpha</td>
-<td>float</td>
-<td>0.4</td>
-<td>alpha parameter for the beta distribution</td>
-</tr>
-<tr class="odd">
-<td>ignore_index</td>
-<td>int</td>
-<td>-100</td>
-<td>ignore index</td>
-</tr>
-</tbody>
-</table>
+<p>Note that this creates non-integer labels/soft labels. Loss functions should be able to handle this.</p>
 <hr>
 </section>
 <section id="transformscallback" class="level3">
 <h3 class="anchored" data-anchor-id="transformscallback">TransformsCallback</h3>
-<blockquote class="blockquote">
-<pre><code> TransformsCallback (transforms)</code></pre>
-</blockquote>
+<div class="sourceCode" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> TransformsCallback(</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    transforms</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>):</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p><em>Applies a series of transforms to the input data, on train_batch_start.</em></p>
 
 

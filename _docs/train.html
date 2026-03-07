@@ -21,6 +21,40 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
@@ -244,145 +278,28 @@ ul.task-list li input[type="checkbox"] {
 </section>
 <section id="patchtftsingleoutcomelightning" class="level3">
 <h3 class="anchored" data-anchor-id="patchtftsingleoutcomelightning">PatchTFTSingleOutcomeLightning</h3>
-<blockquote class="blockquote">
-<pre><code> PatchTFTSingleOutcomeLightning (linear_probing_head, learning_rate,
-                                 train_size, batch_size, n_gpus,
-                                 preloaded_model, metrics={},
-                                 fine_tune=False, class_weights=None,
-                                 epochs=100, scheduler_type='OneCycle',
-                                 optimizer_type='AdamW', weight_decay=0.0,
-                                 use_weight_decay_scheduler=False,
-                                 final_weight_decay=0.01,
-                                 scheduler_kwargs={}, transforms=None,
-                                 mixup_callback=None)</code></pre>
-</blockquote>
+<div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> PatchTFTSingleOutcomeLightning(</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    linear_probing_head, <span class="co"># model head to linear probe/train</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    learning_rate, <span class="co"># desired learning rate, initial learning rate in if one_cycle_scheduler</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    train_size, <span class="co"># the training data size (for one_cycle_scheduler=True)</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    batch_size, <span class="co"># the batch size (for one_cycle_scheduler=True)</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    n_gpus, <span class="co"># number of GPUs</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    preloaded_model, <span class="co"># loaded pretrained model to use for linear probing</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    metrics:<span class="bu">dict</span><span class="op">=</span>{}, <span class="co"># name:function for metrics to log</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    fine_tune:<span class="bu">bool</span><span class="op">=</span><span class="va">False</span>, <span class="co"># indicator to fine tune encoder or freeze encoder weights and perform linear probing</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    class_weights:NoneType<span class="op">=</span><span class="va">None</span>, <span class="co"># weights of classes to use in CE loss fxn</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    epochs:<span class="bu">int</span><span class="op">=</span><span class="dv">100</span>, <span class="co"># number of epochs for one_cycle_scheduler</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>    scheduler_type:<span class="bu">str</span><span class="op">=</span><span class="st">'OneCycle'</span>, optimizer_type:<span class="bu">str</span><span class="op">=</span><span class="st">'AdamW'</span>,</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>    weight_decay:<span class="bu">float</span><span class="op">=</span><span class="fl">0.0</span>, <span class="co"># weight decay for Adam optimizer</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    use_weight_decay_scheduler:<span class="bu">bool</span><span class="op">=</span><span class="va">False</span>, <span class="co"># use a weight decay scheduler</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>    final_weight_decay:<span class="bu">float</span><span class="op">=</span><span class="fl">0.01</span>, <span class="co"># final weight decay for the weight decay scheduler</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>    scheduler_kwargs:<span class="bu">dict</span><span class="op">=</span>{}, <span class="co"># kwargs for the scheduler</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>    transforms:NoneType<span class="op">=</span><span class="va">None</span>, <span class="co"># transforms to apply to the data</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>    mixup_callback:NoneType<span class="op">=</span><span class="va">None</span>, <span class="co"># mixup callback to apply to the data</span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>):</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p><em>Hooks to be used in LightningModule.</em></p>
-<table class="caption-top table">
-<colgroup>
-<col style="width: 6%">
-<col style="width: 25%">
-<col style="width: 34%">
-<col style="width: 34%">
-</colgroup>
-<thead>
-<tr class="header">
-<th></th>
-<th><strong>Type</strong></th>
-<th><strong>Default</strong></th>
-<th><strong>Details</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>linear_probing_head</td>
-<td></td>
-<td></td>
-<td>model head to linear probe/train</td>
-</tr>
-<tr class="even">
-<td>learning_rate</td>
-<td></td>
-<td></td>
-<td>desired learning rate, initial learning rate in if one_cycle_scheduler</td>
-</tr>
-<tr class="odd">
-<td>train_size</td>
-<td></td>
-<td></td>
-<td>the training data size (for one_cycle_scheduler=True)</td>
-</tr>
-<tr class="even">
-<td>batch_size</td>
-<td></td>
-<td></td>
-<td>the batch size (for one_cycle_scheduler=True)</td>
-</tr>
-<tr class="odd">
-<td>n_gpus</td>
-<td></td>
-<td></td>
-<td>number of GPUs</td>
-</tr>
-<tr class="even">
-<td>preloaded_model</td>
-<td></td>
-<td></td>
-<td>loaded pretrained model to use for linear probing</td>
-</tr>
-<tr class="odd">
-<td>metrics</td>
-<td>dict</td>
-<td>{}</td>
-<td>name:function for metrics to log</td>
-</tr>
-<tr class="even">
-<td>fine_tune</td>
-<td>bool</td>
-<td>False</td>
-<td>indicator to fine tune encoder or freeze encoder weights and perform linear probing</td>
-</tr>
-<tr class="odd">
-<td>class_weights</td>
-<td>NoneType</td>
-<td>None</td>
-<td>weights of classes to use in CE loss fxn</td>
-</tr>
-<tr class="even">
-<td>epochs</td>
-<td>int</td>
-<td>100</td>
-<td>number of epochs for one_cycle_scheduler</td>
-</tr>
-<tr class="odd">
-<td>scheduler_type</td>
-<td>str</td>
-<td>OneCycle</td>
-<td></td>
-</tr>
-<tr class="even">
-<td>optimizer_type</td>
-<td>str</td>
-<td>AdamW</td>
-<td></td>
-</tr>
-<tr class="odd">
-<td>weight_decay</td>
-<td>float</td>
-<td>0.0</td>
-<td>weight decay for Adam optimizer</td>
-</tr>
-<tr class="even">
-<td>use_weight_decay_scheduler</td>
-<td>bool</td>
-<td>False</td>
-<td>use a weight decay scheduler</td>
-</tr>
-<tr class="odd">
-<td>final_weight_decay</td>
-<td>float</td>
-<td>0.01</td>
-<td>final weight decay for the weight decay scheduler</td>
-</tr>
-<tr class="even">
-<td>scheduler_kwargs</td>
-<td>dict</td>
-<td>{}</td>
-<td>kwargs for the scheduler</td>
-</tr>
-<tr class="odd">
-<td>transforms</td>
-<td>NoneType</td>
-<td>None</td>
-<td>transforms to apply to the data</td>
-</tr>
-<tr class="even">
-<td>mixup_callback</td>
-<td>NoneType</td>
-<td>None</td>
-<td>mixup callback to apply to the data</td>
-</tr>
-</tbody>
-</table>
 
 
 </section>

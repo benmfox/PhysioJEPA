@@ -21,6 +21,40 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
@@ -243,11 +277,15 @@ ul.task-list li input[type="checkbox"] {
 <hr>
 <section id="maskedautogressionfeedforward" class="level3">
 <h3 class="anchored" data-anchor-id="maskedautogressionfeedforward">MaskedAutogressionFeedForward</h3>
-<blockquote class="blockquote">
-<pre><code> MaskedAutogressionFeedForward (c_in, patch_len, d_model,
-                                shared_recreation=True)</code></pre>
-</blockquote>
-<p>*Base class for all neural network modules.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> MaskedAutogressionFeedForward(</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    c_in, <span class="co"># the number of input channels</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    patch_len, <span class="co"># the length of the patches (either stft or interval length)</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    d_model, <span class="co"># the dimension of the initial linear layers for inputting patches into transformer</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    shared_recreation:<span class="bu">bool</span><span class="op">=</span><span class="va">True</span>, <span class="co"># indicator of whether to project each channel individually or together</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>):</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><em>Base class for all neural network modules.</em></p>
 <p>Your models should also subclass this class.</p>
 <p>Modules can also contain other Modules, allowing them to be nested in a tree structure. You can assign the submodules as regular attributes::</p>
 <pre><code>import torch.nn as nn
@@ -264,58 +302,21 @@ class Model(nn.Module):
         return F.relu(self.conv2(x))</code></pre>
 <p>Submodules assigned in this way will be registered, and will also have their parameters converted when you call :meth:<code>to</code>, etc.</p>
 <p>.. note:: As per the example above, an <code>__init__()</code> call to the parent class must be made before assignment on the child.</p>
-<table class="caption-top table">
-<caption>ivar training: Boolean represents whether this module is in training or evaluation mode. :vartype training: bool*</caption>
-<colgroup>
-<col style="width: 6%">
-<col style="width: 25%">
-<col style="width: 34%">
-<col style="width: 34%">
-</colgroup>
-<thead>
-<tr class="header">
-<th></th>
-<th><strong>Type</strong></th>
-<th><strong>Default</strong></th>
-<th><strong>Details</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>c_in</td>
-<td></td>
-<td></td>
-<td>the number of input channels</td>
-</tr>
-<tr class="even">
-<td>patch_len</td>
-<td></td>
-<td></td>
-<td>the length of the patches (either stft or interval length)</td>
-</tr>
-<tr class="odd">
-<td>d_model</td>
-<td></td>
-<td></td>
-<td>the dimension of the initial linear layers for inputting patches into transformer</td>
-</tr>
-<tr class="even">
-<td>shared_recreation</td>
-<td>bool</td>
-<td>True</td>
-<td>indicator of whether to project each channel individually or together</td>
-</tr>
-</tbody>
-</table>
+<p>:ivar training: Boolean represents whether this module is in training or evaluation mode. :vartype training: bool</p>
 <hr>
 </section>
 <section id="tstblock" class="level3">
 <h3 class="anchored" data-anchor-id="tstblock">TSTBlock</h3>
-<blockquote class="blockquote">
-<pre><code> TSTBlock (d_model, n_heads, d_ff=256, attn_dropout=0, dropout=0.0,
-           bias=True, activation='gelu', pre_norm=False, rotary_pes=False)</code></pre>
-</blockquote>
-<p>*Base class for all neural network modules.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> TSTBlock(</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    d_model, <span class="co"># dimension of patch embeddings</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    n_heads, <span class="co"># number of attention heads per layer</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    d_ff:<span class="bu">int</span><span class="op">=</span><span class="dv">256</span>, <span class="co"># dimension of feedforward layer in each transformer layer</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    attn_dropout:<span class="bu">int</span><span class="op">=</span><span class="dv">0</span>, dropout:<span class="bu">float</span><span class="op">=</span><span class="fl">0.0</span>, bias:<span class="bu">bool</span><span class="op">=</span><span class="va">True</span>, activation:<span class="bu">str</span><span class="op">=</span><span class="st">'gelu'</span>, pre_norm:<span class="bu">bool</span><span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    rotary_pes:<span class="bu">bool</span><span class="op">=</span><span class="va">False</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>):</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><em>Base class for all neural network modules.</em></p>
 <p>Your models should also subclass this class.</p>
 <p>Modules can also contain other Modules, allowing them to be nested in a tree structure. You can assign the submodules as regular attributes::</p>
 <pre><code>import torch.nn as nn
@@ -332,93 +333,21 @@ class Model(nn.Module):
         return F.relu(self.conv2(x))</code></pre>
 <p>Submodules assigned in this way will be registered, and will also have their parameters converted when you call :meth:<code>to</code>, etc.</p>
 <p>.. note:: As per the example above, an <code>__init__()</code> call to the parent class must be made before assignment on the child.</p>
-<table class="caption-top table">
-<caption>ivar training: Boolean represents whether this module is in training or evaluation mode. :vartype training: bool*</caption>
-<colgroup>
-<col style="width: 6%">
-<col style="width: 25%">
-<col style="width: 34%">
-<col style="width: 34%">
-</colgroup>
-<thead>
-<tr class="header">
-<th></th>
-<th><strong>Type</strong></th>
-<th><strong>Default</strong></th>
-<th><strong>Details</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>d_model</td>
-<td></td>
-<td></td>
-<td>dimension of patch embeddings</td>
-</tr>
-<tr class="even">
-<td>n_heads</td>
-<td></td>
-<td></td>
-<td>number of attention heads per layer</td>
-</tr>
-<tr class="odd">
-<td>d_ff</td>
-<td>int</td>
-<td>256</td>
-<td>dimension of feedforward layer in each transformer layer</td>
-</tr>
-<tr class="even">
-<td>attn_dropout</td>
-<td>int</td>
-<td>0</td>
-<td></td>
-</tr>
-<tr class="odd">
-<td>dropout</td>
-<td>float</td>
-<td>0.0</td>
-<td></td>
-</tr>
-<tr class="even">
-<td>bias</td>
-<td>bool</td>
-<td>True</td>
-<td></td>
-</tr>
-<tr class="odd">
-<td>activation</td>
-<td>str</td>
-<td>gelu</td>
-<td></td>
-</tr>
-<tr class="even">
-<td>pre_norm</td>
-<td>bool</td>
-<td>False</td>
-<td></td>
-</tr>
-<tr class="odd">
-<td>rotary_pes</td>
-<td>bool</td>
-<td>False</td>
-<td></td>
-</tr>
-</tbody>
-</table>
+<p>:ivar training: Boolean represents whether this module is in training or evaluation mode. :vartype training: bool</p>
 <hr>
 </section>
 <section id="patchtftsimple" class="level3">
 <h3 class="anchored" data-anchor-id="patchtftsimple">PatchTFTSimple</h3>
-<blockquote class="blockquote">
-<pre><code> PatchTFTSimple (c_in, patch_size, patch_stride, num_patches, d_model,
-                 n_heads, d_ff, num_layers, augmentations=['patch_mask',
-                 'jitter_zero_mask', 'channel_masking'], mask_ratio=0.1,
-                 shared_embedding=False, pretrain_head=True, dropout=0.0,
-                 attn_dropout=0.0, act='gelu', pre_norm=False,
-                 pe_type='tAPE', qkv_bias=True, init_std=0.02,
-                 tokenizer_type='simple', tokenizer_kwargs={})</code></pre>
-</blockquote>
-<p>*Base class for all neural network modules.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> PatchTFTSimple(</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    c_in, patch_size, patch_stride, num_patches, d_model, n_heads, d_ff, num_layers,</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    augmentations:<span class="bu">list</span><span class="op">=</span>[<span class="st">'patch_mask'</span>, <span class="st">'jitter_zero_mask'</span>, <span class="st">'channel_masking'</span>], mask_ratio:<span class="bu">float</span><span class="op">=</span><span class="fl">0.1</span>,</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    shared_embedding:<span class="bu">bool</span><span class="op">=</span><span class="va">False</span>, pretrain_head:<span class="bu">bool</span><span class="op">=</span><span class="va">True</span>, dropout:<span class="bu">float</span><span class="op">=</span><span class="fl">0.0</span>, attn_dropout:<span class="bu">float</span><span class="op">=</span><span class="fl">0.0</span>, act:<span class="bu">str</span><span class="op">=</span><span class="st">'gelu'</span>,</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    pre_norm:<span class="bu">bool</span><span class="op">=</span><span class="va">False</span>, pe_type:<span class="bu">str</span><span class="op">=</span><span class="st">'tAPE'</span>, qkv_bias:<span class="bu">bool</span><span class="op">=</span><span class="va">True</span>, init_std:<span class="bu">float</span><span class="op">=</span><span class="fl">0.02</span>, tokenizer_type:<span class="bu">str</span><span class="op">=</span><span class="st">'simple'</span>,</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    tokenizer_kwargs:<span class="bu">dict</span><span class="op">=</span>{}</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>):</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><em>Base class for all neural network modules.</em></p>
 <p>Your models should also subclass this class.</p>
 <p>Modules can also contain other Modules, allowing them to be nested in a tree structure. You can assign the submodules as regular attributes::</p>
 <pre><code>import torch.nn as nn
@@ -435,129 +364,20 @@ class Model(nn.Module):
         return F.relu(self.conv2(x))</code></pre>
 <p>Submodules assigned in this way will be registered, and will also have their parameters converted when you call :meth:<code>to</code>, etc.</p>
 <p>.. note:: As per the example above, an <code>__init__()</code> call to the parent class must be made before assignment on the child.</p>
-<p>:ivar training: Boolean represents whether this module is in training or evaluation mode. :vartype training: bool*</p>
+<p>:ivar training: Boolean represents whether this module is in training or evaluation mode. :vartype training: bool</p>
 <hr>
 </section>
 <section id="patchtftsimplelightning" class="level3">
 <h3 class="anchored" data-anchor-id="patchtftsimplelightning">PatchTFTSimpleLightning</h3>
-<blockquote class="blockquote">
-<pre><code> PatchTFTSimpleLightning (learning_rate, train_size, batch_size, n_gpus,
-                          metrics={}, loss_func='mse', weight_decay=0.0,
-                          epochs=100, use_weight_decay_scheduler=False,
-                          final_weight_decay=0.4, optimizer_type='AdamW',
-                          scheduler_type='OneCycle', huber_delta=None,
-                          scheduler_kwargs={}, transforms=None,
-                          **patchmeup_kwargs)</code></pre>
-</blockquote>
+<div class="sourceCode" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> PatchTFTSimpleLightning(</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    learning_rate, train_size, batch_size, n_gpus, metrics:<span class="bu">dict</span><span class="op">=</span>{}, loss_func:<span class="bu">str</span><span class="op">=</span><span class="st">'mse'</span>, weight_decay:<span class="bu">float</span><span class="op">=</span><span class="fl">0.0</span>,</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    epochs:<span class="bu">int</span><span class="op">=</span><span class="dv">100</span>, use_weight_decay_scheduler:<span class="bu">bool</span><span class="op">=</span><span class="va">False</span>, final_weight_decay:<span class="bu">float</span><span class="op">=</span><span class="fl">0.4</span>, optimizer_type:<span class="bu">str</span><span class="op">=</span><span class="st">'AdamW'</span>,</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    scheduler_type:<span class="bu">str</span><span class="op">=</span><span class="st">'OneCycle'</span>, huber_delta:NoneType<span class="op">=</span><span class="va">None</span>, <span class="co"># huber loss delta, not used otherwise</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    scheduler_kwargs:<span class="bu">dict</span><span class="op">=</span>{}, transforms:NoneType<span class="op">=</span><span class="va">None</span>, patchmeup_kwargs:VAR_KEYWORD</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>):</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p><em>Hooks to be used in LightningModule.</em></p>
-<table class="caption-top table">
-<thead>
-<tr class="header">
-<th></th>
-<th><strong>Type</strong></th>
-<th><strong>Default</strong></th>
-<th><strong>Details</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>learning_rate</td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="even">
-<td>train_size</td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="odd">
-<td>batch_size</td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="even">
-<td>n_gpus</td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="odd">
-<td>metrics</td>
-<td>dict</td>
-<td>{}</td>
-<td></td>
-</tr>
-<tr class="even">
-<td>loss_func</td>
-<td>str</td>
-<td>mse</td>
-<td></td>
-</tr>
-<tr class="odd">
-<td>weight_decay</td>
-<td>float</td>
-<td>0.0</td>
-<td></td>
-</tr>
-<tr class="even">
-<td>epochs</td>
-<td>int</td>
-<td>100</td>
-<td></td>
-</tr>
-<tr class="odd">
-<td>use_weight_decay_scheduler</td>
-<td>bool</td>
-<td>False</td>
-<td></td>
-</tr>
-<tr class="even">
-<td>final_weight_decay</td>
-<td>float</td>
-<td>0.4</td>
-<td></td>
-</tr>
-<tr class="odd">
-<td>optimizer_type</td>
-<td>str</td>
-<td>AdamW</td>
-<td></td>
-</tr>
-<tr class="even">
-<td>scheduler_type</td>
-<td>str</td>
-<td>OneCycle</td>
-<td></td>
-</tr>
-<tr class="odd">
-<td>huber_delta</td>
-<td>NoneType</td>
-<td>None</td>
-<td>huber loss delta, not used otherwise</td>
-</tr>
-<tr class="even">
-<td>scheduler_kwargs</td>
-<td>dict</td>
-<td>{}</td>
-<td></td>
-</tr>
-<tr class="odd">
-<td>transforms</td>
-<td>NoneType</td>
-<td>None</td>
-<td></td>
-</tr>
-<tr class="even">
-<td>patchmeup_kwargs</td>
-<td>VAR_KEYWORD</td>
-<td></td>
-<td></td>
-</tr>
-</tbody>
-</table>
 
 
 </section>

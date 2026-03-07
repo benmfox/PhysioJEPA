@@ -21,6 +21,40 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
@@ -245,74 +279,69 @@ ul.task-list li input[type="checkbox"] {
 <hr>
 <section id="interpolate_nan_clip" class="level3">
 <h3 class="anchored" data-anchor-id="interpolate_nan_clip">interpolate_nan_clip</h3>
-<blockquote class="blockquote">
-<pre><code> interpolate_nan_clip (x_in, physiological_range_clip=None,
-                       percentile_clip=None, return_mask_only=False)</code></pre>
-</blockquote>
+<div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> interpolate_nan_clip(</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    x_in, physiological_range_clip:NoneType<span class="op">=</span><span class="va">None</span>, percentile_clip:NoneType<span class="op">=</span><span class="va">None</span>, return_mask_only:<span class="bu">bool</span><span class="op">=</span><span class="va">False</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>):</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p><em>Function to clip outliers based on percentiles or physiological range and then interpolate nearby values</em></p>
 <hr>
 </section>
 <section id="calculate_samples_mp" class="level3">
 <h3 class="anchored" data-anchor-id="calculate_samples_mp">calculate_samples_mp</h3>
-<blockquote class="blockquote">
-<pre><code> calculate_samples_mp (zarr_files, channels, frequency,
-                       sample_seq_len_sec, stride_sec,
-                       start_offset_sec=None, max_seq_len_sec=None,
-                       include_partial_samples=True,
-                       constant_nan_tolerance=1.0,
-                       require_all_channels=True, min_seq_len_sec=None,
-                       constant_channels=None)</code></pre>
-</blockquote>
+<div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> calculate_samples_mp(</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    zarr_files, channels, frequency, sample_seq_len_sec, stride_sec, start_offset_sec:NoneType<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    max_seq_len_sec:NoneType<span class="op">=</span><span class="va">None</span>, include_partial_samples:<span class="bu">bool</span><span class="op">=</span><span class="va">True</span>, constant_nan_tolerance:<span class="bu">float</span><span class="op">=</span><span class="fl">1.0</span>,</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    require_all_channels:<span class="bu">bool</span><span class="op">=</span><span class="va">True</span>, min_seq_len_sec:NoneType<span class="op">=</span><span class="va">None</span>, constant_channels:NoneType<span class="op">=</span><span class="va">None</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>):</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p><em>Multiprocessing function to generate samples</em></p>
 <hr>
 </section>
 <section id="calculate_samples" class="level3">
 <h3 class="anchored" data-anchor-id="calculate_samples">calculate_samples</h3>
-<blockquote class="blockquote">
-<pre><code> calculate_samples (zarr_file, channels, frequency, sample_seq_len_sec,
-                    stride_sec, start_offset_sec=None,
-                    max_seq_len_sec=None, include_partial_samples=True,
-                    require_all_channels=True, constant_nan_tolerance=1.0,
-                    min_seq_len_sec=None, constant_channels=None)</code></pre>
-</blockquote>
+<div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> calculate_samples(</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    zarr_file, channels, frequency, sample_seq_len_sec, stride_sec, start_offset_sec:NoneType<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    max_seq_len_sec:NoneType<span class="op">=</span><span class="va">None</span>, include_partial_samples:<span class="bu">bool</span><span class="op">=</span><span class="va">True</span>, require_all_channels:<span class="bu">bool</span><span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    constant_nan_tolerance:<span class="bu">float</span><span class="op">=</span><span class="fl">1.0</span>, min_seq_len_sec:NoneType<span class="op">=</span><span class="va">None</span>, constant_channels:NoneType<span class="op">=</span><span class="va">None</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>):</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p><em>Function to create a dataframe of samples and their sequence indices</em></p>
 <hr>
 </section>
 <section id="check_signal_not_constant" class="level3">
 <h3 class="anchored" data-anchor-id="check_signal_not_constant">check_signal_not_constant</h3>
-<blockquote class="blockquote">
-<pre><code> check_signal_not_constant (channel_data, constant_tolerance=1.0)</code></pre>
-</blockquote>
+<div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> check_signal_not_constant(</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    channel_data, constant_tolerance:<span class="bu">float</span><span class="op">=</span><span class="fl">1.0</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>):</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p><em>Function to check if a signal is NOT constant. This works for NaNs and constant values.</em></p>
 <hr>
 </section>
 <section id="calculate_samples_forecast_mp" class="level3">
 <h3 class="anchored" data-anchor-id="calculate_samples_forecast_mp">calculate_samples_forecast_mp</h3>
-<blockquote class="blockquote">
-<pre><code> calculate_samples_forecast_mp (outcome_df, file_col, outcome_val_col,
-                                outcome_time_col, outcome_duration_col,
-                                forecast_window_sec, channels, frequency,
-                                sample_seq_len_sec,
-                                constant_nan_tolerance=1.0,
-                                require_all_channels=True,
-                                infer_forecast_windows=True,
-                                sample_frequency_key='sampling_frequency')</code></pre>
-</blockquote>
+<div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> calculate_samples_forecast_mp(</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    outcome_df, file_col, outcome_val_col, outcome_time_col, outcome_duration_col, forecast_window_sec, channels,</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    frequency, sample_seq_len_sec, constant_nan_tolerance:<span class="bu">float</span><span class="op">=</span><span class="fl">1.0</span>, require_all_channels:<span class="bu">bool</span><span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    infer_forecast_windows:<span class="bu">bool</span><span class="op">=</span><span class="va">True</span>, sample_frequency_key:<span class="bu">str</span><span class="op">=</span><span class="st">'sampling_frequency'</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>):</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p><em>Multiprocessing function to generate samples</em></p>
 <hr>
 </section>
 <section id="calculate_samples_forecast" class="level3">
 <h3 class="anchored" data-anchor-id="calculate_samples_forecast">calculate_samples_forecast</h3>
-<blockquote class="blockquote">
-<pre><code> calculate_samples_forecast (zarr_file, outcome_start_times,
-                             outcome_durations, outcome_vals, channels,
-                             forecast_window_sec, frequency,
-                             sample_seq_len_sec,
-                             require_all_channels=True,
-                             constant_nan_tolerance=1.0,
-                             infer_forecast_windows=True,
-                             sample_frequency_key='sampling_frequency')</code></pre>
-</blockquote>
+<div class="sourceCode" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> calculate_samples_forecast(</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    zarr_file, outcome_start_times, outcome_durations, outcome_vals, channels, forecast_window_sec, frequency,</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    sample_seq_len_sec, require_all_channels:<span class="bu">bool</span><span class="op">=</span><span class="va">True</span>, constant_nan_tolerance:<span class="bu">float</span><span class="op">=</span><span class="fl">1.0</span>,</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    infer_forecast_windows:<span class="bu">bool</span><span class="op">=</span><span class="va">True</span>, sample_frequency_key:<span class="bu">str</span><span class="op">=</span><span class="st">'sampling_frequency'</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>):</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p><em>Function to create a dataframe of samples and their sequence indices</em></p>
 
 

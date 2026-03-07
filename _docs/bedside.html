@@ -21,6 +21,40 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
@@ -246,265 +280,52 @@ ul.task-list li input[type="checkbox"] {
 <hr>
 <section id="forecastingdataset" class="level3">
 <h3 class="anchored" data-anchor-id="forecastingdataset">ForecastingDataset</h3>
-<blockquote class="blockquote">
-<pre><code> ForecastingDataset (channels, forecast_window_sec, outcome_df,
-                     outcome_df_outcome_col, file_col='file_path',
-                     y_date_column='date',
-                     outcome_df_seconds_since_column='Time Stamp
-                     (seconds)',
-                     outcome_df_duration_column='event_length',
-                     sample_df=None, sample_seq_len_sec=None,
-                     frequency=125, butterworth_filters=None,
-                     median_filter_kernel_size=None,
-                     clip_interpolations=None, constant_nan_tolerance=0.5,
-                     require_all_channels=False,
-                     infer_forecast_windows=True, normalize_signals=True,
-                     sample_frequency_key='sampling_frequency')</code></pre>
-</blockquote>
-<p><em>PyTorch Dataset for forecasting tasks using physiological waveform data stored in zarr format. This dataset class handles loading, preprocessing, and preparing samples for forecasting tasks.</em></p>
-<table class="caption-top table">
-<colgroup>
-<col style="width: 6%">
-<col style="width: 25%">
-<col style="width: 34%">
-<col style="width: 34%">
-</colgroup>
-<thead>
-<tr class="header">
-<th></th>
-<th><strong>Type</strong></th>
-<th><strong>Default</strong></th>
-<th><strong>Details</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>channels</td>
-<td></td>
-<td></td>
-<td>channels to use</td>
-</tr>
-<tr class="even">
-<td>forecast_window_sec</td>
-<td></td>
-<td></td>
-<td>forecast window (within), suggest 5, 10, 15 minutes</td>
-</tr>
-<tr class="odd">
-<td>outcome_df</td>
-<td></td>
-<td></td>
-<td>pandas dataframe containing outcomes for zarr files</td>
-</tr>
-<tr class="even">
-<td>outcome_df_outcome_col</td>
-<td></td>
-<td></td>
-<td>outcome column in the y file path</td>
-</tr>
-<tr class="odd">
-<td>file_col</td>
-<td>str</td>
-<td>file_path</td>
-<td>column indicating zarr file path</td>
-</tr>
-<tr class="even">
-<td>y_date_column</td>
-<td>str</td>
-<td>date</td>
-<td>column indicating date of sample collection</td>
-</tr>
-<tr class="odd">
-<td>outcome_df_seconds_since_column</td>
-<td>str</td>
-<td>Time Stamp (seconds)</td>
-<td>column indicating how many seconds since beginning of waveform</td>
-</tr>
-<tr class="even">
-<td>outcome_df_duration_column</td>
-<td>str</td>
-<td>event_length</td>
-<td>column indicating duration of outcome in seconds</td>
-</tr>
-<tr class="odd">
-<td>sample_df</td>
-<td>NoneType</td>
-<td>None</td>
-<td>dataframe indicating which indices within each zarr file includes a sample</td>
-</tr>
-<tr class="even">
-<td>sample_seq_len_sec</td>
-<td>NoneType</td>
-<td>None</td>
-<td>if no sample_df, generate sequences of this length in seconds as one sample</td>
-</tr>
-<tr class="odd">
-<td>frequency</td>
-<td>int</td>
-<td>125</td>
-<td>frequency of underlying data</td>
-</tr>
-<tr class="even">
-<td>butterworth_filters</td>
-<td>NoneType</td>
-<td>None</td>
-<td>dictionary of low pass, high pass, and bandpass dictionary to perform on channels</td>
-</tr>
-<tr class="odd">
-<td>median_filter_kernel_size</td>
-<td>NoneType</td>
-<td>None</td>
-<td>size of median filter to perform on channels</td>
-</tr>
-<tr class="even">
-<td>clip_interpolations</td>
-<td>NoneType</td>
-<td>None</td>
-<td>dictionary of channels:{‘phys_range’:…, ‘percentiles’:…} for filtering and interpolation of filtered values</td>
-</tr>
-<tr class="odd">
-<td>constant_nan_tolerance</td>
-<td>float</td>
-<td>0.5</td>
-<td>tolerance for nan values in the data - 0 means no nan allowed, 1 means 100% of nans allowed</td>
-</tr>
-<tr class="even">
-<td>require_all_channels</td>
-<td>bool</td>
-<td>False</td>
-<td>indicator to require all channels to be present in the sample, if False, will return samples with any of the channels and 0s for the missing channels</td>
-</tr>
-<tr class="odd">
-<td>infer_forecast_windows</td>
-<td>bool</td>
-<td>True</td>
-<td>indicator to require all forecast windows to be present in the sample, if False, will return samples with any of the forecast windows and NAs for the missing forecast windows</td>
-</tr>
-<tr class="even">
-<td>normalize_signals</td>
-<td>bool</td>
-<td>True</td>
-<td>indicator to normalize signals to 0 mean and unit variance</td>
-</tr>
-<tr class="odd">
-<td>sample_frequency_key</td>
-<td>str</td>
-<td>sampling_frequency</td>
-<td></td>
-</tr>
-</tbody>
-</table>
+<div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> ForecastingDataset(</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    channels, <span class="co"># channels to use</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    forecast_window_sec, <span class="co"># forecast window (within), suggest 5, 10, 15 minutes</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    outcome_df, <span class="co"># pandas dataframe containing outcomes for zarr files</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    outcome_df_outcome_col, <span class="co"># outcome column in the y file path</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    file_col:<span class="bu">str</span><span class="op">=</span><span class="st">'file_path'</span>, <span class="co"># column indicating zarr file path</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    y_date_column:<span class="bu">str</span><span class="op">=</span><span class="st">'date'</span>, <span class="co"># column indicating date of sample collection</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    outcome_df_seconds_since_column:<span class="bu">str</span><span class="op">=</span><span class="st">'Time Stamp (seconds)'</span>, <span class="co"># column indicating how many seconds since beginning of waveform</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    outcome_df_duration_column:<span class="bu">str</span><span class="op">=</span><span class="st">'event_length'</span>, <span class="co"># column indicating duration of outcome in seconds</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    sample_df:NoneType<span class="op">=</span><span class="va">None</span>, <span class="co"># dataframe indicating which indices within each zarr file includes a sample</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    sample_seq_len_sec:NoneType<span class="op">=</span><span class="va">None</span>, <span class="co"># if no sample_df, generate sequences of this length in seconds as one sample</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>    frequency:<span class="bu">int</span><span class="op">=</span><span class="dv">125</span>, <span class="co"># frequency of underlying data</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>    butterworth_filters:NoneType<span class="op">=</span><span class="va">None</span>, <span class="co"># dictionary of low pass, high pass, and bandpass dictionary to perform on channels</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    median_filter_kernel_size:NoneType<span class="op">=</span><span class="va">None</span>, <span class="co"># size of median filter to perform on channels</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>    clip_interpolations:NoneType<span class="op">=</span><span class="va">None</span>, <span class="co"># dictionary of channels:{'phys_range':..., 'percentiles':...} for filtering and interpolation of filtered values</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>    constant_nan_tolerance:<span class="bu">float</span><span class="op">=</span><span class="fl">0.5</span>, <span class="co"># tolerance for nan values in the data - 0 means no nan allowed, 1 means 100% of nans allowed</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>    require_all_channels:<span class="bu">bool</span><span class="op">=</span><span class="va">False</span>, <span class="co"># indicator to require all channels to be present in the sample, if False, will return samples with any of the channels and 0s for the missing channels</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>    infer_forecast_windows:<span class="bu">bool</span><span class="op">=</span><span class="va">True</span>, <span class="co"># indicator to require all forecast windows to be present in the sample, if False, will return samples with any of the forecast windows and NAs for the missing forecast windows</span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>    normalize_signals:<span class="bu">bool</span><span class="op">=</span><span class="va">True</span>, <span class="co"># indicator to normalize signals to 0 mean and unit variance</span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>    sample_frequency_key:<span class="bu">str</span><span class="op">=</span><span class="st">'sampling_frequency'</span></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>):</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><em>PyTorch Dataset for forecasting tasks using physiological waveform data stored in zarr format.</em> This dataset class handles loading, preprocessing, and preparing samples for forecasting tasks.</p>
 <hr>
 </section>
 <section id="selfsuperviseddataset" class="level3">
 <h3 class="anchored" data-anchor-id="selfsuperviseddataset">SelfSupervisedDataset</h3>
-<blockquote class="blockquote">
-<pre><code> SelfSupervisedDataset (zarr_files, channels, max_seq_len_sec=None,
-                        sample_df=None, sample_seq_len_sec=None,
-                        sample_stride_sec=None, frequency=125,
-                        butterworth_filters=None,
-                        median_filter_kernel_size=None,
-                        clip_interpolations=None,
-                        constant_nan_tolerance=0.2,
-                        require_all_channels=True, normalize_signals=True)</code></pre>
-</blockquote>
-<p><em>PyTorch Dataset for self-supervised learning tasks using physiological waveform data stored in zarr format. This dataset class handles loading, preprocessing, and preparing samples for self-supervised learning tasks.</em></p>
-<table class="caption-top table">
-<colgroup>
-<col style="width: 6%">
-<col style="width: 25%">
-<col style="width: 34%">
-<col style="width: 34%">
-</colgroup>
-<thead>
-<tr class="header">
-<th></th>
-<th><strong>Type</strong></th>
-<th><strong>Default</strong></th>
-<th><strong>Details</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>zarr_files</td>
-<td></td>
-<td></td>
-<td>zarr files that include samples</td>
-</tr>
-<tr class="even">
-<td>channels</td>
-<td></td>
-<td></td>
-<td>channels to use</td>
-</tr>
-<tr class="odd">
-<td>max_seq_len_sec</td>
-<td>NoneType</td>
-<td>None</td>
-<td>maximum sequence length (in seconds) to use (this is especially relevant when you are returning both stft and raw ts data to keep them in sync)</td>
-</tr>
-<tr class="even">
-<td>sample_df</td>
-<td>NoneType</td>
-<td>None</td>
-<td>dataframe indicating which indices within each zarr file includes a sample</td>
-</tr>
-<tr class="odd">
-<td>sample_seq_len_sec</td>
-<td>NoneType</td>
-<td>None</td>
-<td>if no sample_df, generate sequences of this length in seconds as one sample</td>
-</tr>
-<tr class="even">
-<td>sample_stride_sec</td>
-<td>NoneType</td>
-<td>None</td>
-<td>if no sample_df, seconds of overlap for samples from the same array, if seq_len_seconds == overlap_seconds, there is no overlap</td>
-</tr>
-<tr class="odd">
-<td>frequency</td>
-<td>int</td>
-<td>125</td>
-<td>frequency of underlying data</td>
-</tr>
-<tr class="even">
-<td>butterworth_filters</td>
-<td>NoneType</td>
-<td>None</td>
-<td>dictionary of low pass, high pass, and bandpass dictionary to perform on channels</td>
-</tr>
-<tr class="odd">
-<td>median_filter_kernel_size</td>
-<td>NoneType</td>
-<td>None</td>
-<td>size of median filter to perform on channels</td>
-</tr>
-<tr class="even">
-<td>clip_interpolations</td>
-<td>NoneType</td>
-<td>None</td>
-<td>dictionary of channels:{‘phys_range’:…, ‘percentiles’:…} for filtering and interpolation of filtered values</td>
-</tr>
-<tr class="odd">
-<td>constant_nan_tolerance</td>
-<td>float</td>
-<td>0.2</td>
-<td>tolerance for nan values in the data - 0 means no nan allowed, 1 means 100% of nans allowed</td>
-</tr>
-<tr class="even">
-<td>require_all_channels</td>
-<td>bool</td>
-<td>True</td>
-<td>indicator to require all channels to be present in the data</td>
-</tr>
-<tr class="odd">
-<td>normalize_signals</td>
-<td>bool</td>
-<td>True</td>
-<td>indicator to normalize signals to 0 mean and unit variance</td>
-</tr>
-</tbody>
-</table>
+<div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> SelfSupervisedDataset(</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    zarr_files, <span class="co"># zarr files that include samples</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    channels, <span class="co"># channels to use</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    max_seq_len_sec:NoneType<span class="op">=</span><span class="va">None</span>, <span class="co"># maximum sequence length (in seconds) to use (this is especially relevant when you are returning both stft and raw ts data to keep them in sync)</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    sample_df:NoneType<span class="op">=</span><span class="va">None</span>, <span class="co"># dataframe indicating which indices within each zarr file includes a sample</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    sample_seq_len_sec:NoneType<span class="op">=</span><span class="va">None</span>, <span class="co"># if no sample_df, generate sequences of this length in seconds as one sample</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    sample_stride_sec:NoneType<span class="op">=</span><span class="va">None</span>, <span class="co"># if no sample_df, seconds of overlap for samples from the same array, if seq_len_seconds == overlap_seconds, there is no overlap</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>    frequency:<span class="bu">int</span><span class="op">=</span><span class="dv">125</span>, <span class="co"># frequency of underlying data</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>    butterworth_filters:NoneType<span class="op">=</span><span class="va">None</span>, <span class="co"># dictionary of low pass, high pass, and bandpass dictionary to perform on channels</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>    median_filter_kernel_size:NoneType<span class="op">=</span><span class="va">None</span>, <span class="co"># size of median filter to perform on channels</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>    clip_interpolations:NoneType<span class="op">=</span><span class="va">None</span>, <span class="co"># dictionary of channels:{'phys_range':..., 'percentiles':...} for filtering and interpolation of filtered values</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>    constant_nan_tolerance:<span class="bu">float</span><span class="op">=</span><span class="fl">0.2</span>, <span class="co"># tolerance for nan values in the data - 0 means no nan allowed, 1 means 100% of nans allowed</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>    require_all_channels:<span class="bu">bool</span><span class="op">=</span><span class="va">True</span>, <span class="co"># indicator to require all channels to be present in the data</span></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>    normalize_signals:<span class="bu">bool</span><span class="op">=</span><span class="va">True</span>, <span class="co"># indicator to normalize signals to 0 mean and unit variance</span></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>):</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><em>PyTorch Dataset for self-supervised learning tasks using physiological waveform data stored in zarr format.</em> This dataset class handles loading, preprocessing, and preparing samples for self-supervised learning tasks.</p>
 
 
 </section>

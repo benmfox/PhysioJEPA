@@ -21,6 +21,40 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
@@ -274,17 +308,21 @@ ul.task-list li input[type="checkbox"] {
 <hr>
 <section id="get_activation_fn" class="level3">
 <h3 class="anchored" data-anchor-id="get_activation_fn">get_activation_fn</h3>
-<blockquote class="blockquote">
-<pre><code> get_activation_fn (activation)</code></pre>
-</blockquote>
+<div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> get_activation_fn(</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    activation</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>):</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <hr>
 </section>
 <section id="transpose" class="level3">
 <h3 class="anchored" data-anchor-id="transpose">Transpose</h3>
-<blockquote class="blockquote">
-<pre><code> Transpose (*dims, contiguous=False)</code></pre>
-</blockquote>
-<p>*Base class for all neural network modules.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> Transpose(</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    dims:VAR_POSITIONAL, contiguous:<span class="bu">bool</span><span class="op">=</span><span class="va">False</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>):</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><em>Base class for all neural network modules.</em></p>
 <p>Your models should also subclass this class.</p>
 <p>Modules can also contain other Modules, allowing them to be nested in a tree structure. You can assign the submodules as regular attributes::</p>
 <pre><code>import torch.nn as nn
@@ -301,15 +339,17 @@ class Model(nn.Module):
         return F.relu(self.conv2(x))</code></pre>
 <p>Submodules assigned in this way will be registered, and will also have their parameters converted when you call :meth:<code>to</code>, etc.</p>
 <p>.. note:: As per the example above, an <code>__init__()</code> call to the parent class must be made before assignment on the child.</p>
-<p>:ivar training: Boolean represents whether this module is in training or evaluation mode. :vartype training: bool*</p>
+<p>:ivar training: Boolean represents whether this module is in training or evaluation mode. :vartype training: bool</p>
 <hr>
 </section>
 <section id="identity" class="level3">
 <h3 class="anchored" data-anchor-id="identity">Identity</h3>
-<blockquote class="blockquote">
-<pre><code> Identity ()</code></pre>
-</blockquote>
-<p>*Base class for all neural network modules.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> Identity(</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>):</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><em>Base class for all neural network modules.</em></p>
 <p>Your models should also subclass this class.</p>
 <p>Modules can also contain other Modules, allowing them to be nested in a tree structure. You can assign the submodules as regular attributes::</p>
 <pre><code>import torch.nn as nn
@@ -326,7 +366,7 @@ class Model(nn.Module):
         return F.relu(self.conv2(x))</code></pre>
 <p>Submodules assigned in this way will be registered, and will also have their parameters converted when you call :meth:<code>to</code>, etc.</p>
 <p>.. note:: As per the example above, an <code>__init__()</code> call to the parent class must be made before assignment on the child.</p>
-<p>:ivar training: Boolean represents whether this module is in training or evaluation mode. :vartype training: bool*</p>
+<p>:ivar training: Boolean represents whether this module is in training or evaluation mode. :vartype training: bool</p>
 </section>
 </section>
 <section id="positional-encoding-layers" class="level2">
@@ -334,10 +374,13 @@ class Model(nn.Module):
 <hr>
 <section id="positionalencoding" class="level3">
 <h3 class="anchored" data-anchor-id="positionalencoding">PositionalEncoding</h3>
-<blockquote class="blockquote">
-<pre><code> PositionalEncoding (num_patch, d_model)</code></pre>
-</blockquote>
-<p>*Base class for all neural network modules.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> PositionalEncoding(</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    num_patch, <span class="co"># number of patches of time series or stft in input</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    d_model, <span class="co"># dimension of patch embeddings</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>):</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><em>Base class for all neural network modules.</em></p>
 <p>Your models should also subclass this class.</p>
 <p>Modules can also contain other Modules, allowing them to be nested in a tree structure. You can assign the submodules as regular attributes::</p>
 <pre><code>import torch.nn as nn
@@ -354,59 +397,18 @@ class Model(nn.Module):
         return F.relu(self.conv2(x))</code></pre>
 <p>Submodules assigned in this way will be registered, and will also have their parameters converted when you call :meth:<code>to</code>, etc.</p>
 <p>.. note:: As per the example above, an <code>__init__()</code> call to the parent class must be made before assignment on the child.</p>
-<table class="caption-top table">
-<caption>ivar training: Boolean represents whether this module is in training or evaluation mode. :vartype training: bool*</caption>
-<thead>
-<tr class="header">
-<th></th>
-<th><strong>Details</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>num_patch</td>
-<td>number of patches of time series or stft in input</td>
-</tr>
-<tr class="even">
-<td>d_model</td>
-<td>dimension of patch embeddings</td>
-</tr>
-</tbody>
-</table>
+<p>:ivar training: Boolean represents whether this module is in training or evaluation mode. :vartype training: bool</p>
 <hr>
 </section>
 <section id="tape" class="level3">
 <h3 class="anchored" data-anchor-id="tape">tAPE</h3>
-<blockquote class="blockquote">
-<pre><code> tAPE (d_model:int, seq_len:int)</code></pre>
-</blockquote>
-<p><em>time Absolute Position Encoding Adapted from tsai</em></p>
-<table class="caption-top table">
-<colgroup>
-<col style="width: 9%">
-<col style="width: 38%">
-<col style="width: 52%">
-</colgroup>
-<thead>
-<tr class="header">
-<th></th>
-<th><strong>Type</strong></th>
-<th><strong>Details</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>d_model</td>
-<td>int</td>
-<td>the embedding dimension</td>
-</tr>
-<tr class="even">
-<td>seq_len</td>
-<td>int</td>
-<td>the max. length of the incoming sequence or num patches</td>
-</tr>
-</tbody>
-</table>
+<div class="sourceCode" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> tAPE(</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    d_model:<span class="bu">int</span>, <span class="co"># the embedding dimension</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    seq_len:<span class="bu">int</span>, <span class="co"># the max. length of the incoming sequence or num patches</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>):</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><em>time Absolute Position Encoding</em> Adapted from tsai</p>
 </section>
 </section>
 <section id="mask-and-augmentation-layers" class="level2">
@@ -414,13 +416,13 @@ class Model(nn.Module):
 <hr>
 <section id="patchaugmentations" class="level3">
 <h3 class="anchored" data-anchor-id="patchaugmentations">PatchAugmentations</h3>
-<blockquote class="blockquote">
-<pre><code> PatchAugmentations (augmentations=['patch_mask', 'jitter_zero_mask',
-                     'reverse_sequence', 'shuffle_channels',
-                     'channel_masking'], patch_mask_ratio=0.0,
-                     jitter_zero_mask_ratio=0.0)</code></pre>
-</blockquote>
-<p>*Base class for all neural network modules.</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> PatchAugmentations(</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    augmentations:<span class="bu">list</span><span class="op">=</span>[<span class="st">'patch_mask'</span>, <span class="st">'jitter_zero_mask'</span>, <span class="st">'reverse_sequence'</span>, <span class="st">'shuffle_channels'</span>, <span class="st">'channel_masking'</span>],</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>    patch_mask_ratio:<span class="bu">float</span><span class="op">=</span><span class="fl">0.0</span>, jitter_zero_mask_ratio:<span class="bu">float</span><span class="op">=</span><span class="fl">0.0</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>):</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><em>Base class for all neural network modules.</em></p>
 <p>Your models should also subclass this class.</p>
 <p>Modules can also contain other Modules, allowing them to be nested in a tree structure. You can assign the submodules as regular attributes::</p>
 <pre><code>import torch.nn as nn
@@ -437,7 +439,7 @@ class Model(nn.Module):
         return F.relu(self.conv2(x))</code></pre>
 <p>Submodules assigned in this way will be registered, and will also have their parameters converted when you call :meth:<code>to</code>, etc.</p>
 <p>.. note:: As per the example above, an <code>__init__()</code> call to the parent class must be made before assignment on the child.</p>
-<p>:ivar training: Boolean represents whether this module is in training or evaluation mode. :vartype training: bool*</p>
+<p>:ivar training: Boolean represents whether this module is in training or evaluation mode. :vartype training: bool</p>
 </section>
 </section>
 <section id="patch-and-fourier-layers" class="level2">
@@ -445,10 +447,12 @@ class Model(nn.Module):
 <hr>
 <section id="patch" class="level3">
 <h3 class="anchored" data-anchor-id="patch">Patch</h3>
-<blockquote class="blockquote">
-<pre><code> Patch (patch_len, stride)</code></pre>
-</blockquote>
-<p>*Base class for all neural network modules.</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> Patch(</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>    patch_len, stride</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>):</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><em>Base class for all neural network modules.</em></p>
 <p>Your models should also subclass this class.</p>
 <p>Modules can also contain other Modules, allowing them to be nested in a tree structure. You can assign the submodules as regular attributes::</p>
 <pre><code>import torch.nn as nn
@@ -465,7 +469,7 @@ class Model(nn.Module):
         return F.relu(self.conv2(x))</code></pre>
 <p>Submodules assigned in this way will be registered, and will also have their parameters converted when you call :meth:<code>to</code>, etc.</p>
 <p>.. note:: As per the example above, an <code>__init__()</code> call to the parent class must be made before assignment on the child.</p>
-<p>:ivar training: Boolean represents whether this module is in training or evaluation mode. :vartype training: bool*</p>
+<p>:ivar training: Boolean represents whether this module is in training or evaluation mode. :vartype training: bool</p>
 </section>
 </section>
 <section id="reversible-instance-normalization" class="level2">
@@ -473,10 +477,15 @@ class Model(nn.Module):
 <hr>
 <section id="revin" class="level3">
 <h3 class="anchored" data-anchor-id="revin">RevIN</h3>
-<blockquote class="blockquote">
-<pre><code> RevIN (num_features:int, eps=1e-05, dim_to_reduce=-1, affine=True)</code></pre>
-</blockquote>
-<p>*Base class for all neural network modules.</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> RevIN(</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>    num_features:<span class="bu">int</span>, <span class="co"># the number of channels or features in the input</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>    eps:<span class="bu">float</span><span class="op">=</span><span class="fl">1e-05</span>, <span class="co"># added to avoid division by zero errors</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>    dim_to_reduce:<span class="bu">int</span><span class="op">=-</span><span class="dv">1</span>, <span class="co"># the dimension to reduce,</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>    affine:<span class="bu">bool</span><span class="op">=</span><span class="va">True</span>, <span class="co"># learning affine parameters bias and weight per channel</span></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>):</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><em>Base class for all neural network modules.</em></p>
 <p>Your models should also subclass this class.</p>
 <p>Modules can also contain other Modules, allowing them to be nested in a tree structure. You can assign the submodules as regular attributes::</p>
 <pre><code>import torch.nn as nn
@@ -493,49 +502,7 @@ class Model(nn.Module):
         return F.relu(self.conv2(x))</code></pre>
 <p>Submodules assigned in this way will be registered, and will also have their parameters converted when you call :meth:<code>to</code>, etc.</p>
 <p>.. note:: As per the example above, an <code>__init__()</code> call to the parent class must be made before assignment on the child.</p>
-<table class="caption-top table">
-<caption>ivar training: Boolean represents whether this module is in training or evaluation mode. :vartype training: bool*</caption>
-<colgroup>
-<col style="width: 6%">
-<col style="width: 25%">
-<col style="width: 34%">
-<col style="width: 34%">
-</colgroup>
-<thead>
-<tr class="header">
-<th></th>
-<th><strong>Type</strong></th>
-<th><strong>Default</strong></th>
-<th><strong>Details</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>num_features</td>
-<td>int</td>
-<td></td>
-<td>the number of channels or features in the input</td>
-</tr>
-<tr class="even">
-<td>eps</td>
-<td>float</td>
-<td>1e-05</td>
-<td>added to avoid division by zero errors</td>
-</tr>
-<tr class="odd">
-<td>dim_to_reduce</td>
-<td>int</td>
-<td>-1</td>
-<td>the dimension to reduce,</td>
-</tr>
-<tr class="even">
-<td>affine</td>
-<td>bool</td>
-<td>True</td>
-<td>learning affine parameters bias and weight per channel</td>
-</tr>
-</tbody>
-</table>
+<p>:ivar training: Boolean represents whether this module is in training or evaluation mode. :vartype training: bool</p>
 </section>
 </section>
 <section id="inception" class="level2">
@@ -543,11 +510,12 @@ class Model(nn.Module):
 <hr>
 <section id="inceptionblock" class="level3">
 <h3 class="anchored" data-anchor-id="inceptionblock">InceptionBlock</h3>
-<blockquote class="blockquote">
-<pre><code> InceptionBlock (in_channels, bottleneck_channels=32, residual=True,
-                 depth=6, groups=1, **kwargs)</code></pre>
-</blockquote>
-<p>*Base class for all neural network modules.</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> InceptionBlock(</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>    in_channels, bottleneck_channels:<span class="bu">int</span><span class="op">=</span><span class="dv">32</span>, residual:<span class="bu">bool</span><span class="op">=</span><span class="va">True</span>, depth:<span class="bu">int</span><span class="op">=</span><span class="dv">6</span>, groups:<span class="bu">int</span><span class="op">=</span><span class="dv">1</span>, kwargs:VAR_KEYWORD</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>):</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><em>Base class for all neural network modules.</em></p>
 <p>Your models should also subclass this class.</p>
 <p>Modules can also contain other Modules, allowing them to be nested in a tree structure. You can assign the submodules as regular attributes::</p>
 <pre><code>import torch.nn as nn
@@ -564,15 +532,16 @@ class Model(nn.Module):
         return F.relu(self.conv2(x))</code></pre>
 <p>Submodules assigned in this way will be registered, and will also have their parameters converted when you call :meth:<code>to</code>, etc.</p>
 <p>.. note:: As per the example above, an <code>__init__()</code> call to the parent class must be made before assignment on the child.</p>
-<p>:ivar training: Boolean represents whether this module is in training or evaluation mode. :vartype training: bool*</p>
+<p>:ivar training: Boolean represents whether this module is in training or evaluation mode. :vartype training: bool</p>
 <hr>
 </section>
 <section id="inceptionmodule" class="level3">
 <h3 class="anchored" data-anchor-id="inceptionmodule">InceptionModule</h3>
-<blockquote class="blockquote">
-<pre><code> InceptionModule (in_channels:int, bottleneck_channels:int=32,
-                  bottleneck=True, kernel_size:int=40, groups:int=1)</code></pre>
-</blockquote>
+<div class="sourceCode" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> InceptionModule(</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>    in_channels:<span class="bu">int</span>, bottleneck_channels:<span class="bu">int</span><span class="op">=</span><span class="dv">32</span>, bottleneck:<span class="bu">bool</span><span class="op">=</span><span class="va">True</span>, kernel_size:<span class="bu">int</span><span class="op">=</span><span class="dv">40</span>, groups:<span class="bu">int</span><span class="op">=</span><span class="dv">1</span></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>):</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p><em>Inception module adapted from https://github.com/timeseriesAI/tsai/blob/main/tsai/models/InceptionTime.py</em></p>
 </section>
 </section>
@@ -581,11 +550,13 @@ class Model(nn.Module):
 <hr>
 <section id="multiheadattention" class="level3">
 <h3 class="anchored" data-anchor-id="multiheadattention">MultiHeadAttention</h3>
-<blockquote class="blockquote">
-<pre><code> MultiHeadAttention (dim, num_heads=8, qkv_bias=False, qk_scale=None,
-                     attn_drop=0.0, proj_drop=0.0, rotary_pes=False)</code></pre>
-</blockquote>
-<p>*Base class for all neural network modules.</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> MultiHeadAttention(</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>    dim, num_heads:<span class="bu">int</span><span class="op">=</span><span class="dv">8</span>, qkv_bias:<span class="bu">bool</span><span class="op">=</span><span class="va">False</span>, qk_scale:NoneType<span class="op">=</span><span class="va">None</span>, attn_drop:<span class="bu">float</span><span class="op">=</span><span class="fl">0.0</span>, proj_drop:<span class="bu">float</span><span class="op">=</span><span class="fl">0.0</span>,</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>    rotary_pes:<span class="bu">bool</span><span class="op">=</span><span class="va">False</span></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>):</span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><em>Base class for all neural network modules.</em></p>
 <p>Your models should also subclass this class.</p>
 <p>Modules can also contain other Modules, allowing them to be nested in a tree structure. You can assign the submodules as regular attributes::</p>
 <pre><code>import torch.nn as nn
@@ -602,16 +573,17 @@ class Model(nn.Module):
         return F.relu(self.conv2(x))</code></pre>
 <p>Submodules assigned in this way will be registered, and will also have their parameters converted when you call :meth:<code>to</code>, etc.</p>
 <p>.. note:: As per the example above, an <code>__init__()</code> call to the parent class must be made before assignment on the child.</p>
-<p>:ivar training: Boolean represents whether this module is in training or evaluation mode. :vartype training: bool*</p>
+<p>:ivar training: Boolean represents whether this module is in training or evaluation mode. :vartype training: bool</p>
 <hr>
 </section>
 <section id="mlp" class="level3">
 <h3 class="anchored" data-anchor-id="mlp">MLP</h3>
-<blockquote class="blockquote">
-<pre><code> MLP (in_features, hidden_features=None, out_features=None,
-      act_layer=&lt;class 'torch.nn.modules.activation.GELU'&gt;, drop=0.0)</code></pre>
-</blockquote>
-<p>*Base class for all neural network modules.</p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> MLP(</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>    in_features, hidden_features:NoneType<span class="op">=</span><span class="va">None</span>, out_features:NoneType<span class="op">=</span><span class="va">None</span>, act_layer:<span class="bu">type</span><span class="op">=</span>GELU, drop:<span class="bu">float</span><span class="op">=</span><span class="fl">0.0</span></span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>):</span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><em>Base class for all neural network modules.</em></p>
 <p>Your models should also subclass this class.</p>
 <p>Modules can also contain other Modules, allowing them to be nested in a tree structure. You can assign the submodules as regular attributes::</p>
 <pre><code>import torch.nn as nn
@@ -628,7 +600,7 @@ class Model(nn.Module):
         return F.relu(self.conv2(x))</code></pre>
 <p>Submodules assigned in this way will be registered, and will also have their parameters converted when you call :meth:<code>to</code>, etc.</p>
 <p>.. note:: As per the example above, an <code>__init__()</code> call to the parent class must be made before assignment on the child.</p>
-<p>:ivar training: Boolean represents whether this module is in training or evaluation mode. :vartype training: bool*</p>
+<p>:ivar training: Boolean represents whether this module is in training or evaluation mode. :vartype training: bool</p>
 
 
 </section>

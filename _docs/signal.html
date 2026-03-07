@@ -21,6 +21,40 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
@@ -248,256 +282,118 @@ ul.task-list li input[type="checkbox"] {
 <hr>
 <section id="iqr_normalization" class="level3">
 <h3 class="anchored" data-anchor-id="iqr_normalization">iqr_normalization</h3>
-<blockquote class="blockquote">
-<pre><code> iqr_normalization (waveform_array, is_spo2=False)</code></pre>
-</blockquote>
-<p>*IQR normalization to scale waveform to -1 to 1 For SpO2, scale 0.6-1.0 to -1 to 1</p>
-<p>Returns: normalized waveform array of shape (n_samples,)*</p>
-<table class="caption-top table">
-<colgroup>
-<col style="width: 6%">
-<col style="width: 25%">
-<col style="width: 34%">
-<col style="width: 34%">
-</colgroup>
-<thead>
-<tr class="header">
-<th></th>
-<th><strong>Type</strong></th>
-<th><strong>Default</strong></th>
-<th><strong>Details</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>waveform_array</td>
-<td></td>
-<td></td>
-<td>waveform array of shape (n_samples,)</td>
-</tr>
-<tr class="even">
-<td>is_spo2</td>
-<td>bool</td>
-<td>False</td>
-<td>if True, use SpO2 normalization (0.6-1.0 scaled to -1 to 1)</td>
-</tr>
-</tbody>
-</table>
+<div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> iqr_normalization(</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    waveform_array, <span class="co"># waveform array of shape (n_samples,)</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    is_spo2:<span class="bu">bool</span><span class="op">=</span><span class="va">False</span>, <span class="co"># if True, use SpO2 normalization (0.6-1.0 scaled to -1 to 1)</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>):</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><em>IQR normalization to scale waveform to -1 to 1</em> For SpO2, scale 0.6-1.0 to -1 to 1</p>
+<p>Returns: normalized waveform array of shape (n_samples,)</p>
 <hr>
 </section>
 <section id="iir_filter" class="level3">
 <h3 class="anchored" data-anchor-id="iir_filter">iir_filter</h3>
-<blockquote class="blockquote">
-<pre><code> iir_filter (waveform_array, freq_range, btype, order=16, fs=128)</code></pre>
-</blockquote>
-<p>*IIR filter using elliptic filter design as described in https://www.researchsquare.com/article/rs-6307069/v1</p>
-<p>Returns: filtered waveform array of shape (n_samples,)*</p>
-<table class="caption-top table">
-<colgroup>
-<col style="width: 6%">
-<col style="width: 25%">
-<col style="width: 34%">
-<col style="width: 34%">
-</colgroup>
-<thead>
-<tr class="header">
-<th></th>
-<th><strong>Type</strong></th>
-<th><strong>Default</strong></th>
-<th><strong>Details</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>waveform_array</td>
-<td></td>
-<td></td>
-<td>waveform array of shape (n_samples,),</td>
-</tr>
-<tr class="even">
-<td>freq_range</td>
-<td></td>
-<td></td>
-<td>e.g.&nbsp;[0.5, 8] for bandpass, 0.5 for highpass, 8 for lowpass</td>
-</tr>
-<tr class="odd">
-<td>btype</td>
-<td></td>
-<td></td>
-<td>‘bandpass’, ‘lowpass’, ‘highpass’, ‘bandstop’</td>
-</tr>
-<tr class="even">
-<td>order</td>
-<td>int</td>
-<td>16</td>
-<td>filter order (default 16)</td>
-</tr>
-<tr class="odd">
-<td>fs</td>
-<td>int</td>
-<td>128</td>
-<td>sampling frequency (default 128)</td>
-</tr>
-</tbody>
-</table>
+<div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> iir_filter(</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    waveform_array, <span class="co"># waveform array of shape (n_samples,),</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    freq_range, <span class="co"># e.g. [0.5, 8] for bandpass, 0.5 for highpass, 8 for lowpass</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    btype, <span class="co"># 'bandpass', 'lowpass', 'highpass', 'bandstop'</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    order:<span class="bu">int</span><span class="op">=</span><span class="dv">16</span>, <span class="co"># filter order (default 16)</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    fs:<span class="bu">int</span><span class="op">=</span><span class="dv">128</span>, <span class="co"># sampling frequency (default 128)</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>):</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><em>IIR filter using elliptic filter design</em> as described in https://www.researchsquare.com/article/rs-6307069/v1</p>
+<p>Returns: filtered waveform array of shape (n_samples,)</p>
 <hr>
 </section>
 <section id="resample_waveform" class="level3">
 <h3 class="anchored" data-anchor-id="resample_waveform">resample_waveform</h3>
-<blockquote class="blockquote">
-<pre><code> resample_waveform (waveform_array, fs_in, fs_out, is_spo2=False)</code></pre>
-</blockquote>
-<p>*Resample waveform to desired sampling frequency</p>
-<p>Returns: resampled waveform array of shape (n_resampled_samples,)*</p>
-<table class="caption-top table">
-<colgroup>
-<col style="width: 6%">
-<col style="width: 25%">
-<col style="width: 34%">
-<col style="width: 34%">
-</colgroup>
-<thead>
-<tr class="header">
-<th></th>
-<th><strong>Type</strong></th>
-<th><strong>Default</strong></th>
-<th><strong>Details</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>waveform_array</td>
-<td></td>
-<td></td>
-<td>waveform array of shape (n_samples,)</td>
-</tr>
-<tr class="even">
-<td>fs_in</td>
-<td></td>
-<td></td>
-<td>original sampling frequency</td>
-</tr>
-<tr class="odd">
-<td>fs_out</td>
-<td></td>
-<td></td>
-<td>desired sampling frequency</td>
-</tr>
-<tr class="even">
-<td>is_spo2</td>
-<td>bool</td>
-<td>False</td>
-<td>if True, use linear interpolation (for SpO2 signal or other low-sampling-rate signals)</td>
-</tr>
-</tbody>
-</table>
+<div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> resample_waveform(</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    waveform_array, <span class="co"># waveform array of shape (n_samples,)</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    fs_in, <span class="co"># original sampling frequency</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    fs_out, <span class="co"># desired sampling frequency</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    is_spo2:<span class="bu">bool</span><span class="op">=</span><span class="va">False</span>, <span class="co"># if True, use linear interpolation (for SpO2 signal or other low-sampling-rate signals)</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>):</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><em>Resample waveform to desired sampling frequency</em></p>
+<p>Returns: resampled waveform array of shape (n_resampled_samples,)</p>
 <hr>
 </section>
 <section id="butterworth" class="level3">
 <h3 class="anchored" data-anchor-id="butterworth">butterworth</h3>
-<blockquote class="blockquote">
-<pre><code> butterworth (waveform_array, freq_range, btype, fs=128, order=4)</code></pre>
-</blockquote>
-<p>*Butterworth filter</p>
-<p>Returns: filtered waveform array of shape (n_samples,)*</p>
-<table class="caption-top table">
-<colgroup>
-<col style="width: 6%">
-<col style="width: 25%">
-<col style="width: 34%">
-<col style="width: 34%">
-</colgroup>
-<thead>
-<tr class="header">
-<th></th>
-<th><strong>Type</strong></th>
-<th><strong>Default</strong></th>
-<th><strong>Details</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>waveform_array</td>
-<td></td>
-<td></td>
-<td>waveform array of shape (n_samples,)</td>
-</tr>
-<tr class="even">
-<td>freq_range</td>
-<td></td>
-<td></td>
-<td>e.g.&nbsp;[0.5, 8] for bandpass, 0.5 for highpass, 8 for lowpass</td>
-</tr>
-<tr class="odd">
-<td>btype</td>
-<td></td>
-<td></td>
-<td>‘bandpass’, ‘lowpass’, ‘highpass’, ‘bandstop’</td>
-</tr>
-<tr class="even">
-<td>fs</td>
-<td>int</td>
-<td>128</td>
-<td>sampling frequency</td>
-</tr>
-<tr class="odd">
-<td>order</td>
-<td>int</td>
-<td>4</td>
-<td>filter order (default 4)</td>
-</tr>
-</tbody>
-</table>
+<div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> butterworth(</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    waveform_array, <span class="co"># waveform array of shape (n_samples,)</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    freq_range, <span class="co"># e.g. [0.5, 8] for bandpass, 0.5 for highpass, 8 for lowpass</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    btype, <span class="co"># 'bandpass', 'lowpass', 'highpass', 'bandstop'</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    fs:<span class="bu">int</span><span class="op">=</span><span class="dv">128</span>, <span class="co"># sampling frequency</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    order:<span class="bu">int</span><span class="op">=</span><span class="dv">4</span>, <span class="co"># filter order (default 4)</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>):</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><em>Butterworth filter</em></p>
+<p>Returns: filtered waveform array of shape (n_samples,)</p>
 <hr>
 </section>
 <section id="preprocess_abp_signal" class="level3">
 <h3 class="anchored" data-anchor-id="preprocess_abp_signal">preprocess_abp_signal</h3>
-<blockquote class="blockquote">
-<pre><code> preprocess_abp_signal (abp_signal, fs)</code></pre>
-</blockquote>
-<p>*ABP preprocessing with all features and quality assessment.</p>
-<p>returns averaged sbp, dbp, map, hr for given abp_signal*</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> preprocess_abp_signal(</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    abp_signal, fs</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>):</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><em>ABP preprocessing with all features and quality assessment.</em></p>
+<p>returns averaged sbp, dbp, map, hr for given abp_signal</p>
 <hr>
 </section>
 <section id="jsqi_complete" class="level3">
 <h3 class="anchored" data-anchor-id="jsqi_complete">jSQI_complete</h3>
-<blockquote class="blockquote">
-<pre><code> jSQI_complete (features, onset, abp, fs=125)</code></pre>
-</blockquote>
-<p>*ABP waveform signal quality index calculation. From physionet: https://physionet.org/content/cardiac-output/1.0.0/code/2analyze/jSQI.m</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> jSQI_complete(</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    features, onset, abp, fs:<span class="bu">int</span><span class="op">=</span><span class="dv">125</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>):</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><em>ABP waveform signal quality index calculation. From physionet: https://physionet.org/content/cardiac-output/1.0.0/code/2analyze/jSQI.m</em></p>
 <p>Args: features: Features extracted from ABP (nx12 array from abpfeature function) onset: Onset times of ABP beats abp: Arterial blood pressure waveform fs: Sampling frequency (default 125 Hz)</p>
-<p>Returns: BeatQ: SQI of each beat (nx10 array): 0=good, 1=bad Col 0: logical OR of cols 1 thru 9 Col 1: P not physiologic (&lt;20 or &gt;300 mmHg) Col 2: MAP not physiologic (&lt;30 or &gt;200 mmHg) Col 3: HR not physiologic (&lt;20 or &gt;200 bpm) Col 4: PP not physiologic (&lt;20 mmHg) Col 5: abnormal Psys (beat-to-beat change &gt; 20 mmHg) Col 6: abnormal Pdias (beat-to-beat change &gt; 20 mmHg) Col 7: abnormal period (beat-to-beat change &gt; 1/2 sec) Col 8: abnormal P(onset) (beat-to-beat change &gt; 20 mmHg) Col 9: noisy beat (mean of negative dP &lt; -3) r: fraction of good beats in ABP*</p>
+<p>Returns: BeatQ: SQI of each beat (nx10 array): 0=good, 1=bad Col 0: logical OR of cols 1 thru 9 Col 1: P not physiologic (&lt;20 or &gt;300 mmHg) Col 2: MAP not physiologic (&lt;30 or &gt;200 mmHg) Col 3: HR not physiologic (&lt;20 or &gt;200 bpm) Col 4: PP not physiologic (&lt;20 mmHg) Col 5: abnormal Psys (beat-to-beat change &gt; 20 mmHg) Col 6: abnormal Pdias (beat-to-beat change &gt; 20 mmHg) Col 7: abnormal period (beat-to-beat change &gt; 1/2 sec) Col 8: abnormal P(onset) (beat-to-beat change &gt; 20 mmHg) Col 9: noisy beat (mean of negative dP &lt; -3) r: fraction of good beats in ABP</p>
 <hr>
 </section>
 <section id="localfun_area" class="level3">
 <h3 class="anchored" data-anchor-id="localfun_area">localfun_area</h3>
-<blockquote class="blockquote">
-<pre><code> localfun_area (abp, onset, end_sys, P_dias, fs=125)</code></pre>
-</blockquote>
-<p>*Helper function to calculate systolic area. From physionet: https://physionet.org/content/cardiac-output/1.0.0/code/2analyze/abpfeature.m</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> localfun_area(</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    abp, onset, end_sys, P_dias, fs:<span class="bu">int</span><span class="op">=</span><span class="dv">125</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>):</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><em>Helper function to calculate systolic area.</em> From physionet: https://physionet.org/content/cardiac-output/1.0.0/code/2analyze/abpfeature.m</p>
 <p>Args: abp: ABP signal onset: Onset times end_sys: End of systole times P_dias: Diastolic pressures fs: Sampling frequency</p>
-<p>Returns: sys_area: Systolic area [mmHg*sec]*</p>
+<p>Returns: sys_area: Systolic area [mmHg*sec]</p>
 <hr>
 </section>
 <section id="abp_features" class="level3">
 <h3 class="anchored" data-anchor-id="abp_features">abp_features</h3>
-<blockquote class="blockquote">
-<pre><code> abp_features (abp, onset_times, fs=125)</code></pre>
-</blockquote>
-<p>*ABP waveform feature extractor. From physionet: https://physionet.org/content/cardiac-output/1.0.0/code/2analyze/abpfeature.m</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> abp_features(</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    abp, onset_times, fs:<span class="bu">int</span><span class="op">=</span><span class="dv">125</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>):</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><em>ABP waveform feature extractor. From physionet: https://physionet.org/content/cardiac-output/1.0.0/code/2analyze/abpfeature.m</em></p>
 <p>Args: abp: ABP waveform (sampled at fs Hz) onset_times: Array of onset times in samples fs: Sampling frequency (default 125 Hz)</p>
-<p>Returns: features: Array with beat-to-beat ABP features (12 columns) Col 0: Time of systole [samples] Col 1: Systolic BP [mmHg] Col 2: Time of diastole [samples] Col 3: Diastolic BP [mmHg] Col 4: Pulse pressure [mmHg] Col 5: Mean pressure [mmHg] Col 6: Beat Period [samples] Col 7: mean_dyneg Col 8: End of systole time 0.3<em>sqrt(RR) method Col 9: Area under systole 0.3</em>sqrt(RR) method Col 10: End of systole time 1st min-slope method Col 11: Area under systole 1st min-slope method Col 12: HR*</p>
+<p>Returns: features: Array with beat-to-beat ABP features (12 columns) Col 0: Time of systole [samples] Col 1: Systolic BP [mmHg] Col 2: Time of diastole [samples] Col 3: Diastolic BP [mmHg] Col 4: Pulse pressure [mmHg] Col 5: Mean pressure [mmHg] Col 6: Beat Period [samples] Col 7: mean_dyneg Col 8: End of systole time 0.3<em>sqrt(RR) method Col 9: Area under systole 0.3</em>sqrt(RR) method Col 10: End of systole time 1st min-slope method Col 11: Area under systole 1st min-slope method Col 12: HR</p>
 <hr>
 </section>
 <section id="wabp_onset_detector" class="level3">
 <h3 class="anchored" data-anchor-id="wabp_onset_detector">wabp_onset_detector</h3>
-<blockquote class="blockquote">
-<pre><code> wabp_onset_detector (abp_signal, fs=125)</code></pre>
-</blockquote>
-<p>*ABP onset detector adapted from physionet at: https://physionet.org/content/cardiac-output/1.0.0/code/2analyze/wabp.m Detects onset of each beat in ABP waveform.</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> wabp_onset_detector(</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    abp_signal, fs:<span class="bu">int</span><span class="op">=</span><span class="dv">125</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>):</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><em>ABP onset detector adapted from physionet at: https://physionet.org/content/cardiac-output/1.0.0/code/2analyze/wabp.m</em> Detects onset of each beat in ABP waveform.</p>
 <p>This was written for a 125 Hz ABP signal. Specific params could likely be adjusted for different frequencies.</p>
 <p>Args: abp_signal: ABP waveform in mmHg fs: sampling frequency (default 125 Hz)</p>
-<p>Returns: onset_indices: array of onset sample indices*</p>
+<p>Returns: onset_indices: array of onset sample indices</p>
 
 
 </section>

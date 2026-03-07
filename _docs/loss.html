@@ -21,6 +21,40 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
@@ -248,73 +282,90 @@ ul.task-list li input[type="checkbox"] {
 <hr>
 <section id="mse_variance_loss" class="level3">
 <h3 class="anchored" data-anchor-id="mse_variance_loss">mse_variance_loss</h3>
-<blockquote class="blockquote">
-<pre><code> mse_variance_loss (preds, target, representations, alpha=0.2)</code></pre>
-</blockquote>
-<p><em>preds: [bs x num_patch x n_vars x patch_len] targets: [bs x num_patch x n_vars x patch_len] representations: [bs x nvars x d_model x num_patch]</em></p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> mse_variance_loss(</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    preds, target, representations, alpha:<span class="bu">float</span><span class="op">=</span><span class="fl">0.2</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>):</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><em>preds: [bs x num_patch x n_vars x patch_len]</em> targets: [bs x num_patch x n_vars x patch_len] representations: [bs x nvars x d_model x num_patch]</p>
 <hr>
 </section>
 <section id="smoothl1_loss" class="level3">
 <h3 class="anchored" data-anchor-id="smoothl1_loss">smoothl1_loss</h3>
-<blockquote class="blockquote">
-<pre><code> smoothl1_loss (preds, target)</code></pre>
-</blockquote>
+<div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> smoothl1_loss(</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    preds, target</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>):</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <hr>
 </section>
 <section id="huber_loss" class="level3">
 <h3 class="anchored" data-anchor-id="huber_loss">huber_loss</h3>
-<blockquote class="blockquote">
-<pre><code> huber_loss (preds, target, delta=1)</code></pre>
-</blockquote>
-<p><em>preds: [bs x num_patch x n_vars x patch_len] targets: [bs x num_patch x n_vars x patch_len]</em></p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> huber_loss(</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    preds, target, delta:<span class="bu">int</span><span class="op">=</span><span class="dv">1</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>):</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><em>preds: [bs x num_patch x n_vars x patch_len]</em> targets: [bs x num_patch x n_vars x patch_len]</p>
 <hr>
 </section>
 <section id="cosine_similarity_loss" class="level3">
 <h3 class="anchored" data-anchor-id="cosine_similarity_loss">cosine_similarity_loss</h3>
-<blockquote class="blockquote">
-<pre><code> cosine_similarity_loss (preds, target)</code></pre>
-</blockquote>
-<p><em>preds: [bs x num_patch x n_vars x patch_len] targets: [bs x num_patch x n_vars x patch_len]</em></p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> cosine_similarity_loss(</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    preds, target</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>):</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><em>preds: [bs x num_patch x n_vars x patch_len]</em> targets: [bs x num_patch x n_vars x patch_len]</p>
 <hr>
 </section>
 <section id="mape" class="level3">
 <h3 class="anchored" data-anchor-id="mape">mape</h3>
-<blockquote class="blockquote">
-<pre><code> mape (preds, target)</code></pre>
-</blockquote>
+<div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> mape(</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    preds, target</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>):</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <hr>
 </section>
 <section id="mae_loss" class="level3">
 <h3 class="anchored" data-anchor-id="mae_loss">mae_loss</h3>
-<blockquote class="blockquote">
-<pre><code> mae_loss (preds, target)</code></pre>
-</blockquote>
-<p><em>preds: [bs x num_patch x n_vars x patch_len] targets: [bs x num_patch x n_vars x patch_len]</em></p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> mae_loss(</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    preds, target</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>):</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><em>preds: [bs x num_patch x n_vars x patch_len]</em> targets: [bs x num_patch x n_vars x patch_len]</p>
 <hr>
 </section>
 <section id="mse_loss" class="level3">
 <h3 class="anchored" data-anchor-id="mse_loss">mse_loss</h3>
-<blockquote class="blockquote">
-<pre><code> mse_loss (preds, target)</code></pre>
-</blockquote>
-<p><em>preds: [bs x num_patch x n_vars x patch_len] targets: [bs x num_patch x n_vars x patch_len]</em></p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> mse_loss(</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    preds, target</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>):</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><em>preds: [bs x num_patch x n_vars x patch_len]</em> targets: [bs x num_patch x n_vars x patch_len]</p>
 <hr>
 </section>
 <section id="crossentropyloss" class="level3">
 <h3 class="anchored" data-anchor-id="crossentropyloss">CrossEntropyLoss</h3>
-<blockquote class="blockquote">
-<pre><code> CrossEntropyLoss (ignore_index=-100, reduction='mean', weight=None,
-                   label_smoothing=0, soft_labels=False)</code></pre>
-</blockquote>
+<div class="sourceCode" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> CrossEntropyLoss(</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    ignore_index:<span class="bu">int</span><span class="op">=-</span><span class="dv">100</span>, reduction:<span class="bu">str</span><span class="op">=</span><span class="st">'mean'</span>, weight:NoneType<span class="op">=</span><span class="va">None</span>, label_smoothing:<span class="bu">int</span><span class="op">=</span><span class="dv">0</span>, soft_labels:<span class="bu">bool</span><span class="op">=</span><span class="va">False</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>):</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p><em>Cross entropy loss with ignore_index.</em></p>
 <hr>
 </section>
 <section id="focalloss" class="level3">
 <h3 class="anchored" data-anchor-id="focalloss">FocalLoss</h3>
-<blockquote class="blockquote">
-<pre><code> FocalLoss (weight=None, gamma=2.0, reduction='mean', ignore_index=-100)</code></pre>
-</blockquote>
-<p><em>adapted from tsai, weighted multiclass focal loss https://github.com/timeseriesAI/tsai/blob/bdff96cc8c4c8ea55bc20d7cffd6a72e402f4cb2/tsai/losses.py#L116C1-L140C20</em></p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> FocalLoss(</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    weight:NoneType<span class="op">=</span><span class="va">None</span>, gamma:<span class="bu">float</span><span class="op">=</span><span class="fl">2.0</span>, reduction:<span class="bu">str</span><span class="op">=</span><span class="st">'mean'</span>, ignore_index:<span class="bu">int</span><span class="op">=-</span><span class="dv">100</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>):</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><em>adapted from tsai, weighted multiclass focal loss</em> https://github.com/timeseriesAI/tsai/blob/bdff96cc8c4c8ea55bc20d7cffd6a72e402f4cb2/tsai/losses.py#L116C1-L140C20</p>
 
 
 </section>

@@ -21,6 +21,40 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
@@ -264,28 +298,31 @@ ul.task-list li input[type="checkbox"] {
 <hr>
 <section id="create_masks" class="level3">
 <h3 class="anchored" data-anchor-id="create_masks">create_masks</h3>
-<blockquote class="blockquote">
-<pre><code> create_masks (x, patch_size, patch_stride, context_mask_range,
-               target_mask_range, melt_channels_to_batch=False)</code></pre>
-</blockquote>
+<div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> create_masks(</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    x, patch_size, patch_stride, context_mask_range, target_mask_range, melt_channels_to_batch:<span class="bu">bool</span><span class="op">=</span><span class="va">False</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>):</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <hr>
 </section>
 <section id="apply_masks" class="level3">
 <h3 class="anchored" data-anchor-id="apply_masks">apply_masks</h3>
-<blockquote class="blockquote">
-<pre><code> apply_masks (x, masks)</code></pre>
-</blockquote>
+<div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> apply_masks(</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    x, masks</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>):</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <hr>
 </section>
 <section id="jepablock" class="level3">
 <h3 class="anchored" data-anchor-id="jepablock">JEPABlock</h3>
-<blockquote class="blockquote">
-<pre><code> JEPABlock (dim, num_heads, mlp_ratio=4.0, qkv_bias=False, qk_scale=None,
-            drop=0.0, attn_drop=0.0, act_layer=&lt;class
-            'torch.nn.modules.activation.GELU'&gt;, norm_layer=&lt;class
-            'torch.nn.modules.normalization.LayerNorm'&gt;, rotary_pes=False)</code></pre>
-</blockquote>
-<p>*Base class for all neural network modules.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> JEPABlock(</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    dim, num_heads, mlp_ratio:<span class="bu">float</span><span class="op">=</span><span class="fl">4.0</span>, qkv_bias:<span class="bu">bool</span><span class="op">=</span><span class="va">False</span>, qk_scale:NoneType<span class="op">=</span><span class="va">None</span>, drop:<span class="bu">float</span><span class="op">=</span><span class="fl">0.0</span>,</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    attn_drop:<span class="bu">float</span><span class="op">=</span><span class="fl">0.0</span>, act_layer:<span class="bu">type</span><span class="op">=</span>GELU, norm_layer:<span class="bu">type</span><span class="op">=</span>LayerNorm, rotary_pes:<span class="bu">bool</span><span class="op">=</span><span class="va">False</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>):</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><em>Base class for all neural network modules.</em></p>
 <p>Your models should also subclass this class.</p>
 <p>Modules can also contain other Modules, allowing them to be nested in a tree structure. You can assign the submodules as regular attributes::</p>
 <pre><code>import torch.nn as nn
@@ -302,21 +339,21 @@ class Model(nn.Module):
         return F.relu(self.conv2(x))</code></pre>
 <p>Submodules assigned in this way will be registered, and will also have their parameters converted when you call :meth:<code>to</code>, etc.</p>
 <p>.. note:: As per the example above, an <code>__init__()</code> call to the parent class must be made before assignment on the child.</p>
-<p>:ivar training: Boolean represents whether this module is in training or evaluation mode. :vartype training: bool*</p>
+<p>:ivar training: Boolean represents whether this module is in training or evaluation mode. :vartype training: bool</p>
 <hr>
 </section>
 <section id="encoder" class="level3">
 <h3 class="anchored" data-anchor-id="encoder">Encoder</h3>
-<blockquote class="blockquote">
-<pre><code> Encoder (c_in, num_patches, patch_size, patch_stride, d_model, nhead,
-          num_layers, use_tst_block=False, shared_embedding=True,
-          pe_type='tAPE', mlp_ratio=4.0, qkv_bias=True, qk_scale=None,
-          drop_rate=0.0, attn_drop_rate=0.0, norm_layer=&lt;class
-          'torch.nn.modules.normalization.LayerNorm'&gt;, jepa=True,
-          embed_activation=GELU(approximate='none'), init_std=0.02,
-          tokenizer_type='simple', tokenizer_kwargs={})</code></pre>
-</blockquote>
-<p>*Base class for all neural network modules.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> Encoder(</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    c_in, num_patches, patch_size, patch_stride, d_model, nhead, num_layers, use_tst_block:<span class="bu">bool</span><span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    shared_embedding:<span class="bu">bool</span><span class="op">=</span><span class="va">True</span>, pe_type:<span class="bu">str</span><span class="op">=</span><span class="st">'tAPE'</span>, mlp_ratio:<span class="bu">float</span><span class="op">=</span><span class="fl">4.0</span>, qkv_bias:<span class="bu">bool</span><span class="op">=</span><span class="va">True</span>, qk_scale:NoneType<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    drop_rate:<span class="bu">float</span><span class="op">=</span><span class="fl">0.0</span>, attn_drop_rate:<span class="bu">float</span><span class="op">=</span><span class="fl">0.0</span>, norm_layer:<span class="bu">type</span><span class="op">=</span>LayerNorm, jepa:<span class="bu">bool</span><span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    embed_activation:GELU<span class="op">=</span>GELU(approximate<span class="op">=</span><span class="st">'none'</span>), init_std:<span class="bu">float</span><span class="op">=</span><span class="fl">0.02</span>, tokenizer_type:<span class="bu">str</span><span class="op">=</span><span class="st">'simple'</span>,</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    tokenizer_kwargs:<span class="bu">dict</span><span class="op">=</span>{}</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>):</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><em>Base class for all neural network modules.</em></p>
 <p>Your models should also subclass this class.</p>
 <p>Modules can also contain other Modules, allowing them to be nested in a tree structure. You can assign the submodules as regular attributes::</p>
 <pre><code>import torch.nn as nn
@@ -333,42 +370,48 @@ class Model(nn.Module):
         return F.relu(self.conv2(x))</code></pre>
 <p>Submodules assigned in this way will be registered, and will also have their parameters converted when you call :meth:<code>to</code>, etc.</p>
 <p>.. note:: As per the example above, an <code>__init__()</code> call to the parent class must be made before assignment on the child.</p>
-<p>:ivar training: Boolean represents whether this module is in training or evaluation mode. :vartype training: bool*</p>
+<p>:ivar training: Boolean represents whether this module is in training or evaluation mode. :vartype training: bool</p>
 <hr>
 </section>
 <section id="mse_variance_loss" class="level3">
 <h3 class="anchored" data-anchor-id="mse_variance_loss">mse_variance_loss</h3>
-<blockquote class="blockquote">
-<pre><code> mse_variance_loss (pred, target_ema, representations, alpha=0.2)</code></pre>
-</blockquote>
+<div class="sourceCode" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> mse_variance_loss(</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    pred, target_ema, representations, alpha:<span class="bu">float</span><span class="op">=</span><span class="fl">0.2</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>):</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <hr>
 </section>
 <section id="loss_pred" class="level3">
 <h3 class="anchored" data-anchor-id="loss_pred">loss_pred</h3>
-<blockquote class="blockquote">
-<pre><code> loss_pred (pred, target_ema, representations=None, alpha=0.2)</code></pre>
-</blockquote>
+<div class="sourceCode" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> loss_pred(</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    pred, target_ema, representations:NoneType<span class="op">=</span><span class="va">None</span>, alpha:<span class="bu">float</span><span class="op">=</span><span class="fl">0.2</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>):</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <hr>
 </section>
 <section id="variance_loss" class="level3">
 <h3 class="anchored" data-anchor-id="variance_loss">variance_loss</h3>
-<blockquote class="blockquote">
-<pre><code> variance_loss (x)</code></pre>
-</blockquote>
+<div class="sourceCode" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> variance_loss(</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    x</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>):</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <hr>
 </section>
 <section id="predictor" class="level3">
 <h3 class="anchored" data-anchor-id="predictor">Predictor</h3>
-<blockquote class="blockquote">
-<pre><code> Predictor (num_patches, encoder_embed_dim=128, predictor_embed_dim=128,
-            nhead=2, num_layers=1, use_tst_block=False, pe_type='tAPE',
-            mlp_ratio=4.0, qkv_bias=True, qk_scale=None, drop_rate=0.0,
-            attn_drop_rate=0.0, norm_layer=&lt;class
-            'torch.nn.modules.normalization.LayerNorm'&gt;,
-            embed_activation=GELU(approximate='none'), init_std=0.02,
-            c_in_mask_tokens=1)</code></pre>
-</blockquote>
-<p>*Base class for all neural network modules.</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> Predictor(</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    num_patches, encoder_embed_dim:<span class="bu">int</span><span class="op">=</span><span class="dv">128</span>, predictor_embed_dim:<span class="bu">int</span><span class="op">=</span><span class="dv">128</span>, nhead:<span class="bu">int</span><span class="op">=</span><span class="dv">2</span>, num_layers:<span class="bu">int</span><span class="op">=</span><span class="dv">1</span>,</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>    use_tst_block:<span class="bu">bool</span><span class="op">=</span><span class="va">False</span>, pe_type:<span class="bu">str</span><span class="op">=</span><span class="st">'tAPE'</span>, mlp_ratio:<span class="bu">float</span><span class="op">=</span><span class="fl">4.0</span>, qkv_bias:<span class="bu">bool</span><span class="op">=</span><span class="va">True</span>, qk_scale:NoneType<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>    drop_rate:<span class="bu">float</span><span class="op">=</span><span class="fl">0.0</span>, attn_drop_rate:<span class="bu">float</span><span class="op">=</span><span class="fl">0.0</span>, norm_layer:<span class="bu">type</span><span class="op">=</span>LayerNorm,</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>    embed_activation:GELU<span class="op">=</span>GELU(approximate<span class="op">=</span><span class="st">'none'</span>), init_std:<span class="bu">float</span><span class="op">=</span><span class="fl">0.02</span>,</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>    c_in_mask_tokens:<span class="bu">int</span><span class="op">=</span><span class="dv">1</span>, <span class="co"># number of channels in the encoder (if treating channels sep)</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>):</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><em>Base class for all neural network modules.</em></p>
 <p>Your models should also subclass this class.</p>
 <p>Modules can also contain other Modules, allowing them to be nested in a tree structure. You can assign the submodules as regular attributes::</p>
 <pre><code>import torch.nn as nn
@@ -385,270 +428,23 @@ class Model(nn.Module):
         return F.relu(self.conv2(x))</code></pre>
 <p>Submodules assigned in this way will be registered, and will also have their parameters converted when you call :meth:<code>to</code>, etc.</p>
 <p>.. note:: As per the example above, an <code>__init__()</code> call to the parent class must be made before assignment on the child.</p>
-<table class="caption-top table">
-<caption>ivar training: Boolean represents whether this module is in training or evaluation mode. :vartype training: bool*</caption>
-<colgroup>
-<col style="width: 6%">
-<col style="width: 25%">
-<col style="width: 34%">
-<col style="width: 34%">
-</colgroup>
-<thead>
-<tr class="header">
-<th></th>
-<th><strong>Type</strong></th>
-<th><strong>Default</strong></th>
-<th><strong>Details</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>num_patches</td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="even">
-<td>encoder_embed_dim</td>
-<td>int</td>
-<td>128</td>
-<td></td>
-</tr>
-<tr class="odd">
-<td>predictor_embed_dim</td>
-<td>int</td>
-<td>128</td>
-<td></td>
-</tr>
-<tr class="even">
-<td>nhead</td>
-<td>int</td>
-<td>2</td>
-<td></td>
-</tr>
-<tr class="odd">
-<td>num_layers</td>
-<td>int</td>
-<td>1</td>
-<td></td>
-</tr>
-<tr class="even">
-<td>use_tst_block</td>
-<td>bool</td>
-<td>False</td>
-<td></td>
-</tr>
-<tr class="odd">
-<td>pe_type</td>
-<td>str</td>
-<td>tAPE</td>
-<td></td>
-</tr>
-<tr class="even">
-<td>mlp_ratio</td>
-<td>float</td>
-<td>4.0</td>
-<td></td>
-</tr>
-<tr class="odd">
-<td>qkv_bias</td>
-<td>bool</td>
-<td>True</td>
-<td></td>
-</tr>
-<tr class="even">
-<td>qk_scale</td>
-<td>NoneType</td>
-<td>None</td>
-<td></td>
-</tr>
-<tr class="odd">
-<td>drop_rate</td>
-<td>float</td>
-<td>0.0</td>
-<td></td>
-</tr>
-<tr class="even">
-<td>attn_drop_rate</td>
-<td>float</td>
-<td>0.0</td>
-<td></td>
-</tr>
-<tr class="odd">
-<td>norm_layer</td>
-<td>type</td>
-<td>LayerNorm</td>
-<td></td>
-</tr>
-<tr class="even">
-<td>embed_activation</td>
-<td>GELU</td>
-<td>GELU(approximate=‘none’)</td>
-<td></td>
-</tr>
-<tr class="odd">
-<td>init_std</td>
-<td>float</td>
-<td>0.02</td>
-<td></td>
-</tr>
-<tr class="even">
-<td>c_in_mask_tokens</td>
-<td>int</td>
-<td>1</td>
-<td>number of channels in the encoder (if treating channels sep)</td>
-</tr>
-</tbody>
-</table>
+<p>:ivar training: Boolean represents whether this module is in training or evaluation mode. :vartype training: bool</p>
 <hr>
 </section>
 <section id="jepasimplelightning" class="level3">
 <h3 class="anchored" data-anchor-id="jepasimplelightning">JEPASimpleLightning</h3>
-<blockquote class="blockquote">
-<pre><code> JEPASimpleLightning (learning_rate, train_size, batch_size, n_gpus,
-                      patchtsjepa_encoder_kwargs,
-                      patchtsjepa_predictor_kwargs, weight_decay=0.04,
-                      use_weight_decay_scheduler=False,
-                      final_weight_decay=0.4, epochs=100,
-                      optimizer_type='adamw', scheduler_type='OneCycle',
-                      target_mask_range=(0.05, 0.3),
-                      context_mask_range=(0.5, 1.0), mask_block_range=(1,
-                      30), ema_decay=0.996, scheduler_kwargs={},
-                      transforms=None, loss_fn=&lt;function loss_pred&gt;)</code></pre>
-</blockquote>
+<div class="sourceCode" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> JEPASimpleLightning(</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    learning_rate, train_size, batch_size, n_gpus, patchtsjepa_encoder_kwargs, patchtsjepa_predictor_kwargs,</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    weight_decay:<span class="bu">float</span><span class="op">=</span><span class="fl">0.04</span>, use_weight_decay_scheduler:<span class="bu">bool</span><span class="op">=</span><span class="va">False</span>, final_weight_decay:<span class="bu">float</span><span class="op">=</span><span class="fl">0.4</span>, epochs:<span class="bu">int</span><span class="op">=</span><span class="dv">100</span>,</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>    optimizer_type:<span class="bu">str</span><span class="op">=</span><span class="st">'adamw'</span>, scheduler_type:<span class="bu">str</span><span class="op">=</span><span class="st">'OneCycle'</span>,</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>    target_mask_range:<span class="bu">tuple</span><span class="op">=</span>(<span class="fl">0.05</span>, <span class="fl">0.3</span>), <span class="co"># the target can be up to 50% of the original x</span></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>    context_mask_range:<span class="bu">tuple</span><span class="op">=</span>(<span class="fl">0.5</span>, <span class="fl">1.0</span>), <span class="co"># the context can be up to 80% of masked out target (1-target_mask_ratio)</span></span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>    mask_block_range:<span class="bu">tuple</span><span class="op">=</span>(<span class="dv">1</span>, <span class="dv">30</span>), ema_decay:<span class="bu">float</span><span class="op">=</span><span class="fl">0.996</span>, scheduler_kwargs:<span class="bu">dict</span><span class="op">=</span>{}, transforms:NoneType<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>    loss_fn:function<span class="op">=</span>loss_pred</span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>):</span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p><em>Hooks to be used in LightningModule.</em></p>
-<table class="caption-top table">
-<colgroup>
-<col style="width: 6%">
-<col style="width: 25%">
-<col style="width: 34%">
-<col style="width: 34%">
-</colgroup>
-<thead>
-<tr class="header">
-<th></th>
-<th><strong>Type</strong></th>
-<th><strong>Default</strong></th>
-<th><strong>Details</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>learning_rate</td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="even">
-<td>train_size</td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="odd">
-<td>batch_size</td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="even">
-<td>n_gpus</td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="odd">
-<td>patchtsjepa_encoder_kwargs</td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="even">
-<td>patchtsjepa_predictor_kwargs</td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="odd">
-<td>weight_decay</td>
-<td>float</td>
-<td>0.04</td>
-<td></td>
-</tr>
-<tr class="even">
-<td>use_weight_decay_scheduler</td>
-<td>bool</td>
-<td>False</td>
-<td></td>
-</tr>
-<tr class="odd">
-<td>final_weight_decay</td>
-<td>float</td>
-<td>0.4</td>
-<td></td>
-</tr>
-<tr class="even">
-<td>epochs</td>
-<td>int</td>
-<td>100</td>
-<td></td>
-</tr>
-<tr class="odd">
-<td>optimizer_type</td>
-<td>str</td>
-<td>adamw</td>
-<td></td>
-</tr>
-<tr class="even">
-<td>scheduler_type</td>
-<td>str</td>
-<td>OneCycle</td>
-<td></td>
-</tr>
-<tr class="odd">
-<td>target_mask_range</td>
-<td>tuple</td>
-<td>(0.05, 0.3)</td>
-<td>the target can be up to 50% of the original x</td>
-</tr>
-<tr class="even">
-<td>context_mask_range</td>
-<td>tuple</td>
-<td>(0.5, 1.0)</td>
-<td>the context can be up to 80% of masked out target (1-target_mask_ratio)</td>
-</tr>
-<tr class="odd">
-<td>mask_block_range</td>
-<td>tuple</td>
-<td>(1, 30)</td>
-<td></td>
-</tr>
-<tr class="even">
-<td>ema_decay</td>
-<td>float</td>
-<td>0.996</td>
-<td></td>
-</tr>
-<tr class="odd">
-<td>scheduler_kwargs</td>
-<td>dict</td>
-<td>{}</td>
-<td></td>
-</tr>
-<tr class="even">
-<td>transforms</td>
-<td>NoneType</td>
-<td>None</td>
-<td></td>
-</tr>
-<tr class="odd">
-<td>loss_fn</td>
-<td>function</td>
-<td>loss_pred</td>
-<td></td>
-</tr>
-</tbody>
-</table>
 </section>
 </section>
 <section id="ecg-jepa" class="level2">
@@ -659,30 +455,27 @@ class Model(nn.Module):
 <hr>
 <section id="ecgjepalightning" class="level3">
 <h3 class="anchored" data-anchor-id="ecgjepalightning">ECGJEPALightning</h3>
-<blockquote class="blockquote">
-<pre><code> ECGJEPALightning (encoder_kwargs, predictor_kwargs, learning_rate,
-                   train_size, batch_size, n_gpus, weight_decay=0.04,
-                   use_weight_decay_scheduler=False,
-                   final_weight_decay=0.4, epochs=100,
-                   optimizer_type='adamw', scheduler_type='OneCycle',
-                   ema_decay=0.996, scheduler_kwargs={}, transforms=None)</code></pre>
-</blockquote>
+<div class="sourceCode" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> ECGJEPALightning(</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>    encoder_kwargs, predictor_kwargs, learning_rate, train_size, batch_size, n_gpus, weight_decay:<span class="bu">float</span><span class="op">=</span><span class="fl">0.04</span>,</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>    use_weight_decay_scheduler:<span class="bu">bool</span><span class="op">=</span><span class="va">False</span>, final_weight_decay:<span class="bu">float</span><span class="op">=</span><span class="fl">0.4</span>, epochs:<span class="bu">int</span><span class="op">=</span><span class="dv">100</span>, optimizer_type:<span class="bu">str</span><span class="op">=</span><span class="st">'adamw'</span>,</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>    scheduler_type:<span class="bu">str</span><span class="op">=</span><span class="st">'OneCycle'</span>, ema_decay:<span class="bu">float</span><span class="op">=</span><span class="fl">0.996</span>, scheduler_kwargs:<span class="bu">dict</span><span class="op">=</span>{}, transforms:NoneType<span class="op">=</span><span class="va">None</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>):</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p><em>Hooks to be used in LightningModule.</em></p>
 <hr>
 </section>
 <section id="masktransformerpredictor" class="level3">
 <h3 class="anchored" data-anchor-id="masktransformerpredictor">MaskTransformerPredictor</h3>
-<blockquote class="blockquote">
-<pre><code> MaskTransformerPredictor (d_model=384, predictor_embed_dim=192,
-                           num_layers=4, nhead=6, mlp_ratio=4.0,
-                           qkv_bias=False, qk_scale=None, drop_rate=0.0,
-                           attn_drop_rate=0.0, drop_path_rate=0.0,
-                           norm_layer=&lt;class
-                           'torch.nn.modules.normalization.LayerNorm'&gt;,
-                           init_std=0.02, pe_type='sincos', c_in=9,
-                           num_patches=50, patch_size=50)</code></pre>
-</blockquote>
-<p>*Base class for all neural network modules.</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> MaskTransformerPredictor(</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>    d_model:<span class="bu">int</span><span class="op">=</span><span class="dv">384</span>, predictor_embed_dim:<span class="bu">int</span><span class="op">=</span><span class="dv">192</span>, num_layers:<span class="bu">int</span><span class="op">=</span><span class="dv">4</span>, nhead:<span class="bu">int</span><span class="op">=</span><span class="dv">6</span>, mlp_ratio:<span class="bu">float</span><span class="op">=</span><span class="fl">4.0</span>,</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>    qkv_bias:<span class="bu">bool</span><span class="op">=</span><span class="va">False</span>, qk_scale:NoneType<span class="op">=</span><span class="va">None</span>, drop_rate:<span class="bu">float</span><span class="op">=</span><span class="fl">0.0</span>, attn_drop_rate:<span class="bu">float</span><span class="op">=</span><span class="fl">0.0</span>,</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>    drop_path_rate:<span class="bu">float</span><span class="op">=</span><span class="fl">0.0</span>, norm_layer:<span class="bu">type</span><span class="op">=</span>LayerNorm, init_std:<span class="bu">float</span><span class="op">=</span><span class="fl">0.02</span>, pe_type:<span class="bu">str</span><span class="op">=</span><span class="st">'sincos'</span>, c_in:<span class="bu">int</span><span class="op">=</span><span class="dv">9</span>,</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>    num_patches:<span class="bu">int</span><span class="op">=</span><span class="dv">50</span>, patch_size:<span class="bu">int</span><span class="op">=</span><span class="dv">50</span></span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>):</span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><em>Base class for all neural network modules.</em></p>
 <p>Your models should also subclass this class.</p>
 <p>Modules can also contain other Modules, allowing them to be nested in a tree structure. You can assign the submodules as regular attributes::</p>
 <pre><code>import torch.nn as nn
@@ -699,21 +492,20 @@ class Model(nn.Module):
         return F.relu(self.conv2(x))</code></pre>
 <p>Submodules assigned in this way will be registered, and will also have their parameters converted when you call :meth:<code>to</code>, etc.</p>
 <p>.. note:: As per the example above, an <code>__init__()</code> call to the parent class must be made before assignment on the child.</p>
-<p>:ivar training: Boolean represents whether this module is in training or evaluation mode. :vartype training: bool*</p>
+<p>:ivar training: Boolean represents whether this module is in training or evaluation mode. :vartype training: bool</p>
 <hr>
 </section>
 <section id="masktransformer" class="level3">
 <h3 class="anchored" data-anchor-id="masktransformer">MaskTransformer</h3>
-<blockquote class="blockquote">
-<pre><code> MaskTransformer (d_model=384, num_layers=12, nhead=6, mlp_ratio=4.0,
-                  qkv_bias=False, qk_scale=None, drop_rate=0.0,
-                  attn_drop_rate=0.0, drop_path_rate=0.0,
-                  norm_layer=&lt;class
-                  'torch.nn.modules.normalization.LayerNorm'&gt;,
-                  init_std=0.02, mask_scale=(0.3, 0.5), mask_type='block',
-                  pe_type='sincos', c_in=3, num_patches=50, patch_size=50)</code></pre>
-</blockquote>
-<p>*Base class for all neural network modules.</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> MaskTransformer(</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>    d_model:<span class="bu">int</span><span class="op">=</span><span class="dv">384</span>, num_layers:<span class="bu">int</span><span class="op">=</span><span class="dv">12</span>, nhead:<span class="bu">int</span><span class="op">=</span><span class="dv">6</span>, mlp_ratio:<span class="bu">float</span><span class="op">=</span><span class="fl">4.0</span>, qkv_bias:<span class="bu">bool</span><span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>    qk_scale:NoneType<span class="op">=</span><span class="va">None</span>, drop_rate:<span class="bu">float</span><span class="op">=</span><span class="fl">0.0</span>, attn_drop_rate:<span class="bu">float</span><span class="op">=</span><span class="fl">0.0</span>, drop_path_rate:<span class="bu">float</span><span class="op">=</span><span class="fl">0.0</span>,</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>    norm_layer:<span class="bu">type</span><span class="op">=</span>LayerNorm, init_std:<span class="bu">float</span><span class="op">=</span><span class="fl">0.02</span>, mask_scale:<span class="bu">tuple</span><span class="op">=</span>(<span class="fl">0.3</span>, <span class="fl">0.5</span>), mask_type:<span class="bu">str</span><span class="op">=</span><span class="st">'block'</span>,</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>    pe_type:<span class="bu">str</span><span class="op">=</span><span class="st">'sincos'</span>, c_in:<span class="bu">int</span><span class="op">=</span><span class="dv">3</span>, num_patches:<span class="bu">int</span><span class="op">=</span><span class="dv">50</span>, patch_size:<span class="bu">int</span><span class="op">=</span><span class="dv">50</span></span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>):</span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><em>Base class for all neural network modules.</em></p>
 <p>Your models should also subclass this class.</p>
 <p>Modules can also contain other Modules, allowing them to be nested in a tree structure. You can assign the submodules as regular attributes::</p>
 <pre><code>import torch.nn as nn
@@ -730,17 +522,18 @@ class Model(nn.Module):
         return F.relu(self.conv2(x))</code></pre>
 <p>Submodules assigned in this way will be registered, and will also have their parameters converted when you call :meth:<code>to</code>, etc.</p>
 <p>.. note:: As per the example above, an <code>__init__()</code> call to the parent class must be made before assignment on the child.</p>
-<p>:ivar training: Boolean represents whether this module is in training or evaluation mode. :vartype training: bool*</p>
+<p>:ivar training: Boolean represents whether this module is in training or evaluation mode. :vartype training: bool</p>
 <hr>
 </section>
 <section id="predictor_block" class="level3">
 <h3 class="anchored" data-anchor-id="predictor_block">Predictor_Block</h3>
-<blockquote class="blockquote">
-<pre><code> Predictor_Block (predictor_embed_dim=192, depth=4, num_heads=6,
-                  mlp_ratio=4.0, qkv_bias=False, qk_scale=None,
-                  drop_rate=0.0, attn_drop_rate=0.0, drop_path_rate=0.0)</code></pre>
-</blockquote>
-<p>*Base class for all neural network modules.</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> Predictor_Block(</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>    predictor_embed_dim:<span class="bu">int</span><span class="op">=</span><span class="dv">192</span>, depth:<span class="bu">int</span><span class="op">=</span><span class="dv">4</span>, num_heads:<span class="bu">int</span><span class="op">=</span><span class="dv">6</span>, mlp_ratio:<span class="bu">float</span><span class="op">=</span><span class="fl">4.0</span>, qkv_bias:<span class="bu">bool</span><span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>    qk_scale:NoneType<span class="op">=</span><span class="va">None</span>, drop_rate:<span class="bu">float</span><span class="op">=</span><span class="fl">0.0</span>, attn_drop_rate:<span class="bu">float</span><span class="op">=</span><span class="fl">0.0</span>, drop_path_rate:<span class="bu">float</span><span class="op">=</span><span class="fl">0.0</span></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>):</span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><em>Base class for all neural network modules.</em></p>
 <p>Your models should also subclass this class.</p>
 <p>Modules can also contain other Modules, allowing them to be nested in a tree structure. You can assign the submodules as regular attributes::</p>
 <pre><code>import torch.nn as nn
@@ -757,18 +550,19 @@ class Model(nn.Module):
         return F.relu(self.conv2(x))</code></pre>
 <p>Submodules assigned in this way will be registered, and will also have their parameters converted when you call :meth:<code>to</code>, etc.</p>
 <p>.. note:: As per the example above, an <code>__init__()</code> call to the parent class must be made before assignment on the child.</p>
-<p>:ivar training: Boolean represents whether this module is in training or evaluation mode. :vartype training: bool*</p>
+<p>:ivar training: Boolean represents whether this module is in training or evaluation mode. :vartype training: bool</p>
 <hr>
 </section>
 <section id="encoder_block" class="level3">
 <h3 class="anchored" data-anchor-id="encoder_block">Encoder_Block</h3>
-<blockquote class="blockquote">
-<pre><code> Encoder_Block (embed_dim=384, depth=12, num_heads=6, mlp_ratio=4.0,
-                qkv_bias=False, qk_scale=None, drop_rate=0.0,
-                attn_drop_rate=0.0, drop_path_rate=0.0, norm_layer=&lt;class
-                'torch.nn.modules.normalization.LayerNorm'&gt;)</code></pre>
-</blockquote>
-<p>*Base class for all neural network modules.</p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> Encoder_Block(</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>    embed_dim:<span class="bu">int</span><span class="op">=</span><span class="dv">384</span>, depth:<span class="bu">int</span><span class="op">=</span><span class="dv">12</span>, num_heads:<span class="bu">int</span><span class="op">=</span><span class="dv">6</span>, mlp_ratio:<span class="bu">float</span><span class="op">=</span><span class="fl">4.0</span>, qkv_bias:<span class="bu">bool</span><span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>    qk_scale:NoneType<span class="op">=</span><span class="va">None</span>, drop_rate:<span class="bu">float</span><span class="op">=</span><span class="fl">0.0</span>, attn_drop_rate:<span class="bu">float</span><span class="op">=</span><span class="fl">0.0</span>, drop_path_rate:<span class="bu">float</span><span class="op">=</span><span class="fl">0.0</span>,</span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>    norm_layer:<span class="bu">type</span><span class="op">=</span>LayerNorm</span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>):</span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><em>Base class for all neural network modules.</em></p>
 <p>Your models should also subclass this class.</p>
 <p>Modules can also contain other Modules, allowing them to be nested in a tree structure. You can assign the submodules as regular attributes::</p>
 <pre><code>import torch.nn as nn
@@ -785,31 +579,36 @@ class Model(nn.Module):
         return F.relu(self.conv2(x))</code></pre>
 <p>Submodules assigned in this way will be registered, and will also have their parameters converted when you call :meth:<code>to</code>, etc.</p>
 <p>.. note:: As per the example above, an <code>__init__()</code> call to the parent class must be made before assignment on the child.</p>
-<p>:ivar training: Boolean represents whether this module is in training or evaluation mode. :vartype training: bool*</p>
+<p>:ivar training: Boolean represents whether this module is in training or evaluation mode. :vartype training: bool</p>
 <hr>
 </section>
 <section id="get_2d_sincos_pos_embed" class="level3">
 <h3 class="anchored" data-anchor-id="get_2d_sincos_pos_embed">get_2d_sincos_pos_embed</h3>
-<blockquote class="blockquote">
-<pre><code> get_2d_sincos_pos_embed (embed_dim, grid_size_h, grid_size_w,
-                          cls_token=False)</code></pre>
-</blockquote>
-<p><em>grid_size_h: int of the grid height grid_size_w: int of the grid width return: pos_embed: [grid_size_h*grid_size_w, embed_dim] or [1+grid_size_h*grid_size_w, embed_dim] (w/ or w/o cls_token)</em></p>
+<div class="sourceCode" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> get_2d_sincos_pos_embed(</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>    embed_dim, grid_size_h, grid_size_w, cls_token:<span class="bu">bool</span><span class="op">=</span><span class="va">False</span></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>):</span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><em>grid_size_h: int of the grid height</em> grid_size_w: int of the grid width return: pos_embed: [grid_size_h*grid_size_w, embed_dim] or [1+grid_size_h*grid_size_w, embed_dim] (w/ or w/o cls_token)</p>
 <hr>
 </section>
 <section id="get_2d_sincos_pos_embed_from_grid" class="level3">
 <h3 class="anchored" data-anchor-id="get_2d_sincos_pos_embed_from_grid">get_2d_sincos_pos_embed_from_grid</h3>
-<blockquote class="blockquote">
-<pre><code> get_2d_sincos_pos_embed_from_grid (embed_dim, grid)</code></pre>
-</blockquote>
+<div class="sourceCode" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> get_2d_sincos_pos_embed_from_grid(</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>    embed_dim, grid</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>):</span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <hr>
 </section>
 <section id="get_1d_sincos_pos_embed_from_grid" class="level3">
 <h3 class="anchored" data-anchor-id="get_1d_sincos_pos_embed_from_grid">get_1d_sincos_pos_embed_from_grid</h3>
-<blockquote class="blockquote">
-<pre><code> get_1d_sincos_pos_embed_from_grid (embed_dim, pos)</code></pre>
-</blockquote>
-<p><em>embed_dim: output dimension for each position pos: a list of positions to be encoded: size (M,) out: (M, D)</em></p>
+<div class="sourceCode" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> get_1d_sincos_pos_embed_from_grid(</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>    embed_dim, pos</span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>):</span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><em>embed_dim: output dimension for each position</em> pos: a list of positions to be encoded: size (M,) out: (M, D)</p>
 
 
 </section>
